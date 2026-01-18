@@ -40,18 +40,10 @@ __email__ = "michael@databooth.com.au"
 from mojo_marimo.executor import run_mojo, clear_cache, cache_stats, get_mojo_version
 from mojo_marimo.decorator import mojo
 
-# Example implementations
-from mojo_marimo.examples import fibonacci, sum_squares, is_prime
-
 __all__ = [
-    # Core
     "run_mojo",
     "clear_cache",
     "cache_stats",
     "get_mojo_version",
     "mojo",
-    # Examples
-    "fibonacci",
-    "sum_squares",
-    "is_prime",
 ]

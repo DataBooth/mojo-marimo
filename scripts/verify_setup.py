@@ -13,6 +13,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Add src to path
+src_path = Path(__file__).parent.parent / "src"
+sys.path.insert(0, str(src_path))
+
 
 def check_mojo_available():
     """Check if mojo command is available on PATH."""
@@ -72,7 +76,11 @@ def main():
     print("=" * 60)
     
     # Import after checking mojo is available
-    from mojo_marimo.examples import fibonacci as fib_example
+    # Add examples to path
+    examples_path = Path(__file__).parent.parent / "examples"
+    sys.path.insert(0, str(examples_path))
+    
+    from examples import fibonacci as fib_example
     from mojo_marimo.decorator import fibonacci as fib_decorator
     from mojo_marimo.executor import clear_cache
     

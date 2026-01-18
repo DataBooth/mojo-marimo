@@ -18,7 +18,7 @@ ty = "*"
 
 [tasks]
 # Setup verification
-test-setup = { cmd = "python test_all_approaches.py", cwd = "src/mojo_marimo" }
+test-setup = { cmd = "python verify_setup.py", cwd = "scripts" }
 
 # Interactive notebooks
 notebook-example = { cmd = "marimo edit example_notebook.py", cwd = "notebooks" }

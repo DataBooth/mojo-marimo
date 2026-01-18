@@ -4,6 +4,14 @@ These are convenience wrappers that demonstrate how to use the executor
 for common computational tasks.
 """
 
+import sys
+from pathlib import Path
+
+# Add src to path when run as script
+if __name__ == "__main__":
+    src_path = Path(__file__).parent.parent / "src"
+    sys.path.insert(0, str(src_path))
+
 from mojo_marimo.executor import run_mojo
 
 
@@ -90,6 +98,7 @@ fn main():
 
 
 if __name__ == "__main__":
+    # Imports already available from above
     from mojo_marimo.executor import get_mojo_version, cache_stats
     
     print(f"Mojo version: {get_mojo_version()}\n")

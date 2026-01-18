@@ -99,7 +99,13 @@ def __(mo):
 
 @app.cell
 def __():
-    from mojo_marimo.examples import (
+    # Add examples to path
+    import sys
+    from pathlib import Path
+    examples_path = Path(__file__).parent.parent / "examples"
+    sys.path.insert(0, str(examples_path))
+    
+    from examples import (
         fibonacci as fib_cached,
         sum_squares as sum_sq_cached,
         is_prime as prime_cached,

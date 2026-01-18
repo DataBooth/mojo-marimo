@@ -33,13 +33,17 @@ def test_core_functions_import():
     assert callable(get_mojo_version)
 
 
-def test_example_functions_import():
-    """Test that example functions can be imported."""
-    from mojo_marimo import fibonacci, sum_squares, is_prime
+def test_decorator_definition():
+    """Test that decorator can define functions."""
+    from mojo_marimo import mojo
     
-    assert callable(fibonacci)
-    assert callable(sum_squares)
-    assert callable(is_prime)
+    # Can define a decorated function
+    @mojo
+    def test_func(n: int) -> int:
+        """fn main(): print(42)"""
+        pass
+    
+    assert callable(test_func)
 
 
 def test_all_exports():
@@ -47,16 +51,11 @@ def test_all_exports():
     import mojo_marimo
     
     expected = [
-        # Core
         "run_mojo",
         "clear_cache",
         "cache_stats",
         "get_mojo_version",
         "mojo",
-        # Examples
-        "fibonacci",
-        "sum_squares",
-        "is_prime",
     ]
     
     assert set(mojo_marimo.__all__) == set(expected)

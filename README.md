@@ -185,7 +185,7 @@ result = sum_squares(10)  # ~50-200ms
 
 ```bash
 # Using uv
-python src/mojo_marimo/test_all_approaches.py
+uv run python scripts/verify_setup.py
 
 # Using pixi
 pixi run test-setup
@@ -251,19 +251,21 @@ See the [benchmark notebook](notebooks/benchmark_notebook.py) for detailed compa
 ```
 mojo-marimo/
 ├── src/
-│   └── mojo_marimo/          # Source code
-│       ├── compute.mojo      # Standalone Mojo implementations
-│       ├── compute_wrapper.py         # Approach 1: Uncached subprocess
-│       ├── mo_run_cached.py          # Approach 2: Cached binary
-│       ├── mojo_decorator.py         # Approach 3: Decorator
-│       └── test_all_approaches.py    # Setup verification
-├── notebooks/                # Example marimo notebooks
-│   ├── example_notebook.py   # Interactive demo
+│   └── mojo_marimo/          # Core library
+│       ├── executor.py       # Cached Mojo execution
+│       ├── decorator.py      # @mojo decorator
+│       └── __init__.py       # Package exports
+├── examples/                 # Example implementations
+│   ├── examples.py          # Python wrappers (fibonacci, etc.)
+│   └── examples.mojo        # Standalone Mojo code
+├── notebooks/               # Interactive marimo notebooks
+│   ├── example_notebook.py  # Interactive demo
 │   └── benchmark_notebook.py # Performance comparison
-├── tests/                    # Test suite
-├── examples/                 # Additional examples
-├── docs/                     # Documentation
-└── README.md                 # This file
+├── scripts/                 # Utility scripts
+│   └── verify_setup.py      # Setup verification
+├── tests/                   # Test suite
+├── docs/                    # Documentation
+└── README.md                # This file
 ```
 
 ## Development

@@ -30,8 +30,15 @@ def _(mo):
 
 @app.cell
 def _():
+    # Add examples to path
+    import sys
+    from pathlib import Path
+    examples_path = Path(__file__).parent.parent / "examples"
+    sys.path.insert(0, str(examples_path))
+    
     # Import our compute functions (runs real Mojo code!)
-    from mojo_marimo import fibonacci, sum_squares, is_prime, get_mojo_version
+    from examples import fibonacci, sum_squares, is_prime
+    from mojo_marimo import get_mojo_version
     return fibonacci, get_mojo_version, is_prime, sum_squares
 
 
