@@ -1,0 +1,42 @@
+[workspace]
+name = "mojo-marimo"
+version = "0.1.0"
+authors = ["Michael Booth <michael@databooth.com.au>"]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64", "win-64"]
+description = "Interactive Mojo integration for Python notebooks"
+
+[dependencies]
+python = ">=3.12,<3.15"
+
+[pypi-dependencies]
+marimo = ">=0.10.0"
+pytest = ">=8.0.0"
+pytest-cov = ">=4.1.0"
+ruff = ">=0.8.0"
+mypy = ">=1.8.0"
+
+[tasks]
+# Setup verification
+test-setup = { cmd = "python test_all_approaches.py", cwd = "src/mojo_marimo" }
+
+# Interactive notebooks
+notebook-example = { cmd = "marimo edit example_notebook.py", cwd = "notebooks" }
+notebook-benchmark = { cmd = "marimo edit benchmark_notebook.py", cwd = "notebooks" }
+
+# Command-line demos
+demo-uncached = { cmd = "python compute_wrapper.py", cwd = "src/mojo_marimo" }
+demo-cached = { cmd = "python mo_run_cached.py", cwd = "src/mojo_marimo" }
+demo-decorator = { cmd = "python mojo_decorator.py", cwd = "src/mojo_marimo" }
+
+# Testing
+test-all = "pytest tests/"
+test-python = "pytest tests/ -k 'not mojo'"
+
+# Code quality
+format = "ruff format ."
+lint = "ruff check ."
+typecheck = "mypy src/"
+
+# Combined quality check
+check = { depends-on = ["format", "lint", "typecheck"] }
