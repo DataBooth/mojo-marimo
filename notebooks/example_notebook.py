@@ -31,7 +31,7 @@ def _(mo):
 @app.cell
 def _():
     # Import our compute functions (runs real Mojo code!)
-    from compute_wrapper import fibonacci, sum_squares, is_prime, get_mojo_version
+    from mojo_marimo import fibonacci, sum_squares, is_prime, get_mojo_version
     return fibonacci, get_mojo_version, is_prime, sum_squares
 
 
@@ -153,29 +153,33 @@ def _(get_mojo_version, mo):
 
     **Mojo Version:** `{get_mojo_version()}`
 
-    This notebook uses **`mo_run_mojo`** to execute real Mojo code:
+    This notebook uses **cached Mojo execution** via `run_mojo()`:
 
     1. Each function call generates Mojo source code
-    2. Code is written to a temporary `.mojo` file
-    3. `mojo run` executes the code via subprocess
-    4. Output is parsed and returned to marimo
+    2. Code is compiled to a binary on first call
+    3. Binary is cached by SHA256 hash
+    4. Subsequent calls reuse the cached binary (~10-50ms)
+    5. Output is parsed and returned to marimo
 
-    ### Advantages
+    ### Performance
 
-    ✅ **No compilation step** - just run Mojo code directly  
-    ✅ **Easy debugging** - can echo code and output  
-    ✅ **Rapid prototyping** - modify Mojo code on the fly  
+    ✅ **First call**: ~1-2s (compile + run)  
+    ✅ **Subsequent calls**: ~10-50ms (run only)  
+    ✅ **Cache persists** across sessions  
     ✅ **Real Mojo performance** - not Python fallbacks  
 
-    ### For Production
+    ### Advanced Usage
 
-    For even better performance, compile to Python extension modules:
+    Try the decorator approach for cleaner APIs:
 
-    ```bash
-    mojo package compute.mojo -o compute_ext
+    ```python
+    from mojo_marimo import mojo
+    
+    @mojo
+    def my_function(n: int) -> int:
+        '''Mojo code in docstring'''
+        pass
     ```
-
-    This eliminates subprocess overhead and provides native Python integration.
     """)
     return
 

@@ -1,9 +1,8 @@
-"""Benchmark and comparison of three Mojo execution approaches.
+"""Benchmark and comparison of two Mojo execution approaches.
 
 Compares:
-1. Uncached subprocess (compute_wrapper.py)
-2. Cached binary (mo_run_cached.py) 
-3. Decorator (mojo_decorator.py)
+1. Cached binary (examples.py via executor.py)
+2. Decorator (decorator.py)
 
 Measures:
 - First call overhead (compilation time)
@@ -37,11 +36,12 @@ def __(mo):
         """
         # Mojo Execution Approaches: Comparison & Benchmark
         
-        This notebook compares three different approaches for running Mojo code from Python/marimo:
+        This notebook compares two practical approaches for running Mojo code from Python/marimo:
         
-        1. **Uncached subprocess**: Write temp file → `mojo run` → Parse output (every call)
-        2. **Cached binary**: First call compiles & caches, subsequent calls run cached binary
-        3. **Decorator**: Same as cached binary but with cleaner syntax via decorator
+        1. **Cached binary** (via examples): Explicit caching, clear control
+        2. **Decorator**: Same performance, cleaner Pythonic syntax
+        
+        Both use the same underlying caching mechanism, so performance is identical.
         
         We'll test each approach on the same computational tasks and measure:
         - First-call latency (compilation + execution)
@@ -73,40 +73,7 @@ def __(mo):
 
 @app.cell
 def __(mo):
-    mo.md("## Approach 1: Uncached Subprocess")
-    return
-
-
-@app.cell
-def __(mo):
-    mo.md(
-        """
-        **Pattern**: Direct `mojo run` on temporary files, no caching.
-        
-        **Pros**:
-        - Simple implementation
-        - Good for development/debugging
-        - Always uses latest code
-        
-        **Cons**:
-        - Slow (50-200ms per call)
-        - High overhead for frequent calls
-        """
-    )
-    return
-
-
-@app.cell
-def __():
-    from compute_wrapper import fibonacci as fib_uncached
-    from compute_wrapper import sum_squares as sum_sq_uncached
-    from compute_wrapper import is_prime as prime_uncached
-    return fib_uncached, prime_uncached, sum_sq_uncached
-
-
-@app.cell
-def __(mo):
-    mo.md("## Approach 2: Cached Binary")
+    mo.md("## Approach 1: Cached Binary (Examples)")
     return
 
 
@@ -132,18 +99,18 @@ def __(mo):
 
 @app.cell
 def __():
-    from mo_run_cached import (
-        fibonacci_cached as fib_cached,
-        sum_squares_cached as sum_sq_cached,
-        is_prime_cached as prime_cached,
-        clear_cache,
+    from mojo_marimo.examples import (
+        fibonacci as fib_cached,
+        sum_squares as sum_sq_cached,
+        is_prime as prime_cached,
     )
+    from mojo_marimo.executor import clear_cache
     return clear_cache, fib_cached, prime_cached, sum_sq_cached
 
 
 @app.cell
 def __(mo):
-    mo.md("## Approach 3: Decorator")
+    mo.md("## Approach 2: Decorator")
     return
 
 
@@ -169,7 +136,7 @@ def __(mo):
 
 @app.cell
 def __():
-    from mojo_decorator import (
+    from mojo_marimo.decorator import (
         fibonacci as fib_decorator,
         sum_squares as sum_sq_decorator,
         is_prime as prime_decorator,
