@@ -18,25 +18,23 @@ def test_decorator_import():
     assert callable(mojo)
 
 
-def test_cached_functions_import():
-    """Test that cached functions can be imported."""
+def test_core_functions_import():
+    """Test that core functions can be imported."""
     from mojo_marimo import (
+        run_mojo,
         clear_cache,
         cache_stats,
-        fibonacci_cached,
-        sum_squares_cached,
-        is_prime_cached,
+        get_mojo_version,
     )
     
+    assert callable(run_mojo)
     assert callable(clear_cache)
     assert callable(cache_stats)
-    assert callable(fibonacci_cached)
-    assert callable(sum_squares_cached)
-    assert callable(is_prime_cached)
+    assert callable(get_mojo_version)
 
 
-def test_uncached_functions_import():
-    """Test that uncached functions can be imported."""
+def test_example_functions_import():
+    """Test that example functions can be imported."""
     from mojo_marimo import fibonacci, sum_squares, is_prime
     
     assert callable(fibonacci)
@@ -49,12 +47,13 @@ def test_all_exports():
     import mojo_marimo
     
     expected = [
-        "mojo",
+        # Core
+        "run_mojo",
         "clear_cache",
         "cache_stats",
-        "fibonacci_cached",
-        "sum_squares_cached",
-        "is_prime_cached",
+        "get_mojo_version",
+        "mojo",
+        # Examples
         "fibonacci",
         "sum_squares",
         "is_prime",

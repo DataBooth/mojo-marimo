@@ -36,27 +36,21 @@ __version__ = "0.1.0"
 __author__ = "Michael Booth"
 __email__ = "michael@databooth.com.au"
 
-from mojo_marimo.mojo_decorator import mojo
-from mojo_marimo.mo_run_cached import (
-    clear_cache,
-    cache_stats,
-    fibonacci_cached,
-    sum_squares_cached,
-    is_prime_cached,
-)
-from mojo_marimo.compute_wrapper import (
-    fibonacci,
-    sum_squares,
-    is_prime,
-)
+# Core functionality
+from mojo_marimo.executor import run_mojo, clear_cache, cache_stats, get_mojo_version
+from mojo_marimo.decorator import mojo
+
+# Example implementations
+from mojo_marimo.examples import fibonacci, sum_squares, is_prime
 
 __all__ = [
-    "mojo",
+    # Core
+    "run_mojo",
     "clear_cache",
     "cache_stats",
-    "fibonacci_cached",
-    "sum_squares_cached",
-    "is_prime_cached",
+    "get_mojo_version",
+    "mojo",
+    # Examples
     "fibonacci",
     "sum_squares",
     "is_prime",

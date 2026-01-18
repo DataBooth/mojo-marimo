@@ -10,7 +10,7 @@ Future enhancement: compile to Python extension modules for zero subprocess over
 from functools import wraps
 from typing import Callable, Any
 import inspect
-from mo_run_cached import mo_run_mojo_cached, get_mojo_version
+from mojo_marimo.executor import run_mojo, get_mojo_version
 
 
 def mojo(func: Callable) -> Callable:
@@ -69,7 +69,7 @@ def mojo(func: Callable) -> Callable:
             mojo_code = mojo_code.replace(placeholder, str(param_value))
         
         # Execute via cached binary
-        result = mo_run_mojo_cached(mojo_code, use_cache=True)
+        result = run_mojo(mojo_code, use_cache=True)
         
         # Convert result based on return type annotation
         return_type = sig.return_annotation

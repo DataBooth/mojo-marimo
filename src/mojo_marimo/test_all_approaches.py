@@ -1,11 +1,10 @@
-"""Test script to verify all three Mojo execution approaches work correctly.
+"""Test script to verify both Mojo execution approaches work correctly.
 
 This script:
 1. Checks if mojo is available on PATH
-2. Tests uncached subprocess approach
-3. Tests cached binary approach
-4. Tests decorator approach
-5. Compares results for consistency
+2. Tests cached binary approach (via examples)
+3. Tests decorator approach
+4. Compares results for consistency
 
 Run this before using the marimo notebooks to ensure your environment is set up correctly.
 """
@@ -69,13 +68,13 @@ def main():
         sys.exit(1)
     
     print("\n" + "=" * 60)
-    print("Testing all three approaches...")
+    print("Testing both approaches...")
     print("=" * 60)
     
     # Import after checking mojo is available
-    from compute_wrapper import fibonacci as fib_uncached
-    from mo_run_cached import fibonacci_cached as fib_cached, clear_cache
-    from mojo_decorator import fibonacci as fib_decorator
+    from mojo_marimo.examples import fibonacci as fib_example
+    from mojo_marimo.decorator import fibonacci as fib_decorator
+    from mojo_marimo.executor import clear_cache
     
     # Clear cache to ensure fair test
     clear_cache()
@@ -87,28 +86,29 @@ def main():
     
     # Test each approach
     results = {}
-    results["uncached"] = test_approach(
-        "1. Uncached Subprocess",
-        fib_uncached,
-        n
-    )
     
-    results["cached"] = test_approach(
-        "2. Cached Binary (first call - will compile)",
-        fib_cached,
+    results["cached_first"] = test_approach(
+        "1. Cached Binary (first call - will compile)",
+        fib_example,
         n
     )
     
     results["decorator"] = test_approach(
-        "3. Decorator",
+        "2. Decorator (first call - will compile)",
         fib_decorator,
         n
     )
     
-    # Test cached performance (should be faster)
+    # Test warm cache performance
     results["cached_warm"] = test_approach(
-        "4. Cached Binary (second call - using cache)",
-        fib_cached,
+        "3. Cached Binary (second call - using cache)",
+        fib_example,
+        n
+    )
+    
+    results["decorator_warm"] = test_approach(
+        "4. Decorator (second call - using cache)",
+        fib_decorator,
         n
     )
     
@@ -131,10 +131,13 @@ def main():
     # Final verdict
     print("\n" + "=" * 60)
     if all_correct:
-        print("🎉 All approaches working correctly!")
+        print("🎉 Both approaches working correctly!")
         print("\nYou can now use:")
-        print("  pixi run marimo-edit        # Interactive example notebook")
-        print("  pixi run benchmark-marimo   # Comparison & benchmarks")
+        print("  marimo edit notebooks/example_notebook.py     # Interactive example")
+        print("  marimo edit notebooks/benchmark_notebook.py   # Benchmarks")
+        print("\nOr with pixi:")
+        print("  pixi run notebook-example    # Interactive example")
+        print("  pixi run notebook-benchmark  # Benchmarks")
     else:
         print("⚠️  Some approaches failed - check output above")
         sys.exit(1)
