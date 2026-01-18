@@ -41,7 +41,7 @@ def test_decorator_definition():
     @mojo
     def test_func(n: int) -> int:
         """fn main(): print(42)"""
-        pass
+        ...
     
     assert callable(test_func)
 

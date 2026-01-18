@@ -13,7 +13,7 @@ def test_decorator_basic():
         fn main():
             print(42)
         """
-        pass
+        ...
     
     result = simple_func(10)
     assert result == 42
@@ -29,7 +29,7 @@ def test_decorator_with_parameter_substitution():
         fn main():
             print({{n}})
         """
-        pass
+        ...
     
     assert echo(5) == 5
     assert echo(100) == 100
@@ -46,7 +46,7 @@ def test_decorator_returns_int():
             var result = {{n}} * 2
             print(result)
         """
-        pass
+        ...
     
     assert double(5) == 10
     assert double(21) == 42
@@ -63,7 +63,7 @@ def test_decorator_returns_bool():
             var result = {{n}} > 0
             print(result)
         """
-        pass
+        ...
     
     assert is_positive(5) is True
     assert is_positive(-5) is False
@@ -81,7 +81,7 @@ def test_decorator_with_multiple_params():
             var result = {{a}} + {{b}}
             print(result)
         """
-        pass
+        ...
     
     assert add(2, 3) == 5
     assert add(10, 20) == 30
@@ -100,7 +100,7 @@ def test_decorator_caching():
         fn main():
             print({{n}})
         """
-        pass
+        ...
     
     # Multiple calls with same implementation should use cache
     result1 = cached_func(10)
@@ -117,7 +117,7 @@ def test_decorator_without_docstring():
     with pytest.raises(ValueError, match="no docstring"):
         @mojo
         def no_doc(n: int) -> int:
-            pass
+            ...
 
 
 def test_decorator_preserves_function_name():
@@ -130,7 +130,7 @@ def test_decorator_preserves_function_name():
         fn main():
             print(42)
         """
-        pass
+        ...
     
     assert my_function.__name__ == "my_function"
 
@@ -156,7 +156,7 @@ def test_decorator_with_complex_mojo_code():
         fn main():
             print(fibonacci({{n}}))
         """
-        pass
+        ...
     
     assert fibonacci(0) == 0
     assert fibonacci(1) == 1
@@ -194,6 +194,6 @@ def test_decorator_prime_check(n, expected):
         fn main():
             print(is_prime({{n}}))
         """
-        pass
+        ...
     
     assert is_prime(n) == expected

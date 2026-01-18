@@ -13,7 +13,7 @@ import inspect
 from mojo_marimo.executor import run_mojo, get_mojo_version
 
 
-def mojo(func: Callable) -> Callable:
+def mojo(func: Callable[..., Any]) -> Callable[..., Any]:
     """
     Decorator to execute Mojo code from function docstring.
     
@@ -104,7 +104,7 @@ def fibonacci(n: int) -> int:
     fn main():
         print(fibonacci({{n}}))
     """
-    pass
+    ...
 
 
 @mojo
@@ -119,7 +119,7 @@ def sum_squares(n: int) -> int:
     fn main():
         print(sum_squares({{n}}))
     """
-    pass
+    ...
 
 
 @mojo
@@ -142,7 +142,7 @@ def is_prime(n: int) -> bool:
     fn main():
         print(is_prime({{n}}))
     """
-    pass
+    ...
 
 
 if __name__ == "__main__":

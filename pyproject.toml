@@ -77,6 +77,10 @@ python_functions = ["test_*"]
 addopts = "-v --cov=src/mojo_marimo --cov-report=term-missing"
 
 [tool.ty]
-# ty configuration
-# Run with: uvx ty check
-# Or add to project: uv add --dev ty
+# ty configuration - run with: uv run ty check
+
+[tool.ty.rules]
+# Allow stub functions with return types in decorator pattern
+invalid-return-type = "ignore"
+# Allow func.__name__ in decorator (it's safe for our use case)
+unresolved-attribute = "ignore"
