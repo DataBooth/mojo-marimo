@@ -282,6 +282,9 @@ ruff format .
 
 # Lint
 ruff check .
+
+# Type check
+uvx ty check
 ```
 
 ### Using pixi
@@ -295,6 +298,9 @@ pixi run format
 
 # Lint
 pixi run lint
+
+# Type check
+pixi run typecheck
 ```
 
 ## Why marimo?

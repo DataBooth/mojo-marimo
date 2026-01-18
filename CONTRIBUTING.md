@@ -60,7 +60,7 @@ ruff format .
 ruff check .
 
 # Type check
-mypy src/
+uvx ty check
 ```
 
 ### pixi
@@ -86,7 +86,7 @@ pixi run check
 
 This project uses:
 - **ruff** for linting and formatting
-- **mypy** for type checking
+- **ty** for type checking (10-100× faster than mypy)
 - **pytest** for testing
 
 Please ensure:
@@ -116,7 +116,7 @@ python src/mojo_marimo/test_all_approaches.py
 5. **Run quality checks**:
    ```bash
    # uv
-   ruff format . && ruff check . && mypy src/ && pytest tests/
+   ruff format . && ruff check . && uvx ty check && pytest tests/
    
    # pixi
    pixi run check && pixi run test-all

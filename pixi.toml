@@ -10,11 +10,11 @@ description = "Interactive Mojo integration for Python notebooks"
 python = ">=3.12,<3.15"
 
 [pypi-dependencies]
-marimo = ">=0.10.0"
-pytest = ">=8.0.0"
-pytest-cov = ">=4.1.0"
-ruff = ">=0.8.0"
-mypy = ">=1.8.0"
+marimo = "*"
+pytest = "*"
+pytest-cov = "*"
+ruff = "*"
+ty = "*"
 
 [tasks]
 # Setup verification
@@ -36,7 +36,7 @@ test-python = "pytest tests/ -k 'not mojo'"
 # Code quality
 format = "ruff format ."
 lint = "ruff check ."
-typecheck = "mypy src/"
+typecheck = "ty check"
 
 # Combined quality check
 check = { depends-on = ["format", "lint", "typecheck"] }
