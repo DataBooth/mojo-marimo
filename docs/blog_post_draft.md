@@ -1,15 +1,15 @@
 ---
-title: "Interactive Mojo 🔥: Three Patterns for Notebook Integration"
+title: "Interactive Mojo 🔥: Running High-Performance Code in Notebooks"
 date: 2026-01-18
 tags: Mojo 🔥, Python, Notebooks, Performance, Interactive Computing, marimo
-description: "Exploring three approaches for running high-performance Mojo code from Python notebooks—uncached subprocess, cached binaries, and decorators—with real benchmarks and practical guidance."
+description: "Two practical approaches for running high-performance Mojo code from Python notebooks—cached binaries and decorators—with real benchmarks and practical guidance."
 ---
 
-# Interactive Mojo 🔥: Three Patterns for Notebook Integration
+# Interactive Mojo 🔥: Running High-Performance Code in Notebooks
 
 ## Why: The Interactive Performance Gap
 
-Python notebooks are brilliant for exploration, visualisation, and rapid prototyping. But when you need serious performance—whether it's Monte Carlo simulations, numerical algorithms, or data transformations—Python hits a wall. Traditional solutions mean:
+Python notebooks are brilliant for exploration, visualisation, and rapid prototyping (if fact some stretch them well beyond this e.g. `nbdev`). But when you need serious performance, whether it's Monte Carlo simulations, numerical algorithms, or data transformations—Python sometimes hits a wall. Traditional solutions mean:
 
 - **Rewriting in C/C++**: Complex build systems, manual memory management, days of work
 - **Numba/JAX**: Limited language features, steep learning curves, debugging challenges
@@ -25,33 +25,13 @@ This matters for:
 
 The ideal would be: _write Mojo once, call it like Python, see results instantly in an interactive notebook._
 
-## What: Three Integration Patterns
+## What: Two Practical Approaches
 
-I've been building `mojo-fireplace` ([github.com/databooth/mojo-fireplace](https://github.com/databooth/mojo-fireplace))—a collection of paired Python and Mojo examples showing real-world migration paths. The latest addition explores running Mojo code from [marimo](https://marimo.io/) notebooks (reactive Python notebooks) through three distinct approaches.
+I've been building `mojo-marimo`, exploring how to run Mojo code from [marimo](https://marimo.io/) notebooks (reactive Python notebooks). After experimenting with several patterns, two approaches emerged as genuinely useful: cached binaries and decorators.
 
-Each approach tackles the same problem—executing Mojo from Python—but with different trade-offs between speed, simplicity, and developer experience.
+Both solve the same problem—executing Mojo from Python—but optimise for different priorities.
 
-### Approach 1: Uncached Subprocess
-
-**Pattern**: Write temporary file → `mojo run` → Parse output → Cleanup
-
-```python
-from compute_wrapper import fibonacci
-
-# Every call compiles and runs Mojo
-result = fibonacci(10)  # ~50-200ms
-```
-
-**When to use**:
-- Rapid prototyping where code changes frequently
-- Debugging Mojo implementations
-- Educational demos where seeing compilation is valuable
-
-**Performance**: ~50-200ms per call (includes compilation every time)
-
-**Trade-offs**: Simple and transparent, but slow for repeated calls. Best for development.
-
-### Approach 2: Cached Binary
+### Approach 1: Cached Binary
 
 **Pattern**: First call compiles to binary → Cache by SHA256 hash → Reuse cached executable
 
@@ -72,9 +52,9 @@ result = fibonacci_cached(10)
 
 **Performance**: First call ~1-2s, subsequent calls ~10-50ms
 
-**Trade-offs**: Much faster for repeated execution, cache persists across sessions, but requires explicit function wrapping.
+**Trade-offs**: Fast after first run, cache persists across sessions, but requires explicit function wrapping.
 
-### Approach 3: Decorator
+### Approach 2: Decorator
 
 **Pattern**: Extract Mojo from docstring → Use cached binary execution → Clean Python interface
 
@@ -111,7 +91,15 @@ result = fibonacci(10)
 
 **Performance**: Same as cached binary (~10-50ms after first call)
 
-**Trade-offs**: Most elegant, but requires decorator setup and understanding of template placeholders.
+**Trade-offs**: Most Pythonic, self-documenting, same performance as cached binary.
+
+### Why Not an Uncached Approach?
+
+You might wonder: why not a simpler pattern that compiles every time?
+
+I built one initially—write temp file → `mojo run` → parse → cleanup. But it's strictly worse: ~50-200ms per call with no benefits over cached. The first call overhead (~1-2s) is negligible in interactive work, and subsequent calls are 5-10× faster with caching.
+
+**Bottom line**: Caching is nearly free (SHA256 hash + filesystem check), so there's no reason not to use it.
 
 ## How: Real Implementation Details
 
@@ -137,14 +125,14 @@ Testing on Apple Silicon (M-series) with `fibonacci(10)`, `sum_squares(100)`, an
 
 | Approach | First Call | Subsequent Calls | Use Case |
 |----------|-----------|------------------|----------|
-| Uncached | ~50-200ms | ~50-200ms | Development |
-| Cached | ~1-2s | ~10-50ms | Repeated execution |
-| Decorator | ~1-2s | ~10-50ms | Production code |
+| Cached Binary | ~1-2s | ~10-50ms | Explicit control, clear caching |
+| Decorator | ~1-2s | ~10-50ms | Production code, clean APIs |
 
 Key insights:
-1. **Caching wins for repeated calls**: 5-10× faster than uncached after first compilation
-2. **Decorator has zero performance cost**: Same speed as explicit caching, better DX
-3. **All approaches deliver real Mojo performance**: No Python fallbacks or compromises
+1. **Both approaches use the same caching**: Zero performance difference
+2. **Choose based on ergonomics**: Decorator for APIs, explicit for transparency
+3. **First call is acceptable**: 1-2s compilation is fine for interactive work
+4. **Real Mojo performance**: No Python fallbacks or compromises
 
 ### The marimo Advantage
 
@@ -192,9 +180,9 @@ For DataBooth clients and medium-sized businesses exploring high-performance com
    - No "prototype in Python, rewrite in C++" tax
 
 **2. Transparent performance path**
-   - Start with uncached for development
-   - Graduate to cached/decorator for production
-   - No architectural rewrites between phases
+   - Start with either approach (both work well)
+   - Choose decorator for cleaner APIs
+   - No architectural rewrites needed
 
 **3. Educational value**
    - Teams can learn Mojo incrementally
@@ -208,8 +196,8 @@ For DataBooth clients and medium-sized businesses exploring high-performance com
 
 ## Current Status & Next Steps
 
-The `mojo-fireplace` repo now includes:
-- ✅ Three working integration approaches
+The `mojo-marimo` repo now includes:
+- ✅ Two practical integration approaches (cached binary and decorator)
 - ✅ Interactive marimo notebooks with reactive UI
 - ✅ Benchmark comparison notebook
 - ✅ Setup verification script
@@ -227,23 +215,31 @@ This is a living experiment. The patterns work today, but I'm refining them base
 
 ```bash
 # Clone the repo
-git clone https://github.com/databooth/mojo-fireplace
-cd mojo-fireplace
+git clone https://github.com/databooth/mojo-marimo
+cd mojo-marimo
 
 # Install dependencies (requires mojo on PATH)
+# Using uv (recommended)
+uv venv && source .venv/bin/activate
+uv pip install -e ".[dev]"
+
+# Or using pixi
 pixi install
 
 # Verify setup
-pixi run test-marimo-setup
+python src/mojo_marimo/test_all_approaches.py  # uv
+pixi run test-setup  # pixi
 
 # Launch interactive notebook
-pixi run marimo-edit
+marimo edit notebooks/example_notebook.py  # uv
+pixi run notebook-example  # pixi
 
 # Or explore the benchmark comparison
-pixi run benchmark-marimo
+marimo edit notebooks/benchmark_notebook.py  # uv
+pixi run notebook-benchmark  # pixi
 ```
 
-Full code, examples, and documentation at: [github.com/databooth/mojo-fireplace/src/marimo_mojo](https://github.com/databooth/mojo-fireplace/tree/main/src/marimo_mojo)
+Full code, examples, and documentation at: [github.com/databooth/mojo-marimo](https://github.com/databooth/mojo-marimo)
 
 ## Reflections
 
