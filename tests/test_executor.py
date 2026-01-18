@@ -141,7 +141,7 @@ fn main(:
 
 
 @pytest.mark.parametrize("n,expected", [
-    (0, "0"),
+    (0, "1"),  # 0! = 1 by definition
     (1, "1"),
     (5, "120"),  # 5! = 120
 ])

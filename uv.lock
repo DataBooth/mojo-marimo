@@ -271,11 +271,61 @@ wheels = [
 ]
 
 [[package]]
+name = "mblack"
+version = "25.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "mypy-extensions" },
+    { name = "pathspec" },
+    { name = "platformdirs" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ad/4a/23cc3e7e798313502becc4d5f50010f57dea2e9cd98ef72459aa21f06fdc/mblack-25.7.0-py3-none-any.whl", hash = "sha256:3ebb936e2c4234802ad0e5c7d173edca24f8cec7f061aaaa10a2fc452f3c8b74", size = 146363, upload-time = "2025-11-20T16:36:01.576Z" },
+]
+
+[[package]]
+name = "mojo"
+version = "0.25.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mblack" },
+    { name = "mojo-compiler" },
+    { name = "mojo-lldb-libs" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5c/06/ad11f26082034c139b35ca1326bfc4cce2689a5d86088031355dbc7da3c8/mojo-0.25.7.0-py3-none-macosx_13_0_arm64.whl", hash = "sha256:cc17d82b4c41428538c99e937ec813db4605469fab036a45309fc72da0c5de7c", size = 16829240, upload-time = "2025-11-20T16:36:36.441Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/d6/8d1c5a060d77451d726142a7f353460f969f49cee1b59fcf46e1b68af0ca/mojo-0.25.7.0-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:5397ea571817e279cbe9a0864c89f7ba8266f503bb6a6499a3e8da168113eac8", size = 24935294, upload-time = "2025-11-20T16:36:30.152Z" },
+    { url = "https://files.pythonhosted.org/packages/73/8e/0544e245418b9bfde555372619dedb57cfe7f5ba8388e8a847137026423f/mojo-0.25.7.0-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:853e7fe57fb5ad101e4f5cddd9903e16cdf639ddade4b0112f1a5902f5bed571", size = 24644888, upload-time = "2025-11-20T16:37:24.533Z" },
+]
+
+[[package]]
+name = "mojo-compiler"
+version = "0.25.7.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2c/c8/69e66f0a8f67d85afe64ed266168e7e72dc2c074e60623aae4e8d5238989/mojo_compiler-0.25.7.0-py3-none-macosx_13_0_arm64.whl", hash = "sha256:c8be11b6f17be249ef89748b56c4ff82c60d840995aeb95c739ce3bae2483fe1", size = 76593247, upload-time = "2025-11-20T16:36:11.999Z" },
+    { url = "https://files.pythonhosted.org/packages/33/96/be2413eccf3c955534508ab66a044426f2a80a31b84af2204aad983d8e67/mojo_compiler-0.25.7.0-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:1d05455cff7513943c9582ea442547e22f0c266d6cd1d4be599999f183e09e32", size = 102371294, upload-time = "2025-11-20T16:37:16.625Z" },
+    { url = "https://files.pythonhosted.org/packages/20/57/9ceec8ae8fadb733272093e267732d9f4f3388099eb3099ae8b27f8b6d8c/mojo_compiler-0.25.7.0-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:b67bfed9675e582b72d1e52dbf64e9b8f13c47dcdf55f855cb889d2ba9a395a7", size = 104405750, upload-time = "2025-11-20T16:36:43.192Z" },
+]
+
+[[package]]
+name = "mojo-lldb-libs"
+version = "0.25.7.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9a/4f/0b3bc49f07606d04e5db2323edea47bf453ddea04172401120a80498c5db/mojo_lldb_libs-0.25.7.0-py3-none-macosx_13_0_arm64.whl", hash = "sha256:184fa4494f4444d0888be764fa280896f78f51f1347174d508f04d5950723e74", size = 76303307, upload-time = "2025-11-20T16:37:11.127Z" },
+    { url = "https://files.pythonhosted.org/packages/df/8a/601defb30cfc5881fa7cbd3da473d417b43232f6f4f619bae73f68931e1c/mojo_lldb_libs-0.25.7.0-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:7a9cfd6d500e18b940a9c5eded2fd420a4c6f9ed5207ae8e7e7497f183aed8bf", size = 82841267, upload-time = "2025-11-20T16:36:25.11Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/61/8d8672fe67e84e45ad5aa23be0f59f782c06b583b98f41a8dc7dc1ebbc71/mojo_lldb_libs-0.25.7.0-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:0f55cbb92293de703e5dec0949441ca4bcf989de1f41db624b1a7e54c4867ca6", size = 83840404, upload-time = "2025-11-20T16:36:07.13Z" },
+]
+
+[[package]]
 name = "mojo-marimo"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "marimo" },
+    { name = "mojo" },
 ]
 
 [package.optional-dependencies]
@@ -289,6 +339,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "marimo" },
+    { name = "mojo" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest-cov", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
@@ -337,6 +388,15 @@ wheels = [
 ]
 
 [[package]]
+name = "mypy-extensions"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/6e/371856a3fb9d31ca8dac321cda606860fa4548858c0cc45d9d1d4ca2628b/mypy_extensions-1.1.0.tar.gz", hash = "sha256:52e68efc3284861e772bbcd66823fde5ae21fd2fdb51c62a211403730b916558", size = 6343, upload-time = "2025-04-22T14:54:24.164Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl", hash = "sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505", size = 4963, upload-time = "2025-04-22T14:54:22.983Z" },
+]
+
+[[package]]
 name = "narwhals"
 version = "2.15.0"
 source = { registry = "https://pypi.org/simple" }
@@ -361,6 +421,24 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d4/de/53e0bcf53d13e005bd8c92e7855142494f41171b34c2536b86187474184d/parso-0.8.5.tar.gz", hash = "sha256:034d7354a9a018bdce352f48b2a8a450f05e9d6ee85db84764e9b6bd96dafe5a", size = 401205, upload-time = "2025-08-23T15:15:28.028Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/16/32/f8e3c85d1d5250232a5d3477a2a28cc291968ff175caeadaf3cc19ce0e4a/parso-0.8.5-py2.py3-none-any.whl", hash = "sha256:646204b5ee239c396d040b90f9e272e9a8017c630092bf59980beb62fd033887", size = 106668, upload-time = "2025-08-23T15:15:25.663Z" },
+]
+
+[[package]]
+name = "pathspec"
+version = "1.0.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4c/b2/bb8e495d5262bfec41ab5cb18f522f1012933347fb5d9e62452d446baca2/pathspec-1.0.3.tar.gz", hash = "sha256:bac5cf97ae2c2876e2d25ebb15078eb04d76e4b98921ee31c6f85ade8b59444d", size = 130841, upload-time = "2026-01-09T15:46:46.009Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/32/2b/121e912bd60eebd623f873fd090de0e84f322972ab25a7f9044c056804ed/pathspec-1.0.3-py3-none-any.whl", hash = "sha256:e80767021c1cc524aa3fb14bedda9c34406591343cc42797b386ce7b9354fb6c", size = 55021, upload-time = "2026-01-09T15:46:44.652Z" },
+]
+
+[[package]]
+name = "platformdirs"
+version = "4.5.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/86/0248f086a84f01b37aaec0fa567b397df1a119f73c16f6c7a9aac73ea309/platformdirs-4.5.1.tar.gz", hash = "sha256:61d5cdcc6065745cdd94f0f878977f8de9437be93de97c1c12f853c9c0cdcbda", size = 21715, upload-time = "2025-12-05T13:52:58.638Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cb/28/3bfe2fa5a7b9c46fe7e13c97bda14c895fb10fa2ebf1d0abb90e0cea7ee1/platformdirs-4.5.1-py3-none-any.whl", hash = "sha256:d03afa3963c806a9bed9d5125c8f4cb2fdaf74a55ab60e5d59b3fde758104d31", size = 18731, upload-time = "2025-12-05T13:52:56.823Z" },
 ]
 
 [[package]]

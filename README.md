@@ -77,19 +77,7 @@ This matters for:
 
 ### Prerequisites
 
-**Critical**: The `mojo` command must be available on your PATH.
-
-```bash
-# Install Mojo
-curl https://get.modular.com | sh -
-modular install mojo
-
-# Add to PATH (example for macOS/Linux)
-export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
-
-# Verify
-mojo --version
-```
+**None!** Mojo is now installed automatically as a Python package dependency.
 
 ### Option 1: uv (Recommended)
 
@@ -98,16 +86,14 @@ mojo --version
 git clone https://github.com/databooth/mojo-marimo
 cd mojo-marimo
 
-# Create virtual environment and install dependencies
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install -e ".[dev]"
+# Install dependencies (includes mojo)
+uv sync --extra dev
 
 # Verify setup
-python src/mojo_marimo/test_all_approaches.py
+uv run python scripts/verify_setup.py
 
 # Launch example notebook
-marimo edit notebooks/example_notebook.py
+uv run marimo edit notebooks/example_notebook.py
 ```
 
 ### Option 2: pixi
