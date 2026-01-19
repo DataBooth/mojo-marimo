@@ -36,16 +36,16 @@ result = fibonacci(10)  # Compiles, caches, runs subprocess
 **How it works:**
 ```bash
 # 1. Write Mojo with Python bindings
-# See extension_module_example.mojo
+# See fibonacci_mojo_ext.mojo
 
 # 2. Compile to shared library
-mojo build extension_module_example.mojo --emit shared-lib
+mojo build fibonacci_mojo_ext.mojo --emit shared-lib
 
 # 3. Import in Python
 import mojo.importer  # Enables auto-compilation
-import extension_module_example
+import fibonacci_mojo_ext
 
-result = extension_module_example.fibonacci(10)  # Direct call!
+result = fibonacci_mojo_ext.fibonacci(10)  # Direct call!
 ```
 
 **Pros:**
@@ -62,7 +62,7 @@ result = extension_module_example.fibonacci(10)  # Direct call!
 
 ## Example: Extension Module
 
-See [`extension_module_example.mojo`](./extension_module_example.mojo) for a complete example with:
+See [`fibonacci_mojo_ext.mojo`](./fibonacci_mojo_ext.mojo) for a complete example with:
 - `fibonacci()` function
 - `is_prime()` function
 - Proper `PyInit_*()` setup
@@ -72,13 +72,13 @@ See [`extension_module_example.mojo`](./extension_module_example.mojo) for a com
 
 ```bash
 # Compile to .so
-mojo build extension_module_example.mojo --emit shared-lib -o extension_module_example.so
+mojo build fibonacci_mojo_ext.mojo --emit shared-lib -o fibonacci_mojo_ext.so
 
 # Use in Python
 python -c "
-import extension_module_example
-print(extension_module_example.fibonacci(10))
-print(extension_module_example.is_prime(17))
+import fibonacci_mojo_ext
+print(fibonacci_mojo_ext.fibonacci(10))
+print(fibonacci_mojo_ext.is_prime(17))
 "
 ```
 
@@ -89,10 +89,18 @@ import mojo.importer  # Enables import hook
 
 # Automatically compiles .mojo file to .so when imported
 # Caches in __mojocache__/ directory
-import extension_module_example
+import fibonacci_mojo_ext
 
-print(extension_module_example.fibonacci(10))
+print(fibonacci_mojo_ext.fibonacci(10))
 ```
+
+### Interactive Notebook
+
+See [`notebooks/pattern_extension.py`](../notebooks/pattern_extension.py) for a complete marimo notebook demonstrating:
+- Auto-compilation with `mojo.importer`
+- Interactive examples with sliders
+- Performance comparison with decorator pattern
+- Direct benchmarking
 
 ## When to Use Each Approach
 

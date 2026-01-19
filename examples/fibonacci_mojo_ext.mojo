@@ -1,12 +1,14 @@
-"""Example Mojo extension module that can be imported directly by Python.
+"""Mojo extension module demonstrating .so compilation approach.
 
-This demonstrates the alternative approach to mojo-marimo's subprocess pattern.
-Compile with: mojo build extension_module_example.mojo --emit shared-lib
+This shows the alternative to mojo-marimo's subprocess pattern.
 
-Then in Python:
+Compile manually:
+    mojo build fibonacci_mojo_ext.mojo --emit shared-lib
+
+Or use auto-compilation:
     import mojo.importer
-    import extension_module_example
-    result = extension_module_example.fibonacci(10)
+    import fibonacci_mojo_ext
+    result = fibonacci_mojo_ext.fibonacci(10)
 """
 
 from python import PythonObject
@@ -15,13 +17,13 @@ from os import abort
 
 
 @export
-fn PyInit_extension_module_example() -> PythonObject:
+fn PyInit_fibonacci_mojo_ext() -> PythonObject:
     """Initialize the Python extension module.
     
     Python looks for PyInit_<module_name>() when importing.
     """
     try:
-        var mb = PythonModuleBuilder("extension_module_example")
+        var mb = PythonModuleBuilder("fibonacci_mojo_ext")
         mb.def_function[fibonacci](
             "fibonacci",
             docstring="Calculate nth Fibonacci number (iterative)"

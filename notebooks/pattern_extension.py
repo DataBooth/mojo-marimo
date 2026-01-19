@@ -1,0 +1,376 @@
+"""Mojo Extension Module Pattern (.so compilation).
+
+This notebook demonstrates the alternative approach to running Mojo from Python:
+compiling Mojo code to Python extension modules (.so files) for zero subprocess overhead.
+
+Compare with:
+- pattern_decorator.py (subprocess with caching)
+- pattern_executor.py (direct run_mojo calls)
+"""
+
+import marimo
+
+__generated_with = "0.10.18"
+app = marimo.App(width="medium")
+
+
+@app.cell
+def __():
+    import sys
+    import time
+    from pathlib import Path
+
+    import marimo as mo
+
+    # Add examples directory to path for Mojo imports
+    examples_dir = Path(__file__).parent.parent / "examples"
+    sys.path.insert(0, str(examples_dir))
+
+    return mo, time, Path, sys, examples_dir
+
+
+@app.cell
+def __(mo):
+    mo.md(
+        """
+        # Mojo Extension Module Pattern
+        
+        This notebook demonstrates using Mojo code compiled to Python extension modules (`.so` files).
+        
+        ## How It Works
+        
+        1. Write Mojo code with `PythonModuleBuilder` bindings
+        2. Compile to `.so` using `mojo build --emit shared-lib`
+        3. Import directly in Python (with `mojo.importer` for auto-compilation)
+        4. Call functions with **zero subprocess overhead**
+        
+        ## Comparison with Other Patterns
+        
+        | Pattern | Overhead | Complexity | Use Case |
+        |---------|----------|------------|----------|
+        | **Extension (.so)** | ~0.01ms | High | Production, tight loops |
+        | **Decorator** | ~10-50ms | Low | Development, notebooks |
+        | **Executor** | ~10-50ms | Medium | Dynamic code generation |
+        """
+    )
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md("## Import Extension Module")
+    return
+
+
+@app.cell
+def __():
+    # Enable Mojo import hook for auto-compilation
+    import mojo.importer
+
+    # Import our Mojo extension module
+    # This will auto-compile fibonacci_mojo_ext.mojo to .so if needed
+    import fibonacci_mojo_ext
+
+    return fibonacci_mojo_ext, mojo
+
+
+@app.cell
+def __(mo, fibonacci_mojo_ext):
+    mo.md(
+        f"""
+        ✅ Successfully imported `fibonacci_mojo_ext`
+        
+        Available functions:
+        - `fibonacci(n)` - {fibonacci_mojo_ext.fibonacci.__doc__}
+        - `is_prime(n)` - {fibonacci_mojo_ext.is_prime.__doc__}
+        """
+    )
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md("## Example 1: Fibonacci")
+    return
+
+
+@app.cell
+def __(mo):
+    n_slider = mo.ui.slider(1, 40, value=10, label="n", show_value=True)
+    mo.md(f"**Calculate Fibonacci number:** {n_slider}")
+    return (n_slider,)
+
+
+@app.cell
+def __(fibonacci_mojo_ext, n_slider, time, mo):
+    # Call Mojo function directly - no subprocess!
+    start = time.perf_counter()
+    fib_result = fibonacci_mojo_ext.fibonacci(n_slider.value)
+    elapsed_ms = (time.perf_counter() - start) * 1000
+
+    mo.md(
+        f"""
+        **fibonacci({n_slider.value})** = {fib_result:,}
+        
+        Execution time: {elapsed_ms:.3f}ms
+        
+        ⚡ **Direct function call** - no subprocess overhead!
+        """
+    )
+    return elapsed_ms, fib_result, start
+
+
+@app.cell
+def __(mo):
+    mo.md("## Example 2: Prime Number Testing")
+    return
+
+
+@app.cell
+def __(mo):
+    prime_input = mo.ui.number(
+        start=1, stop=1_000_000, value=104729, label="Test if prime", step=1
+    )
+    mo.md(f"**Enter a number:** {prime_input}")
+    return (prime_input,)
+
+
+@app.cell
+def __(fibonacci_mojo_ext, prime_input, time, mo):
+    start_prime = time.perf_counter()
+    is_prime_result = fibonacci_mojo_ext.is_prime(prime_input.value)
+    elapsed_prime_ms = (time.perf_counter() - start_prime) * 1000
+
+    result_emoji = "✅" if is_prime_result else "❌"
+
+    mo.md(
+        f"""
+        {result_emoji} **{prime_input.value:,}** is {"" if is_prime_result else "not "}prime
+        
+        Execution time: {elapsed_prime_ms:.3f}ms
+        """
+    )
+    return elapsed_prime_ms, is_prime_result, result_emoji, start_prime
+
+
+@app.cell
+def __(mo):
+    mo.md("## Performance Comparison")
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md(
+        """
+        Let's compare the extension module approach with the decorator pattern:
+        """
+    )
+    return
+
+
+@app.cell
+def __():
+    # Import decorator pattern for comparison
+    from mojo_marimo import mojo
+
+    @mojo
+    def fibonacci_decorator(n: int) -> int:
+        """
+        fn fibonacci(n: Int) -> Int:
+            if n <= 1:
+                return n
+            var prev: Int = 0
+            var curr: Int = 1
+            for _ in range(2, n + 1):
+                var next_val = prev + curr
+                prev = curr
+                curr = next_val
+            return curr
+
+        fn main():
+            print(fibonacci({{n}}))
+        """
+        ...
+
+    return fibonacci_decorator, mojo
+
+
+@app.cell
+def __(fibonacci_mojo_ext, fibonacci_decorator, time, mo):
+    test_n = 30
+    runs = 10
+
+    # Benchmark extension module
+    ext_times = []
+    for _ in range(runs):
+        start = time.perf_counter()
+        fibonacci_mojo_ext.fibonacci(test_n)
+        ext_times.append((time.perf_counter() - start) * 1000)
+
+    ext_mean = sum(ext_times) / len(ext_times)
+
+    # Benchmark decorator (with warmup)
+    fibonacci_decorator(test_n)  # Warmup
+    dec_times = []
+    for _ in range(runs):
+        start = time.perf_counter()
+        fibonacci_decorator(test_n)
+        dec_times.append((time.perf_counter() - start) * 1000)
+
+    dec_mean = sum(dec_times) / len(dec_times)
+
+    speedup = dec_mean / ext_mean
+
+    mo.md(
+        f"""
+        ### Benchmark Results: fibonacci({test_n})
+        
+        Over {runs} runs:
+        
+        - **Extension module**: {ext_mean:.3f}ms (direct call)
+        - **Decorator pattern**: {dec_mean:.3f}ms (subprocess + cache)
+        - **Speedup**: {speedup:.1f}x faster
+        
+        The extension module eliminates the ~10-15ms subprocess overhead.
+        """
+    )
+    return (
+        dec_mean,
+        dec_times,
+        ext_mean,
+        ext_times,
+        runs,
+        speedup,
+        start,
+        test_n,
+    )
+
+
+@app.cell
+def __(mo):
+    mo.md("## Trade-offs")
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md(
+        """
+        ### Extension Module (.so) Advantages
+        
+        ✅ **Zero subprocess overhead** - direct Python calls
+        ✅ **100-1000x faster** for simple operations or tight loops
+        ✅ **Production ready** - standard Python extension module
+        ✅ **Auto-compilation** - `mojo.importer` handles rebuilding
+        
+        ### Extension Module Disadvantages
+        
+        ❌ **More complex Mojo code** - requires `PyInit_*()` boilerplate
+        ❌ **Different API** - functions must take `PythonObject` arguments
+        ❌ **Learning curve** - need to understand `PythonModuleBuilder`
+        ❌ **Less flexible** - harder to generate code dynamically
+        
+        ### When to Use Extension Modules
+        
+        - Production deployments
+        - Functions called thousands of times
+        - Performance-critical tight loops
+        - When every millisecond counts
+        - Stable APIs that don't change frequently
+        
+        ### When to Use Decorator Pattern
+        
+        - Interactive notebook development
+        - Prototyping and exploration
+        - Educational content
+        - When simplicity > absolute performance
+        - Compute-intensive tasks (>100ms) where subprocess overhead is negligible
+        """
+    )
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md("## Technical Details")
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md(
+        """
+        ### Mojo Code Structure
+        
+        Extension modules require specific structure:
+        
+        ```mojo
+        from python import PythonObject
+        from python.bindings import PythonModuleBuilder
+        
+        @export
+        fn PyInit_mymodule() -> PythonObject:
+            var mb = PythonModuleBuilder("mymodule")
+            mb.def_function[my_func]("my_func")
+            return mb.finalize()
+        
+        fn my_func(py_arg: PythonObject) raises -> PythonObject:
+            var arg = Int(py=py_arg)  # Convert from Python
+            var result = arg * 2
+            return PythonObject(result)  # Convert to Python
+        ```
+        
+        ### Compilation
+        
+        **Manual:**
+        ```bash
+        mojo build mymodule.mojo --emit shared-lib -o mymodule.so
+        ```
+        
+        **Auto (recommended):**
+        ```python
+        import mojo.importer  # Enables auto-compilation
+        import mymodule  # Compiles .mojo → .so automatically
+        ```
+        
+        ### Cache Location
+        
+        Compiled `.so` files are cached in `__mojocache__/`:
+        ```
+        project/
+        ├── mymodule.mojo
+        └── __mojocache__/
+            └── mymodule.hash-ABC123.so
+        ```
+        """
+    )
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md("## See Also")
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md(
+        """
+        - [examples/fibonacci_mojo_ext.mojo](../examples/fibonacci_mojo_ext.mojo) - Source code
+        - [examples/EXTENSION_MODULES.md](../examples/EXTENSION_MODULES.md) - Detailed guide
+        - [Mojo docs: Calling Mojo from Python](https://docs.modular.com/mojo/manual/python/mojo-from-python/)
+        - [docs/COMPILED_LANGUAGES.md](../docs/COMPILED_LANGUAGES.md) - Integration patterns
+        """
+    )
+    return
+
+
+@app.cell
+def __():
+    return
+
+
+if __name__ == "__main__":
+    app.run()

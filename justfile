@@ -39,6 +39,10 @@ notebook-decorator:
 notebook-executor:
     uv run marimo edit notebooks/pattern_executor.py
 
+# Open extension module pattern notebook
+notebook-extension:
+    uv run marimo edit notebooks/pattern_extension.py
+
 # Open Python vs Mojo benchmark notebook
 benchmark:
     uv run marimo edit benchmarks/python_vs_mojo.py
