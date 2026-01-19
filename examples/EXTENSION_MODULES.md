@@ -87,12 +87,18 @@ print(fibonacci_mojo_ext.is_prime(17))
 ```python
 import mojo.importer  # Enables import hook
 
-# Automatically compiles .mojo file to .so when imported
-# Caches in __mojocache__/ directory
+# BUILD HAPPENS HERE on first import (~1-2s)
+# Subsequent imports are instant (uses cached .so)
 import fibonacci_mojo_ext
 
 print(fibonacci_mojo_ext.fibonacci(10))
 ```
+
+**When does compilation happen?**
+
+- **First import**: Compiles `.mojo` → `.so` (~1-2 seconds)
+- **Subsequent imports**: Uses cached `.so` from `__mojocache__/` (instant)
+- **After edits**: Recompiles automatically when `.mojo` file changes
 
 ### Interactive Notebook
 

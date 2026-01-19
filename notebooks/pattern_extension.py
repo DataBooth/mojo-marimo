@@ -58,7 +58,29 @@ def __(mo):
 
 @app.cell
 def __(mo):
-    mo.md("## Import Extension Module")
+    mo.md(
+        """
+        ## Import Extension Module
+        
+        ### Build Timing
+        
+        The build happens **automatically on first import**:
+        
+        1. **First import** (~1-2 seconds):
+           - `mojo.importer` detects `.mojo` file
+           - Runs `mojo build --emit shared-lib`
+           - Saves `.so` to `__mojocache__/`
+           - Imports the compiled module
+        
+        2. **Subsequent imports** (~instant):
+           - `mojo.importer` finds cached `.so`
+           - Checks if `.mojo` file changed (hash comparison)
+           - Uses cached `.so` if unchanged
+           - Recompiles only if source changed
+        
+        This is similar to Python's `.pyc` bytecode caching!
+        """
+    )
     return
 
 
@@ -68,24 +90,40 @@ def __():
     import mojo.importer
 
     # Import our Mojo extension module
-    # This will auto-compile fibonacci_mojo_ext.mojo to .so if needed
+    # BUILD HAPPENS HERE: First import compiles .mojo → .so (~1-2s)
+    # Subsequent imports use cached .so from __mojocache__/ (~instant)
+    # Recompiles only when .mojo file changes
     import fibonacci_mojo_ext
 
     return fibonacci_mojo_ext, mojo
 
 
 @app.cell
-def __(mo, fibonacci_mojo_ext):
+def __(mo, fibonacci_mojo_ext, examples_dir):
+    import os
+    
+    # Check if __mojocache__ exists to show build status
+    cache_dir = examples_dir / "__mojocache__"
+    cache_exists = cache_dir.exists()
+    
+    status_msg = (
+        "📦 Using cached `.so` from `__mojocache__/` (build already done)"
+        if cache_exists
+        else "🔨 Compiled `.mojo` → `.so` on first import (~1-2s)"
+    )
+    
     mo.md(
         f"""
         ✅ Successfully imported `fibonacci_mojo_ext`
+        
+        {status_msg}
         
         Available functions:
         - `fibonacci(n)` - {fibonacci_mojo_ext.fibonacci.__doc__}
         - `is_prime(n)` - {fibonacci_mojo_ext.is_prime.__doc__}
         """
     )
-    return
+    return cache_dir, cache_exists, os, status_msg
 
 
 @app.cell
