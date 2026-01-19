@@ -58,6 +58,20 @@ fn main()
     assert error and "colon" in error.lower()
 
 
+def test_missing_colon_with_return_type():
+    """Validator catches missing colon with return type annotation."""
+    code = """
+fn compute(n: Int) -> Int
+    return n * 2
+
+fn main():
+    print(compute(5))
+"""
+    is_valid, error = validate_mojo_code(code)
+    assert not is_valid
+    assert error and "colon" in error.lower()
+
+
 def test_valid_code():
     """Validator passes valid code."""
     code = """

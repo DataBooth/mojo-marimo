@@ -23,8 +23,11 @@ classifiers = [
 ]
 
 dependencies = [
+    "ipykernel>=7.1.0",
     "marimo",
     "mojo",
+    "numpy>=2.4.1",
+    "plotly>=6.5.2",
 ]
 
 [project.optional-dependencies]
@@ -84,3 +87,10 @@ addopts = "-v --cov=src/mojo_marimo --cov-report=term-missing"
 invalid-return-type = "ignore"
 # Allow func.__name__ in decorator (it's safe for our use case)
 unresolved-attribute = "ignore"
+
+[dependency-groups]
+dev = [
+    "jupytext>=1.19.0",
+    "nbformat>=5.10.4",
+    "notebook>=7.5.2",
+]

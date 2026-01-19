@@ -51,7 +51,7 @@ def _():
 @app.cell
 def _(get_mojo_version, mo):
     mo.md(f"""
-    **Mojo:** `{get_mojo_version()}`
+    **Mojo version:** `{get_mojo_version()}`
     """)
     return
 
@@ -81,7 +81,8 @@ def _(mo, run_mojo):
     {simple_code.strip()}
     ```
 
-    **Output:** `{result1}`
+    **Output:**  
+    `{result1}`
     """)
     return
 
@@ -122,7 +123,203 @@ def _(mo, run_mojo):
     {fib_code_10.strip()}
     ```
 
-    **Output:** `fibonacci(10) = {fib_result}`
+    **Output:**  
+    `fibonacci(10) = {fib_result}`
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ---
+    ## Validation & Error Handling
+
+    The executor validates Mojo code **before** compilation to catch common errors early.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Example 1: Missing `fn main()`
+    """)
+    return
+
+
+@app.cell
+def _(mo, run_mojo):
+    no_main_code = """
+    fn fibonacci(n: Int) -> Int:
+        if n <= 1:
+            return n
+        var prev: Int = 0
+        var curr: Int = 1
+        for _ in range(2, n + 1):
+            var next_val = prev + curr
+            prev = curr
+            curr = next_val
+        return curr
+    """
+
+    result_no_main = run_mojo(no_main_code)
+
+    mo.md(f"""
+    **Mojo code:**
+    ```mojo
+    {no_main_code.strip()}
+    ```
+
+    **Result:** `{result_no_main}` ❌
+
+    → Validation catches that executables need a `fn main()` function.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Example 2: Statements at File Scope
+    """)
+    return
+
+
+@app.cell
+def _(mo, run_mojo):
+    file_scope_code = """
+    var x = 42  # Error: can't declare variables at file scope
+
+    fn main():
+        print(x)
+    """
+
+    result_file_scope = run_mojo(file_scope_code)
+
+    mo.md(f"""
+    **Mojo code:**
+    ```mojo
+    {file_scope_code.strip()}
+    ```
+
+    **Result:** `{result_file_scope}` ❌
+
+    → `var` must be inside a function, not at file scope.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Example 3: Missing Colon After Function
+    """)
+    return
+
+
+@app.cell
+def _(mo, run_mojo):
+    no_colon_code = """
+    fn compute(n: Int) -> Int
+        return n * 2
+
+    fn main():
+        print(compute(5))
+    """
+
+    result_no_colon = run_mojo(no_colon_code)
+
+    mo.md(f"""
+    **Mojo code:**
+    ```mojo
+    {no_colon_code.strip()}
+    ```
+
+    **Result:** `{result_no_colon}` ❌
+
+    → Function declarations need a colon (`:`) after the parameters.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Example 4: Mixed Tabs and Spaces
+    """)
+    return
+
+
+@app.cell
+def _(mo, run_mojo):
+    # Note: using explicit \t in string to demonstrate
+    mixed_indent_code = """fn main():
+    \tvar x = 1  # Tab here
+    print(x)   # Spaces here
+    """
+
+    result_mixed = run_mojo(mixed_indent_code)
+
+    mo.md(f"""
+    **Mojo code:**
+    ```mojo
+    {mixed_indent_code}
+    ```
+
+    **Result:** `{result_mixed}` ❌
+
+    → Use consistent indentation (spaces recommended).
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Example 5: Empty Code
+    """)
+    return
+
+
+@app.cell
+def _(mo, run_mojo):
+    empty_code = """   
+
+    """
+
+    result_empty = run_mojo(empty_code)
+
+    mo.md(f"""
+    **Mojo code:**
+    ```mojo
+    {empty_code}
+    ```
+
+    **Result:** `{result_empty}` ❌
+
+    → Empty or whitespace-only code is rejected.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ---
+
+    **Validation Benefits:**
+    - ✅ **Fast feedback** - Errors caught before compilation
+    - ✅ **Helpful hints** - Specific error messages with examples
+    - ✅ **Save time** - No waiting for compiler errors on obvious mistakes
+
+    **Additional checks** (not shown above):
+    - Deprecated `let` keyword (use `var` instead)
+    - Python 2 style `print` without parentheses
+    - Lowercase type names (`int` → `Int`, `str` → `String`, `bool` → `Bool`)
+    - Missing parentheses in function calls (`range 10` → `range(10)`)
+
+    **Note:** Both the decorator and executor patterns use the same validation.
     """)
     return
 

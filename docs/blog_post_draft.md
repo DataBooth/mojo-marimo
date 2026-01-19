@@ -2,10 +2,13 @@
 title: "Interactive Mojo 🔥: Running High-Performance Code in Notebooks"
 date: 2026-01-18
 tags: Mojo 🔥, Python, Notebooks, Performance, Interactive Computing, marimo
-description: "Two practical approaches for running high-performance Mojo code from Python notebooks—cached binaries and decorators—with real benchmarks and practical guidance."
+status: Work in Progress
+description: "Three practical approaches for running high-performance Mojo code from Python notebooks—decorators, executors, and extension modules—with real benchmarks and community feedback requested."
 ---
 
 # Interactive Mojo 🔥: Running High-Performance Code in Notebooks
+
+> **Status**: Work in progress — Released for community feedback and testing (v0.1.0 Beta)
 
 ## Why: The Interactive Performance Gap
 
@@ -25,41 +28,57 @@ This matters for:
 
 The ideal would be: _write Mojo once, call it like Python, see results instantly in an interactive notebook._
 
-## What: Two Practical Approaches
+## What: Three Practical Approaches
 
-I've been building `mojo-marimo`, exploring how to run Mojo code from [marimo](https://marimo.io/) notebooks (reactive Python notebooks). After experimenting with several patterns, two approaches emerged as genuinely useful: cached binaries and decorators.
+I've been building `mojo-marimo`, exploring how to run Mojo code from [marimo](https://marimo.io/) notebooks (reactive Python notebooks). After experimenting with several patterns, **three approaches** emerged with distinct trade-offs:
 
-Both solve the same problem—executing Mojo from Python—but optimise for different priorities.
+1. **Decorator** — Clean API, notebook-friendly, subprocess overhead
+2. **Executor** — Dynamic code generation, subprocess overhead
+3. **Extension modules** — Zero overhead, more complex Mojo code
 
-### Approach 1: Cached Binary
+All solve the same problem—executing Mojo from Python—but optimise for different priorities.
 
-**Pattern**: First call compiles to binary → Cache by SHA256 hash → Reuse cached executable
+### Approach 1: Executor (Dynamic Code)
+
+**Pattern**: Pass Mojo code as string → Compile to binary → Cache by SHA256 hash → Execute
 
 ```python
-from mo_run_cached import fibonacci_cached
+from mojo_marimo import run_mojo
+
+# Inline Mojo code
+mojo_code = """
+fn compute(n: Int) -> Int:
+    return n * n
+
+fn main():
+    print(compute(42))
+"""
 
 # First call: ~1-2s (compile + run)
-result = fibonacci_cached(10)
+result = run_mojo(mojo_code)
 
-# Subsequent calls: ~10-50ms (run only)
-result = fibonacci_cached(10)
+# Subsequent calls: ~10-50ms (cached binary)
+result = run_mojo(mojo_code)
+
+# Or execute .mojo files
+result = run_mojo("path/to/module.mojo")
 ```
 
 **When to use**:
-- Benchmarking where you run the same code repeatedly
-- Production notebooks with stable Mojo implementations
-- Scenarios where a one-time compilation cost is acceptable
+- Dynamic code generation (building Mojo from templates)
+- Prototyping different algorithm variations
+- Running existing .mojo files from Python
 
 **Performance**: First call ~1-2s, subsequent calls ~10-50ms
 
-**Trade-offs**: Fast after first run, cache persists across sessions, but requires explicit function wrapping.
+**Trade-offs**: Flexible, explicit, subprocess overhead (~10-50ms per call).
 
-### Approach 2: Decorator
+### Approach 2: Decorator (Pythonic API)
 
 **Pattern**: Extract Mojo from docstring → Use cached binary execution → Clean Python interface
 
 ```python
-from mojo_decorator import mojo
+from mojo_marimo import mojo
 
 @mojo
 def fibonacci(n: int) -> int:
@@ -78,28 +97,57 @@ def fibonacci(n: int) -> int:
     fn main():
         print(fibonacci({{n}}))
     """
-    pass
+    ...
 
 # Use like normal Python!
 result = fibonacci(10)
 ```
 
 **When to use**:
-- Production code where ergonomics matter
-- Self-documenting APIs (Mojo code is visible in the docstring)
+- Clean APIs in notebook cells
+- Self-documenting code (Mojo implementation visible in docstring)
 - When you want performance without sacrificing Pythonic style
 
-**Performance**: Same as cached binary (~10-50ms after first call)
+**Performance**: First call ~1-2s, subsequent calls ~10-50ms
 
-**Trade-offs**: Most Pythonic, self-documenting, same performance as cached binary.
+**Trade-offs**: Most Pythonic, self-documenting, subprocess overhead (~10-50ms per call).
 
-### Why Not an Uncached Approach?
+### Approach 3: Extension Modules (Zero Overhead)
 
-You might wonder: why not a simpler pattern that compiles every time?
+**Pattern**: Compile Mojo to `.so` file → Direct Python import → No subprocess
 
-I built one initially—write temp file → `mojo run` → parse → cleanup. But it's strictly worse: ~50-200ms per call with no benefits over cached. The first call overhead (~1-2s) is negligible in interactive work, and subsequent calls are 5-10× faster with caching.
+```python
+import mojo.importer  # Auto-compile on import
+import fibonacci_mojo_ext
 
-**Bottom line**: Caching is nearly free (SHA256 hash + filesystem check), so there's no reason not to use it.
+# Direct function call - zero subprocess overhead!
+result = fibonacci_mojo_ext.fibonacci(100)
+result = fibonacci_mojo_ext.is_prime(17)
+```
+
+**Mojo code** (requires `PythonModuleBuilder`):
+```mojo
+from python.python import PythonModuleBuilder
+
+fn fibonacci(py_n: PythonObject) raises -> PythonObject:
+    let n = Int(py_n)
+    if n <= 1:
+        return n
+    # ... implementation
+    return result
+
+fn initialize(module: PythonModuleBuilder) -> None:
+    module.add_function("fibonacci", fibonacci)
+```
+
+**When to use**:
+- Performance-critical paths called 1000s of times
+- Production systems where ~10-50ms overhead matters
+- When you need C/Rust-level call overhead
+
+**Performance**: First import ~1-2s (compile), subsequent calls ~0.01-0.1ms
+
+**Trade-offs**: **1000× faster** than subprocess approaches, but requires more complex Mojo code and `PythonModuleBuilder` knowledge.
 
 ## How: Real Implementation Details
 
@@ -123,16 +171,18 @@ Benefits:
 
 Testing on Apple Silicon (M-series) with `fibonacci(10)`, `sum_squares(100)`, and `is_prime(104729)`:
 
-| Approach | First Call | Subsequent Calls | Use Case |
-|----------|-----------|------------------|----------|
-| Cached Binary | ~1-2s | ~10-50ms | Explicit control, clear caching |
-| Decorator | ~1-2s | ~10-50ms | Production code, clean APIs |
+| Approach | First Call | Subsequent Calls | Overhead | Use Case |
+|----------|-----------|------------------|----------|----------|
+| Executor | ~1-2s | ~10-50ms | Subprocess | Dynamic code, prototyping |
+| Decorator | ~1-2s | ~10-50ms | Subprocess | Clean APIs, notebook-friendly |
+| Extension | ~1-2s | ~0.01-0.1ms | None | Performance-critical loops |
 
 Key insights:
-1. **Both approaches use the same caching**: Zero performance difference
-2. **Choose based on ergonomics**: Decorator for APIs, explicit for transparency
-3. **First call is acceptable**: 1-2s compilation is fine for interactive work
-4. **Real Mojo performance**: No Python fallbacks or compromises
+1. **Decorator and executor have identical performance**: Both use subprocess + caching
+2. **Extension modules eliminate overhead**: ~1000× faster per call, but more complex
+3. **Choose based on bottleneck**: ~10-50ms okay? Use decorator. Need faster? Use extensions.
+4. **First call is acceptable**: 1-2s compilation is fine for interactive work
+5. **Real Mojo performance**: No Python fallbacks or compromises
 
 ### The marimo Advantage
 
@@ -161,15 +211,21 @@ mo.md(f"**Fibonacci({fib_n.value})** = {result}")
 
 This creates an interactive widget where dragging the slider triggers real Mojo execution and updates the result instantly.
 
-### What's Not Here (Yet)
+### Extension Module Auto-Compilation
 
-A fourth approach—compiling Mojo to Python extension modules (`.so` files)—would eliminate subprocess overhead entirely:
+The extension module approach uses `mojo.importer` for automatic compilation:
 
-- **Performance**: ~0.01-0.1ms per call (1000× faster than subprocess)
-- **Complexity**: Requires PyInit wrapper generation, build toolchain
-- **Trade-off**: Best for production with 1000s+ of calls, overkill for exploration
+```python
+import mojo.importer  # Registers import hook
+import fibonacci_mojo_ext  # Auto-compiles on first import
+```
 
-I'm keeping this in reserve. For interactive notebooks, the cached binary approach hits the sweet spot of simplicity and performance.
+**What happens**:
+1. First import: Compiles `.mojo` → `.so` in `__mojocache__/` (~1-2s)
+2. Subsequent imports: Uses cached `.so` (instant)
+3. Source changes: Recompiles automatically (hash-based detection)
+
+**Trade-off**: Best for production code or tight loops. Overkill if ~10-50ms is acceptable.
 
 ## Why This Matters for Business
 
@@ -194,22 +250,42 @@ For DataBooth clients and medium-sized businesses exploring high-performance com
    - Falls back gracefully (subprocess always works)
    - Clear performance visibility (cache hits/misses visible)
 
-## Current Status & Next Steps
+## Current Status & Feedback Requested
+
+**This is a work-in-progress** (v0.1.0 Beta) released for community feedback.
 
 The `mojo-marimo` repo now includes:
-- ✅ Two practical integration approaches (cached binary and decorator)
-- ✅ Interactive marimo notebooks with reactive UI
-- ✅ Benchmark comparison notebook
-- ✅ Setup verification script
-- ✅ Comprehensive documentation
+- ✅ **Three integration patterns** with interactive notebooks
+- ✅ **44 passing tests** (75% coverage)
+- ✅ **Python vs Mojo benchmarking** infrastructure
+- ✅ **Extension module examples** with auto-compilation
+- ✅ **Validation and error handling** with helpful hints
+- ✅ **Reference .mojo files** for learning
+- ✅ **Comprehensive documentation**
 
-**Evolving areas**:
-- Real-world performance profiling on diverse hardware
-- Error handling and debugging workflow refinement
-- Pattern library for common use cases (data transformations, simulations, etc.)
-- Integration with popular notebook environments (Jupyter, VSCode)
+### I'm Particularly Interested In:
 
-This is a living experiment. The patterns work today, but I'm refining them based on real-world usage. If you're exploring Mojo for data-intensive work, these patterns provide a low-friction entry point.
+**Pattern Preferences**:
+- Which pattern do you prefer and why?
+- Is the decorator syntax intuitive?
+- Does extension module complexity justify the performance gain?
+
+**Use Cases**:
+- What real-world problems would you solve with this?
+- Where does ~10-50ms overhead become a bottleneck?
+- Algorithm prototyping? Production notebooks? Education?
+
+**Performance & Ergonomics**:
+- Is the `{{param}}` template syntax clear?
+- Should we auto-generate extension module boilerplate?
+- What benchmarks would be valuable?
+
+**marimo Integration**:
+- How well does this fit marimo's reactivity model?
+- Missing features for notebook workflows?
+- Other compiled languages you'd want integration for?
+
+**All feedback welcome** — issues, PRs, or comments below! This library evolves based on real-world usage.
 
 ## Try It Yourself
 
@@ -226,17 +302,17 @@ uv pip install -e ".[dev]"
 # Or using pixi
 pixi install
 
-# Verify setup
-python src/mojo_marimo/test_all_approaches.py  # uv
-pixi run test-setup  # pixi
+# Run tests
+just test  # or: pytest
 
-# Launch interactive notebook
-marimo edit notebooks/example_notebook.py  # uv
-pixi run notebook-example  # pixi
+# Launch interactive notebooks
+just notebook-decorator   # Decorator examples
+just notebook-executor    # Executor examples  
+just notebook-extension   # Extension module examples
 
-# Or explore the benchmark comparison
-marimo edit notebooks/benchmark_notebook.py  # uv
-pixi run notebook-benchmark  # pixi
+# Benchmarking
+just notebook-benchmark   # Python vs Mojo comparison
+just benchmark-exec       # Pattern performance comparison
 ```
 
 Full code, examples, and documentation at: [github.com/databooth/mojo-marimo](https://github.com/databooth/mojo-marimo)
@@ -245,11 +321,16 @@ Full code, examples, and documentation at: [github.com/databooth/mojo-marimo](ht
 
 Three weeks into deep Mojo exploration, and this is what excites me: **performance without the usual friction.**
 
-The decorator approach, in particular, feels like a genuine improvement over "write C extension" or "port to Numba". It's not perfect—subprocess overhead is real, compilation adds latency—but for interactive exploration, it's the right trade-off.
+The three-pattern approach gives you choices:
+- **Start simple**: Decorator for notebook-friendly code
+- **Go dynamic**: Executor for code generation
+- **Optimise later**: Extension modules when you need them
+
+It's not perfect—subprocess overhead is real (~10-50ms), compilation adds latency (~1-2s)—but for interactive exploration, it's the right trade-off. And when you need zero overhead, extension modules are there.
 
 For businesses considering Mojo: this is how you start. Pick a performance bottleneck, port it to Mojo, wrap it with a decorator, benchmark it in a notebook. If you see 10-100× speedup (and you likely will), you've validated the path forward without betting the farm.
 
-**Questions? Feedback? Your own Mojo integration patterns?** I'd genuinely love to hear from you. Comments are enabled below, or reach out via the [contact page](https://www.databooth.com.au/about/).
+**Questions? Feedback? Your own Mojo integration patterns?** This is a work-in-progress and I'd genuinely love to hear from you. Comments are enabled below, or reach out via the [contact page](https://www.databooth.com.au/about/).
 
 ---
 

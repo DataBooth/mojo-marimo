@@ -38,25 +38,51 @@ def validate_mojo_code(code: str) -> tuple[bool, str | None]:
         
         # Check for obvious indentation errors (statements at wrong level)
         stripped = line.lstrip()
-        if stripped.startswith(('return ', 'var ', 'if ', 'for ', 'while ')):
+        
+        # Skip imports, function/struct definitions, and comments
+        if stripped.startswith(('from ', 'import ', 'fn ', 'def ', 'struct ', '#')):
+            continue
+            
+        # Check for statements/expressions that should be inside functions
+        if stripped.startswith(('return ', 'var ', 'if ', 'for ', 'while ', 'print(')):
             # These should be indented (inside a function/block)
             indent = len(line) - len(stripped)
             if indent == 0:
-                return False, f"Line {i}: '{stripped.split()[0]}' at file scope (should be indented inside a function)"
+                keyword = stripped.split('(')[0] if '(' in stripped else stripped.split()[0]
+                return False, f"Line {i}: '{keyword}' at file scope (must be inside a function)"
     
-    # Check 4: Basic syntax patterns
-    # Look for common typos
-    if re.search(r'fn\s+\w+\([^)]*\)\s*$', code, re.MULTILINE):
-        # Function declaration without colon
-        return False, "Function declaration missing colon (':') after parameters"
-    
-    # Check 5: Validate function/def syntax
-    func_pattern = r'^(fn|def)\s+\w+\([^)]*\):'
+    # Check 4: Validate function/def syntax - missing colon
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
         if stripped.startswith(('fn ', 'def ')):
-            if not ':' in stripped:
+            # Function declaration should end with :
+            # Examples: fn foo():  or  fn bar(x: Int) -> Int:
+            if not stripped.endswith(':'):
+                # Make sure it's not a multi-line function (has opening brace on next line)
+                # In Mojo, function declarations should have : on same line
                 return False, f"Line {i}: Function declaration missing colon (':') at end"
+    
+    # Check 5: Common Python patterns that don't work in Mojo
+    if re.search(r'\blet\s+\w+', code):
+        return False, "'let' keyword is deprecated in Mojo - use 'var' instead"
+    
+    # Check 6: print statement without parentheses (Python 2 style)
+    if re.search(r'^\s+print\s+(?!\()', code, re.MULTILINE):
+        return False, "print requires parentheses: print(...) not print ..."
+    
+    # Check 7: Common typos in type annotations (case-sensitive)
+    if re.search(r':\s*int\b', code):  # lowercase 'int' instead of 'Int'
+        return False, "Use 'Int' (capitalized) for integer types in Mojo, not 'int'"
+    
+    if re.search(r':\s*str\b', code):  # lowercase 'str' instead of 'String'
+        return False, "Use 'String' for string types in Mojo, not 'str'"
+    
+    if re.search(r':\s*bool\b', code):  # lowercase 'bool' instead of 'Bool'
+        return False, "Use 'Bool' (capitalized) for boolean types in Mojo, not 'bool'"
+    
+    # Check 8: Missing parentheses in range/len
+    if re.search(r'\brange\s+\d', code):  # range 10 instead of range(10)
+        return False, "'range' requires parentheses: range(n) not range n"
     
     return True, None
 
@@ -94,6 +120,53 @@ fn compute(n: Int) -> Int:  # ✓ Colon at end
     return n * 2
 
 fn compute(n: Int) -> Int   # ✗ Missing colon
+""",
+        "'let' keyword is deprecated": """
+💡 Mojo deprecated 'let' in favor of 'var':
+
+fn main():
+    var x = 42   # ✓ Use 'var'
+    var y = 10   # ✓ Use 'var'
+    # let z = 5  # ✗ 'let' is deprecated
+""",
+        "print requires parentheses": """
+💡 Mojo requires parentheses for print (like Python 3):
+
+fn main():
+    print("Hello")      # ✓ Correct
+    # print "Hello"    # ✗ Python 2 style doesn't work
+""",
+        "Use 'Int'": """
+💡 Mojo type names are capitalized:
+
+fn compute(n: Int) -> Int:   # ✓ Capitalized 'Int'
+    return n * 2
+    
+# fn compute(n: int) -> int  # ✗ Python's 'int' doesn't work
+""",
+        "Use 'String'": """
+💡 Mojo uses 'String' not 'str':
+
+fn greet(name: String):      # ✓ Use 'String'
+    print(name)
+    
+# fn greet(name: str)        # ✗ Python's 'str' doesn't work
+""",
+        "Use 'Bool'": """
+💡 Mojo uses 'Bool' not 'bool':
+
+fn is_valid(flag: Bool) -> Bool:  # ✓ Capitalized 'Bool'
+    return flag
+    
+# fn is_valid(flag: bool)          # ✗ Python's 'bool' doesn't work
+""",
+        "'range' requires parentheses": """
+💡 Function calls need parentheses:
+
+fn main():
+    for i in range(10):   # ✓ Correct
+        print(i)
+    # for i in range 10   # ✗ Missing parentheses
 """,
     }
     

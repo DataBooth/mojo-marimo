@@ -1,16 +1,20 @@
 # mojo-marimo 🔥
 
-Interactive Mojo integration for Python notebooks - three patterns for running high-performance Mojo code from marimo notebooks.
+**Notebook-agnostic Mojo integration for Python** - three patterns for running high-performance Mojo code from any Python environment.
 
 > **Status:** ✅ **Beta** - Three working approaches, evolving based on real-world usage
+>
+> **Note:** Despite the name, this library works with **any Python notebook system** (Jupyter, marimo, VSCode, Google Colab) and even standalone Python scripts. The name reflects its origin, but a rename is under consideration—see [ROADMAP.md](docs/ROADMAP.md).
 
 ## Overview
 
-`mojo-marimo` provides three distinct patterns for executing Mojo code from Python/marimo notebooks, each with different trade-offs between speed, simplicity, and developer experience:
+`mojo-marimo` provides three distinct patterns for executing Mojo code from Python, each with different trade-offs:
 
-1. **Uncached Subprocess** - Simple, transparent, best for development (~50-200ms per call)
-2. **Cached Binary** - Fast repeated execution (~10-50ms after first compile)
-3. **Decorator** - Clean Pythonic syntax with cached performance
+1. **Decorator** (`@mojo`) - Clean Pythonic syntax with template parameters and caching
+2. **Executor** (`run_mojo()`) - Dynamic execution from strings or files, great for code generation
+3. **Extension Module** - Compiled `.so` files for zero-overhead FFI calls (~1000× faster than subprocess)
+
+**Works everywhere:** Jupyter notebooks, marimo, VSCode notebooks, Google Colab, IPython REPL, or standalone Python scripts. The core library has no notebook-specific dependencies.
 
 ```python
 from mojo_marimo import mojo
@@ -54,22 +58,26 @@ This matters for:
 
 ### Current (v0.1.0)
 
-- [x] Three integration approaches (uncached, cached, decorator)
-- [x] Interactive marimo notebooks with reactive UI
-- [x] Benchmark comparison notebook
+- [x] Three integration patterns (decorator, executor, extension modules)
+- [x] Works with any Python environment (Jupyter, marimo, VSCode, IPython, scripts)
+- [x] Interactive example notebooks in marimo and Jupyter (`.ipynb`) formats
 - [x] SHA256-based binary caching (`~/.mojo_cache/binaries/`)
+- [x] Pre-compilation validation (catches common syntax errors)
 - [x] Cache management utilities (`clear_cache()`, `cache_stats()`)
-- [x] Setup verification script
-- [x] Comprehensive documentation
+- [x] Monte Carlo and Mandelbrot examples with visualisation
+- [x] 44 passing tests (75% coverage)
+- [x] Comprehensive documentation + roadmap
 
 ### Planned
 
-- [ ] Jupyter notebook support
-- [ ] VSCode notebook integration
-- [ ] Python extension module approach (`.so` compilation)
-- [ ] Pattern library for common use cases
+See [ROADMAP.md](docs/ROADMAP.md) for full details:
+
+- [ ] Validate Jupyter compatibility with real-world testing
+- [ ] Auto-generate extension module boilerplate
+- [ ] Pattern library for common algorithms
 - [ ] Enhanced error handling and debugging
 - [ ] Multiple Mojo version support
+- [ ] Potential package rename (community feedback requested)
 
 ## Installation
 
@@ -115,10 +123,9 @@ pixi run notebook-example
 
 ## Quick Start
 
-### Using the Decorator (Recommended)
+### Pattern 1: Decorator (Recommended)
 
 ```python
-import marimo as mo
 from mojo_marimo import mojo
 
 @mojo
@@ -135,35 +142,40 @@ def sum_squares(n: int) -> int:
     """
     pass
 
-# Reactive slider
-n = mo.ui.slider(1, 100, value=10, label="n")
-
-# Mojo executes automatically when slider changes
-result = sum_squares(n.value)
-
-mo.md(f"**Sum of squares 1² + 2² + ... + {n.value}²** = {result}")
+# Use like normal Python!
+result = sum_squares(10)  # First call: ~1-2s, subsequent: ~10-50ms
+print(result)  # 385
 ```
 
-### Using Cached Binary
+### Pattern 2: Executor
 
 ```python
-from mojo_marimo.mo_run_cached import sum_squares_cached
+from mojo_marimo import run_mojo
 
-# First call: ~1-2s (compile + run)
-result = sum_squares_cached(10)
+mojo_code = """
+fn compute(n: Int) -> Int:
+    return n * n
 
-# Subsequent calls: ~10-50ms (run only)
-result = sum_squares_cached(20)
+fn main():
+    print(compute(42))
+"""
+
+result = run_mojo(mojo_code)  # Or run_mojo("path/to/file.mojo")
+print(result)  # "1764"
 ```
 
-### Using Uncached Subprocess
+### Pattern 3: Extension Module
 
 ```python
-from mojo_marimo.compute_wrapper import sum_squares
+import mojo.importer  # Enables auto-compilation of .mojo → .so
+import monte_carlo_mojo_ext
 
-# Every call compiles and runs
-result = sum_squares(10)  # ~50-200ms
+# Direct FFI call - no subprocess overhead!
+x, y, inside, pi_est, error = monte_carlo_mojo_ext.generate_samples(1_000_000)
+print(f"π ≈ {pi_est:.6f} ± {error:.6f}")
 ```
+
+See [`examples/`](examples/) and [`notebooks/`](notebooks/) for complete working examples.
 
 ## Usage
 

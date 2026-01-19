@@ -252,6 +252,30 @@ def _(gcd, mo):
 def _(mo):
     mo.md(r"""
     ---
+    ## Validation & Error Handling
+    
+    The decorator validates Mojo code **before** compilation to catch common errors early.
+    
+    **Validation checks:**
+    - Missing `fn main()` function
+    - Statements at file scope (e.g., `var x = 10` outside functions)
+    - Missing colons after function declarations
+    - Mixed tabs and spaces in indentation
+    - Empty code
+    - Deprecated `let` keyword (use `var` instead)
+    - Python 2 style `print` without parentheses
+    - Lowercase type names (`int` → `Int`, `str` → `String`, `bool` → `Bool`)
+    - Missing parentheses in function calls (`range 10` → `range(10)`)
+    
+    See `pattern_executor.py` for detailed error examples.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ---
     ## Summary
 
     **Benefits:**
@@ -259,13 +283,14 @@ def _(mo):
     - ✅ Mojo code visible in notebook
     - ✅ Automatic type conversion
     - ✅ Cached execution (~10-50ms after first compile)
+    - ✅ Pre-compilation validation with helpful hints
 
     **When to use:**
     - Self-contained Mojo functions
     - Interactive notebooks
     - Quick prototyping
 
-    **See also:** `pattern_executor.py` for dynamic code generation
+    **See also:** `pattern_executor.py` for dynamic code generation and detailed validation examples
     """)
     return
 

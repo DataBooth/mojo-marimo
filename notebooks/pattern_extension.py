@@ -91,7 +91,6 @@ def _():
     # Subsequent imports use cached .so from __mojocache__/ (~instant)
     # Recompiles only when .mojo file changes
     import fibonacci_mojo_ext
-
     return (fibonacci_mojo_ext,)
 
 
@@ -168,7 +167,7 @@ def _(mo):
 @app.cell
 def _(mo):
     prime_input = mo.ui.number(
-        start=1, stop=1_000_000, value=104729, label="Test if prime", step=1
+        start=1, stop=10_000_000, value=104729, label="Test if prime", step=1
     )
     mo.md(f"**Enter a number:** {prime_input}")
     return (prime_input,)

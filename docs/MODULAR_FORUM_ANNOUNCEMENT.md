@@ -1,126 +1,55 @@
 # Announcing mojo-marimo: Run Mojo in Interactive Python Notebooks 🔥
 
+> **Status**: Work in progress - Released for community feedback and testing  
+> **Version**: v0.1.0 (Beta)
+
 I'm excited to share **mojo-marimo** - a library that lets you run real Mojo code inside interactive Python notebooks using marimo.
+
+**Note:** This executes Mojo via compilation and subprocess/FFI, **not** as a Mojo kernel.
+
+This is an early release and **I'm actively seeking feedback** from the Mojo community on the approach, API design, and use cases.
 
 ## What is it?
 
-`mojo-marimo` provides two clean patterns for executing high-performance Mojo code from Python/marimo notebooks:
+`mojo-marimo` provides **three integration patterns** for executing high-performance Mojo code from Python/marimo notebooks:
 
-### Pattern 1: @mojo Decorator (Cleanest)
-```python
-from mojo_marimo import mojo
+### Pattern 1: Decorator - Pythonic & Clean
+Mojo code lives in function docstrings with `{{param}}` templates. Call it like normal Python.
 
-@mojo
-def fibonacci(n: int) -> int:
-    """
-    fn fibonacci(n: Int) -> Int:
-        if n <= 1:
-            return n
-        var prev: Int = 0
-        var curr: Int = 1
-        for _ in range(2, n + 1):
-            var next_val = prev + curr
-            prev = curr
-            curr = next_val
-        return curr
-    
-    fn main():
-        print(fibonacci({{n}}))
-    """
-    ...
+**Example:** [`notebooks/pattern_decorator.py`](https://github.com/DataBooth/mojo-marimo/blob/main/notebooks/pattern_decorator.py)
 
-# Use like normal Python!
-result = fibonacci(10)  # Returns: 55
-```
+### Pattern 2: Executor - Dynamic & Flexible  
+Pass Mojo code as strings or execute `.mojo` files. Perfect for dynamic code generation.
 
-### Pattern 2: run_mojo() Executor
-```python
-from mojo_marimo import run_mojo
+**Example:** [`notebooks/pattern_executor.py`](https://github.com/DataBooth/mojo-marimo/blob/main/notebooks/pattern_executor.py)
 
-# Option A: Inline Mojo code
-mojo_code = """
-fn compute(n: Int) -> Int:
-    return n * n
+### Pattern 3: Extension Modules - Zero Overhead
+Compile to `.so` files for direct Python imports. No subprocess, ~1000× faster calls.
 
-fn main():
-    print(compute(42))
-"""
-result = run_mojo(mojo_code)
+**Examples:**
+- [`notebooks/monte_carlo_extension.py`](https://github.com/DataBooth/mojo-marimo/blob/main/notebooks/monte_carlo_extension.py) - π estimation with scatter plots
+- [`notebooks/mandelbrot_extension.py`](https://github.com/DataBooth/mojo-marimo/blob/main/notebooks/mandelbrot_extension.py) - Fractal visualisation
 
-# Option B: Execute .mojo files
-result = run_mojo("path/to/module.mojo")
-```
+**Trade-off**: More complex Mojo code (requires [`PythonModuleBuilder`](https://docs.modular.com/mojo/stdlib/python/PythonModuleBuilder)), but eliminates subprocess overhead.
 
 ## Key Features
 
-✅ **Real Mojo Performance** - No Python fallbacks, actual Mojo execution  
-✅ **Smart Caching** - SHA256-based binary caching (~1-2s first call, ~10-50ms cached)  
-✅ **Type Safe** - Automatic type conversion (int, bool, float)  
-✅ **Reactive** - Works perfectly with marimo's reactivity  
-✅ **Two Patterns** - Decorator for clean code, executor for flexibility  
-✅ **Interactive Examples** - Sliders, buttons, dropdowns with live Mojo execution  
-
-## Why This Matters
-
-Python notebooks are brilliant for exploration but hit a wall when you need serious performance. With `mojo-marimo`, you can:
-
-- Prototype high-performance algorithms interactively
-- Benchmark Mojo vs Python side-by-side
-- Build interactive demos with real Mojo performance
-- Explore Mojo features with immediate visual feedback
-
-## Try It Out
-
-**Installation:**
-```bash
-git clone https://github.com/DataBooth/mojo-marimo
-cd mojo-marimo
-uv sync --extra dev
-
-# Or with just
-just install
-```
-
-**Run the notebooks:**
-```bash
-# Decorator pattern examples
-just notebook-decorator
-
-# Executor pattern examples
-just notebook-executor
-
-# Benchmark comparison
-just notebook-benchmark
-```
-
-## Technical Details
-
-- **Caching:** Mojo code is compiled to binaries cached in `~/.mojo_cache/binaries/`
-- **Cache Key:** SHA256 hash of source code
-- **Recompilation:** Automatic when code changes
-- **Environment:** Works with both `uv` and `pixi`
+✅ Real Mojo compilation and execution  
+✅ Smart caching (SHA256-based)  
+✅ Three integration patterns  
+✅ Pre-compilation validation  
+✅ Interactive examples: Fibonacci, Monte Carlo π, Mandelbrot fractals  
+✅ Works with marimo's reactive model
 
 ## Repository
 
 🔗 https://github.com/DataBooth/mojo-marimo
 
-Includes:
-- 27 passing tests
-- Comprehensive documentation
-- Interactive notebooks demonstrating both patterns
-- Benchmark notebook comparing performance
-- Complete example implementations
+44 passing tests (75% coverage) | Three integration patterns | Interactive examples | Comprehensive documentation
 
-## Feedback Welcome!
+## 🎯 Feedback Requested!
 
-This is an early release (v0.1.0) and I'd love feedback from the Mojo community:
-
-- Which pattern do you prefer and why?
-- What use cases would benefit most?
-- What features would you like to see?
-- Any performance observations?
-
-Looking forward to hearing your thoughts! Let me know if you try it out.
+See [`docs/FEEDBACK_REQUESTED.md`](https://github.com/DataBooth/mojo-marimo/blob/main/docs/FEEDBACK_REQUESTED.md) for specific areas where community input would be valuable.
 
 ---
 
