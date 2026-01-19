@@ -246,6 +246,7 @@ See the [benchmark notebook](notebooks/benchmark_notebook.py) for detailed compa
 - [**Blog Post Draft**](docs/blog_post_draft.md) - Long-form explanation
 - [**Modular Forum**](docs/MODULAR_FORUM_ANNOUNCEMENT.md) - Mojo community announcement
 - [**marimo Community**](docs/MARIMO_ANNOUNCEMENT.md) - marimo community announcement
+- [**Compiled Languages Integration**](docs/COMPILED_LANGUAGES.md) - How compiled languages work with marimo
 
 ## Project Structure
 
@@ -255,20 +256,28 @@ mojo-marimo/
 │   └── mojo_marimo/          # Core library
 │       ├── executor.py       # Cached Mojo execution
 │       ├── decorator.py      # @mojo decorator
+│       ├── validator.py      # Pre-compilation validation
 │       └── __init__.py       # Package exports
 ├── examples/                 # Example implementations
 │   ├── examples.py          # Python wrappers (fibonacci, etc.)
-│   └── examples.mojo        # Standalone Mojo code
+│   ├── examples.mojo        # Standalone Mojo code
+│   └── reference/           # Reference .mojo files
+├── benchmarks/              # Performance benchmarking
+│   ├── python_baseline.py   # Pure Python implementations
+│   ├── mojo_implementations.py  # Mojo implementations
+│   ├── python_vs_mojo.py    # Python vs Mojo comparison notebook
+│   └── execution_approaches.py  # Execution patterns comparison
 ├── notebooks/               # Interactive marimo notebooks
 │   ├── pattern_decorator.py # @mojo decorator examples
-│   ├── pattern_executor.py  # run_mojo() examples  
-│   └── benchmark.py         # Performance comparison
+│   ├── pattern_executor.py  # run_mojo() examples
+│   └── interactive_learning.py  # Learning notebook
 ├── scripts/                 # Utility scripts
 │   └── verify_setup.py      # Setup verification
 ├── tests/                   # Test suite
 ├── docs/                    # Documentation
 │   ├── project/            # Project docs (contributing, changelog)
 │   ├── blog_post_draft.md  # Blog post
+│   ├── COMPILED_LANGUAGES.md  # Compiled language integration
 │   ├── MODULAR_FORUM_ANNOUNCEMENT.md
 │   └── MARIMO_ANNOUNCEMENT.md
 └── README.md                # This file

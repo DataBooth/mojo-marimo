@@ -39,9 +39,13 @@ notebook-decorator:
 notebook-executor:
     uv run marimo edit notebooks/pattern_executor.py
 
-# Open benchmark notebook
+# Open Python vs Mojo benchmark notebook
 benchmark:
-    uv run marimo edit notebooks/benchmark.py
+    uv run marimo edit benchmarks/python_vs_mojo.py
+
+# Open execution approaches benchmark
+benchmark-exec:
+    uv run marimo edit benchmarks/execution_approaches.py
 
 # Command-line demos
 # ------------------

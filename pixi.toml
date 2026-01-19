@@ -25,7 +25,10 @@ test-setup = { cmd = "python verify_setup.py", cwd = "scripts" }
 learn = { cmd = "marimo edit interactive_learning.py", cwd = "notebooks" }
 notebook-decorator = { cmd = "marimo edit pattern_decorator.py", cwd = "notebooks" }
 notebook-executor = { cmd = "marimo edit pattern_executor.py", cwd = "notebooks" }
-benchmark = { cmd = "marimo edit benchmark.py", cwd = "notebooks" }
+
+# Benchmarks
+benchmark = { cmd = "marimo edit python_vs_mojo.py", cwd = "benchmarks" }
+benchmark-exec = { cmd = "marimo edit execution_approaches.py", cwd = "benchmarks" }
 
 # Command-line demos
 demo-examples = { cmd = "python examples.py", cwd = "examples" }
