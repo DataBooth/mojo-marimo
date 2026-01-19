@@ -188,17 +188,17 @@ This checks that `mojo` is available and tests both approaches.
 # Using just
 just notebook-decorator  # @mojo decorator examples
 just notebook-executor   # run_mojo() examples
-just notebook-benchmark  # Performance comparison
+just benchmark          # Performance comparison
 
 # Using uv
-uv run marimo edit notebooks/decorator_notebook.py
-uv run marimo edit notebooks/executor_notebook.py
-uv run marimo edit notebooks/benchmark_notebook.py
+uv run marimo edit notebooks/pattern_decorator.py
+uv run marimo edit notebooks/pattern_executor.py
+uv run marimo edit notebooks/benchmark.py
 
 # Using pixi
 pixi run notebook-decorator
 pixi run notebook-executor
-pixi run notebook-benchmark
+pixi run benchmark
 ```
 
 ### Command-Line Demos
@@ -260,10 +260,9 @@ mojo-marimo/
 │   ├── examples.py          # Python wrappers (fibonacci, etc.)
 │   └── examples.mojo        # Standalone Mojo code
 ├── notebooks/               # Interactive marimo notebooks
-│   ├── decorator_notebook.py # @mojo decorator examples
-│   ├── executor_notebook.py  # run_mojo() examples  
-│   ├── benchmark_notebook.py # Performance comparison
-│   └── example_notebook.py   # Original demo (legacy)
+│   ├── pattern_decorator.py # @mojo decorator examples
+│   ├── pattern_executor.py  # run_mojo() examples  
+│   └── benchmark.py         # Performance comparison
 ├── scripts/                 # Utility scripts
 │   └── verify_setup.py      # Setup verification
 ├── tests/                   # Test suite
@@ -301,7 +300,7 @@ just check              # Run all quality checks
 # Notebooks
 just notebook-decorator
 just notebook-executor
-just notebook-benchmark
+just benchmark
 
 # Development
 just clean
