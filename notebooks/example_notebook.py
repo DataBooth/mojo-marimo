@@ -13,7 +13,6 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 
@@ -41,8 +40,13 @@ def _():
     # Import our compute functions (runs real Mojo code!)
     from examples import fibonacci, is_prime, sum_squares
     from mojo_marimo import get_mojo_version
-
     return fibonacci, get_mojo_version, is_prime, sum_squares
+
+
+@app.cell
+def _(get_mojo_version):
+    get_mojo_version()
+    return
 
 
 @app.cell(hide_code=True)
@@ -167,7 +171,7 @@ def _(get_mojo_version, mo):
 
     ```python
     from mojo_marimo import mojo
-    
+
     @mojo
     def my_function(n: int) -> int:
         '''Mojo code in docstring'''

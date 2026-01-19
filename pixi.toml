@@ -23,6 +23,8 @@ test-setup = { cmd = "python verify_setup.py", cwd = "scripts" }
 
 # Interactive notebooks
 notebook-example = { cmd = "marimo edit example_notebook.py", cwd = "notebooks" }
+notebook-decorator = { cmd = "marimo edit decorator_notebook.py", cwd = "notebooks" }
+notebook-executor = { cmd = "marimo edit executor_notebook.py", cwd = "notebooks" }
 notebook-benchmark = { cmd = "marimo edit benchmark_notebook.py", cwd = "notebooks" }
 
 # Command-line demos

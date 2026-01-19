@@ -27,9 +27,17 @@ test-setup:
 # Interactive notebooks
 # ---------------------
 
-# Open example notebook
+# Open example notebook (original)
 notebook-example:
     uv run marimo edit notebooks/example_notebook.py
+
+# Open decorator pattern notebook
+notebook-decorator:
+    uv run marimo edit notebooks/decorator_notebook.py
+
+# Open executor pattern notebook
+notebook-executor:
+    uv run marimo edit notebooks/executor_notebook.py
 
 # Open benchmark notebook
 notebook-benchmark:
