@@ -18,12 +18,13 @@ app = marimo.App(width="medium")
 
 @app.cell
 def __():
-    import marimo as mo
-    import time
     import statistics
-    from pathlib import Path
     import sys
-    
+    import time
+    from pathlib import Path
+
+    import marimo as mo
+
     # Add src directory to path
     src_dir = Path(__file__).parent
     sys.path.insert(0, str(src_dir))
@@ -102,15 +103,21 @@ def __():
     # Add examples to path
     import sys
     from pathlib import Path
+
     examples_path = Path(__file__).parent.parent / "examples"
     sys.path.insert(0, str(examples_path))
-    
+
     from examples import (
         fibonacci as fib_cached,
-        sum_squares as sum_sq_cached,
+    )
+    from examples import (
         is_prime as prime_cached,
     )
+    from examples import (
+        sum_squares as sum_sq_cached,
+    )
     from mojo_marimo.executor import clear_cache
+
     return clear_cache, fib_cached, prime_cached, sum_sq_cached
 
 
@@ -144,9 +151,14 @@ def __(mo):
 def __():
     from mojo_marimo.decorator import (
         fibonacci as fib_decorator,
-        sum_squares as sum_sq_decorator,
+    )
+    from mojo_marimo.decorator import (
         is_prime as prime_decorator,
     )
+    from mojo_marimo.decorator import (
+        sum_squares as sum_sq_decorator,
+    )
+
     return fib_decorator, prime_decorator, sum_sq_decorator
 
 
@@ -163,7 +175,7 @@ def __(time, statistics):
         # Warmup
         for _ in range(warmup_runs):
             func(*args)
-        
+
         # Timed runs
         times = []
         for _ in range(timed_runs):
@@ -171,7 +183,7 @@ def __(time, statistics):
             result = func(*args)
             elapsed = time.perf_counter() - start
             times.append(elapsed * 1000)  # Convert to ms
-        
+
         return {
             "result": result,
             "mean_ms": statistics.mean(times),
@@ -180,6 +192,7 @@ def __(time, statistics):
             "max_ms": max(times),
             "runs": len(times),
         }
+
     return (benchmark_function,)
 
 
@@ -212,20 +225,22 @@ def __(mo):
 @app.cell
 def __(benchmark_function, fib_uncached, fib_cached, fib_decorator):
     fib_n = 10
-    
+
     print("Testing fibonacci(10)...\n")
-    
+
     # First call (cold start) - no warmup
     print("1. Uncached subprocess (cold):")
     bench_fib_uncached_cold = benchmark_function(fib_uncached, fib_n, warmup_runs=0, timed_runs=3)
-    print(f"   Mean: {bench_fib_uncached_cold['mean_ms']:.2f}ms ± {bench_fib_uncached_cold['stdev_ms']:.2f}ms")
+    print(
+        f"   Mean: {bench_fib_uncached_cold['mean_ms']:.2f}ms ± {bench_fib_uncached_cold['stdev_ms']:.2f}ms"
+    )
     print(f"   Result: {bench_fib_uncached_cold['result']}\n")
-    
+
     print("2. Cached binary (cold, first compile):")
     bench_fib_cached_cold = benchmark_function(fib_cached, fib_n, warmup_runs=0, timed_runs=1)
     print(f"   Time: {bench_fib_cached_cold['mean_ms']:.2f}ms")
     print(f"   Result: {bench_fib_cached_cold['result']}\n")
-    
+
     print("3. Decorator (cold, first compile):")
     bench_fib_decorator_cold = benchmark_function(fib_decorator, fib_n, warmup_runs=0, timed_runs=1)
     print(f"   Time: {bench_fib_decorator_cold['mean_ms']:.2f}ms")
@@ -247,19 +262,25 @@ def __(mo):
 @app.cell
 def __(benchmark_function, fib_uncached, fib_cached, fib_decorator, fib_n):
     print("Testing fibonacci(10) - cached...\n")
-    
+
     # Warm calls (cached)
     print("1. Uncached subprocess (still compiles every time):")
     bench_fib_uncached_warm = benchmark_function(fib_uncached, fib_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_fib_uncached_warm['mean_ms']:.2f}ms ± {bench_fib_uncached_warm['stdev_ms']:.2f}ms\n")
-    
+    print(
+        f"   Mean: {bench_fib_uncached_warm['mean_ms']:.2f}ms ± {bench_fib_uncached_warm['stdev_ms']:.2f}ms\n"
+    )
+
     print("2. Cached binary (using cached binary):")
     bench_fib_cached_warm = benchmark_function(fib_cached, fib_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_fib_cached_warm['mean_ms']:.2f}ms ± {bench_fib_cached_warm['stdev_ms']:.2f}ms\n")
-    
+    print(
+        f"   Mean: {bench_fib_cached_warm['mean_ms']:.2f}ms ± {bench_fib_cached_warm['stdev_ms']:.2f}ms\n"
+    )
+
     print("3. Decorator (using cached binary):")
     bench_fib_decorator_warm = benchmark_function(fib_decorator, fib_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_fib_decorator_warm['mean_ms']:.2f}ms ± {bench_fib_decorator_warm['stdev_ms']:.2f}ms")
+    print(
+        f"   Mean: {bench_fib_decorator_warm['mean_ms']:.2f}ms ± {bench_fib_decorator_warm['stdev_ms']:.2f}ms"
+    )
     return bench_fib_cached_warm, bench_fib_decorator_warm, bench_fib_uncached_warm
 
 
@@ -277,22 +298,26 @@ def __(
     sum_sq_decorator,
 ):
     sum_n = 100
-    
+
     print("Testing sum_squares(100) - warm...\n")
-    
+
     print("1. Uncached subprocess:")
     bench_sum_uncached = benchmark_function(sum_sq_uncached, sum_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_sum_uncached['mean_ms']:.2f}ms ± {bench_sum_uncached['stdev_ms']:.2f}ms")
+    print(
+        f"   Mean: {bench_sum_uncached['mean_ms']:.2f}ms ± {bench_sum_uncached['stdev_ms']:.2f}ms"
+    )
     print(f"   Result: {bench_sum_uncached['result']}\n")
-    
+
     print("2. Cached binary:")
     bench_sum_cached = benchmark_function(sum_sq_cached, sum_n, warmup_runs=1, timed_runs=5)
     print(f"   Mean: {bench_sum_cached['mean_ms']:.2f}ms ± {bench_sum_cached['stdev_ms']:.2f}ms")
     print(f"   Result: {bench_sum_cached['result']}\n")
-    
+
     print("3. Decorator:")
     bench_sum_decorator = benchmark_function(sum_sq_decorator, sum_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_sum_decorator['mean_ms']:.2f}ms ± {bench_sum_decorator['stdev_ms']:.2f}ms")
+    print(
+        f"   Mean: {bench_sum_decorator['mean_ms']:.2f}ms ± {bench_sum_decorator['stdev_ms']:.2f}ms"
+    )
     print(f"   Result: {bench_sum_decorator['result']}")
     return bench_sum_cached, bench_sum_decorator, bench_sum_uncached, sum_n
 
@@ -306,22 +331,30 @@ def __(mo):
 @app.cell
 def __(benchmark_function, prime_uncached, prime_cached, prime_decorator):
     prime_n = 104729  # 10,000th prime
-    
+
     print("Testing is_prime(104729) - warm...\n")
-    
+
     print("1. Uncached subprocess:")
     bench_prime_uncached = benchmark_function(prime_uncached, prime_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_prime_uncached['mean_ms']:.2f}ms ± {bench_prime_uncached['stdev_ms']:.2f}ms")
+    print(
+        f"   Mean: {bench_prime_uncached['mean_ms']:.2f}ms ± {bench_prime_uncached['stdev_ms']:.2f}ms"
+    )
     print(f"   Result: {bench_prime_uncached['result']}\n")
-    
+
     print("2. Cached binary:")
     bench_prime_cached = benchmark_function(prime_cached, prime_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_prime_cached['mean_ms']:.2f}ms ± {bench_prime_cached['stdev_ms']:.2f}ms")
+    print(
+        f"   Mean: {bench_prime_cached['mean_ms']:.2f}ms ± {bench_prime_cached['stdev_ms']:.2f}ms"
+    )
     print(f"   Result: {bench_prime_cached['result']}\n")
-    
+
     print("3. Decorator:")
-    bench_prime_decorator = benchmark_function(prime_decorator, prime_n, warmup_runs=1, timed_runs=5)
-    print(f"   Mean: {bench_prime_decorator['mean_ms']:.2f}ms ± {bench_prime_decorator['stdev_ms']:.2f}ms")
+    bench_prime_decorator = benchmark_function(
+        prime_decorator, prime_n, warmup_runs=1, timed_runs=5
+    )
+    print(
+        f"   Mean: {bench_prime_decorator['mean_ms']:.2f}ms ± {bench_prime_decorator['stdev_ms']:.2f}ms"
+    )
     print(f"   Result: {bench_prime_decorator['result']}")
     return bench_prime_cached, bench_prime_decorator, bench_prime_uncached, prime_n
 
@@ -377,7 +410,7 @@ def __(
             "Decorator (ms)": f"{bench_prime_decorator['mean_ms']:.2f}",
         },
     ]
-    
+
     mo.ui.table(summary_data)
     return (summary_data,)
 

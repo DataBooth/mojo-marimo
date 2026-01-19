@@ -13,6 +13,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -33,12 +34,14 @@ def _():
     # Add examples to path
     import sys
     from pathlib import Path
+
     examples_path = Path(__file__).parent.parent / "examples"
     sys.path.insert(0, str(examples_path))
-    
+
     # Import our compute functions (runs real Mojo code!)
-    from examples import fibonacci, sum_squares, is_prime
+    from examples import fibonacci, is_prime, sum_squares
     from mojo_marimo import get_mojo_version
+
     return fibonacci, get_mojo_version, is_prime, sum_squares
 
 
@@ -53,13 +56,7 @@ def _(mo):
 @app.cell
 def _(mo):
     # Interactive slider for Fibonacci input
-    fib_slider = mo.ui.slider(
-        start=1, 
-        stop=30, 
-        value=10, 
-        label="n:",
-        show_value=True
-    )
+    fib_slider = mo.ui.slider(start=1, stop=30, value=10, label="n:", show_value=True)
     return (fib_slider,)
 
 
@@ -88,13 +85,7 @@ def _(mo):
 @app.cell
 def _(mo):
     # Input for sum of squares
-    sum_sq_slider = mo.ui.slider(
-        start=1,
-        stop=100,
-        value=10,
-        label="n:",
-        show_value=True
-    )
+    sum_sq_slider = mo.ui.slider(start=1, stop=100, value=10, label="n:", show_value=True)
     return (sum_sq_slider,)
 
 
@@ -125,12 +116,7 @@ def _(mo):
 @app.cell
 def _(mo):
     # Number input for prime checking
-    prime_input = mo.ui.number(
-        start=1,
-        stop=10000,
-        value=17,
-        label="Check if prime:"
-    )
+    prime_input = mo.ui.number(start=1, stop=10000, value=17, label="Check if prime:")
     return (prime_input,)
 
 

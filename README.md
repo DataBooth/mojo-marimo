@@ -170,6 +170,9 @@ result = sum_squares(10)  # ~50-200ms
 ### Verify Setup
 
 ```bash
+# Using just
+just test-setup
+
 # Using uv
 uv run python scripts/verify_setup.py
 
@@ -177,35 +180,37 @@ uv run python scripts/verify_setup.py
 pixi run test-setup
 ```
 
-This checks that `mojo` is available and tests all three approaches.
+This checks that `mojo` is available and tests both approaches.
 
 ### Interactive Notebooks
 
 ```bash
-# Example notebook (uv)
-marimo edit notebooks/example_notebook.py
+# Using just
+just notebook-example
+just notebook-benchmark
 
-# Example notebook (pixi)
+# Using uv
+uv run marimo edit notebooks/example_notebook.py
+uv run marimo edit notebooks/benchmark_notebook.py
+
+# Using pixi
 pixi run notebook-example
-
-# Benchmark comparison (uv)
-marimo edit notebooks/benchmark_notebook.py
-
-# Benchmark comparison (pixi)
 pixi run notebook-benchmark
 ```
 
-### Command-Line Testing
+### Command-Line Demos
 
 ```bash
+# Using just
+just demo-examples
+just demo-decorator
+
 # Using uv
-python src/mojo_marimo/compute_wrapper.py       # Uncached
-python src/mojo_marimo/mo_run_cached.py         # Cached
-python src/mojo_marimo/mojo_decorator.py        # Decorator
+uv run python examples/examples.py
+uv run python -m mojo_marimo.decorator
 
 # Using pixi
-pixi run demo-uncached
-pixi run demo-cached
+pixi run demo-examples
 pixi run demo-decorator
 ```
 
@@ -256,30 +261,64 @@ mojo-marimo/
 
 ## Development
 
+### Using just (Recommended)
+
+We provide a `justfile` with common tasks synced across uv and pixi:
+
+```bash
+# Show all available commands
+just --list
+
+# Install dependencies
+just install
+
+# Run tests
+just test
+just test-coverage
+
+# Code quality
+just format
+just lint
+just typecheck
+just check              # Run all quality checks
+
+# Notebooks
+just notebook-example
+just notebook-benchmark
+
+# Development
+just clean
+just clean-mojo-cache
+just cache-stats
+
+# CI checks locally
+just ci
+```
+
 ### Using uv
 
 ```bash
 # Install in development mode
-uv pip install -e ".[dev]"
+uv sync --extra dev
 
 # Run tests
-pytest tests/
+uv run pytest tests/
 
 # Format code
-ruff format .
+uv run ruff format .
 
 # Lint
-ruff check .
+uv run ruff check .
 
 # Type check
-uvx ty check
+uv run ty check
 ```
 
 ### Using pixi
 
 ```bash
 # Run tests
-pixi run test-all
+pixi run test
 
 # Format code
 pixi run format
@@ -289,6 +328,9 @@ pixi run lint
 
 # Type check
 pixi run typecheck
+
+# All quality checks
+pixi run check
 ```
 
 ## Why marimo?

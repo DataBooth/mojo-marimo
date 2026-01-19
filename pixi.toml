@@ -26,18 +26,26 @@ notebook-example = { cmd = "marimo edit example_notebook.py", cwd = "notebooks" 
 notebook-benchmark = { cmd = "marimo edit benchmark_notebook.py", cwd = "notebooks" }
 
 # Command-line demos
-demo-uncached = { cmd = "python compute_wrapper.py", cwd = "src/mojo_marimo" }
-demo-cached = { cmd = "python mo_run_cached.py", cwd = "src/mojo_marimo" }
-demo-decorator = { cmd = "python mojo_decorator.py", cwd = "src/mojo_marimo" }
+demo-examples = { cmd = "python examples.py", cwd = "examples" }
+demo-decorator = { cmd = "python -m mojo_marimo.decorator" }
 
 # Testing
-test-all = "pytest tests/"
-test-python = "pytest tests/ -k 'not mojo'"
+test = "pytest tests/"
+test-verbose = "pytest tests/ -v"
+test-coverage = "pytest tests/ --cov=src/mojo_marimo --cov-report=term-missing"
 
 # Code quality
 format = "ruff format ."
 lint = "ruff check ."
+lint-fix = "ruff check --fix ."
 typecheck = "ty check"
 
 # Combined quality check
 check = { depends-on = ["format", "lint", "typecheck"] }
+
+# Development
+clean-mojo-cache = "rm -rf ~/.mojo_cache/binaries/*"
+cache-stats = "python -c 'from mojo_marimo.executor import cache_stats; cache_stats()'"
+
+# CI/CD
+ci = { depends-on = ["check", "test"] }

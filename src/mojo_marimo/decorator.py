@@ -7,20 +7,22 @@ as a decorator for cleaner syntax.
 Future enhancement: compile to Python extension modules for zero subprocess overhead.
 """
 
-from functools import wraps
-from typing import Callable, Any
 import inspect
-from mojo_marimo.executor import run_mojo, get_mojo_version
+from collections.abc import Callable
+from functools import wraps
+from typing import Any
+
+from mojo_marimo.executor import get_mojo_version, run_mojo
 
 
 def mojo(func: Callable[..., Any]) -> Callable[..., Any]:
     """
     Decorator to execute Mojo code from function docstring.
-    
+
     The function's docstring should contain valid Mojo code that
     implements the logic. The function signature determines the
     interface.
-    
+
     Usage:
         @mojo
         def fibonacci(n: int) -> int:
@@ -35,57 +37,56 @@ def mojo(func: Callable[..., Any]) -> Callable[..., Any]:
                     prev = curr
                     curr = next_val
                 return curr
-            
+
             fn main():
                 print(fibonacci({{n}}))
             '''
             pass
-        
+
         # Use like normal Python function
         result = fibonacci(10)
-    
+
     Note: Use {{param_name}} in docstring as placeholder for parameter substitution.
     """
-    
+
     # Extract Mojo code template from docstring
     mojo_template = func.__doc__
     if not mojo_template:
         raise ValueError(f"Function {func.__name__} has no docstring with Mojo code")
-    
+
     # Get function signature for parameter handling
     sig = inspect.signature(func)
-    param_names = list(sig.parameters.keys())
-    
+
     @wraps(func)
     def wrapper(*args, **kwargs) -> Any:
         # Bind arguments to parameter names
         bound = sig.bind(*args, **kwargs)
         bound.apply_defaults()
-        
+
         # Substitute parameters into Mojo template
         mojo_code = mojo_template
         for param_name, param_value in bound.arguments.items():
             placeholder = f"{{{{{param_name}}}}}"  # {{param}} in docstring
             mojo_code = mojo_code.replace(placeholder, str(param_value))
-        
+
         # Execute via cached binary
         result = run_mojo(mojo_code, use_cache=True)
-        
+
         # Convert result based on return type annotation
         return_type = sig.return_annotation
-        if return_type == int:
+        if return_type is int:
             return int(result) if result else 0
-        elif return_type == bool:
+        if return_type is bool:
             return result == "True" if result else False
-        elif return_type == float:
+        if return_type is float:
             return float(result) if result else 0.0
-        else:
-            return result
-    
+        return result
+
     return wrapper
 
 
 # Example decorated functions
+
 
 @mojo
 def fibonacci(n: int) -> int:
@@ -100,7 +101,7 @@ def fibonacci(n: int) -> int:
             prev = curr
             curr = next_val
         return curr
-    
+
     fn main():
         print(fibonacci({{n}}))
     """
@@ -115,7 +116,7 @@ def sum_squares(n: int) -> int:
         for i in range(1, n + 1):
             total += i * i
         return total
-    
+
     fn main():
         print(sum_squares({{n}}))
     """
@@ -138,7 +139,7 @@ def is_prime(n: int) -> bool:
                 return False
             i += 2
         return True
-    
+
     fn main():
         print(is_prime({{n}}))
     """
@@ -148,13 +149,13 @@ def is_prime(n: int) -> bool:
 if __name__ == "__main__":
     print(f"Mojo version: {get_mojo_version()}\n")
     print("=== Using @mojo decorator ===\n")
-    
+
     # Call decorated functions like normal Python
     print(f"fibonacci(10) = {fibonacci(10)}")
     print(f"sum_squares(10) = {sum_squares(10)}")
     print(f"is_prime(17) = {is_prime(17)}")
     print(f"is_prime(18) = {is_prime(18)}")
-    
+
     print("\n=== Cached calls (should be fast) ===\n")
     print(f"fibonacci(15) = {fibonacci(15)}")
     print(f"sum_squares(20) = {sum_squares(20)}")

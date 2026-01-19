@@ -17,10 +17,10 @@ from mojo_marimo.executor import run_mojo
 
 def fibonacci(n: int) -> int:
     """Calculate Fibonacci number via cached Mojo binary.
-    
+
     Args:
         n: The Fibonacci number to calculate
-        
+
     Returns:
         The nth Fibonacci number
     """
@@ -45,10 +45,10 @@ fn main():
 
 def sum_squares(n: int) -> int:
     """Calculate sum of squares 1² + 2² + ... + n² via cached Mojo binary.
-    
+
     Args:
         n: Calculate sum up to this number
-        
+
     Returns:
         The sum of squares from 1 to n
     """
@@ -68,10 +68,10 @@ fn main():
 
 def is_prime(n: int) -> bool:
     """Check if number is prime via cached Mojo binary.
-    
+
     Args:
         n: The number to check
-        
+
     Returns:
         True if n is prime, False otherwise
     """
@@ -99,20 +99,20 @@ fn main():
 
 if __name__ == "__main__":
     # Imports already available from above
-    from mojo_marimo.executor import get_mojo_version, cache_stats
-    
+    from mojo_marimo.executor import cache_stats, get_mojo_version
+
     print(f"Mojo version: {get_mojo_version()}\n")
-    
+
     # First calls - will compile and cache
     print("=== First calls (will compile) ===")
     print(f"Fibonacci(10): {fibonacci(10)}")
     print(f"Sum squares 1-10: {sum_squares(10)}")
     print(f"Is 17 prime? {is_prime(17)}")
-    
+
     print("\n=== Second calls (using cache) ===")
     print(f"Fibonacci(15): {fibonacci(15)}")
     print(f"Sum squares 1-20: {sum_squares(20)}")
     print(f"Is 23 prime? {is_prime(23)}")
-    
+
     print()
     cache_stats()

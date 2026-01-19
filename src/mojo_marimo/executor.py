@@ -4,13 +4,11 @@ The executor compiles Mojo code once and caches the binary, making subsequent
 executions much faster (~10-50ms vs ~1-2s).
 """
 
-from functools import cache
-from pathlib import Path
-from typing import Optional
+import hashlib
 import subprocess
 import tempfile
-import hashlib
-
+from functools import cache
+from pathlib import Path
 
 # Cache directory for compiled Mojo binaries
 CACHE_DIR = Path.home() / ".mojo_cache" / "binaries"
@@ -31,10 +29,10 @@ def run_mojo(
     echo_code: bool = False,
     echo_output: bool = False,
     use_cache: bool = True,
-    extra_args: Optional[list[str]] = None,
-) -> Optional[str]:
+    extra_args: list[str] | None = None,
+) -> str | None:
     """Execute Mojo code with optional binary caching.
-    
+
     Args:
         source: Mojo code string or file path.
         echo_code: Print the code before running.
@@ -42,10 +40,10 @@ def run_mojo(
         use_cache: Use cached binaries for faster repeated execution (default True).
                    Set to False to always recompile.
         extra_args: Optional list of extra arguments.
-    
+
     Returns:
         The stdout output if successful, else None.
-        
+
     Example:
         >>> code = '''\n        ... fn main():\n        ...     print("Hello from Mojo!")\n        ... '''\n        >>> output = run_mojo(code)
         >>> print(output)
@@ -54,10 +52,10 @@ def run_mojo(
     if not source.strip():
         print("Error: Empty source provided.")
         return None
-    
+
     path = Path(source)
     mojo_code: str
-    
+
     # Read or use source code
     if path.is_file():
         try:
@@ -71,51 +69,51 @@ def run_mojo(
         mojo_code = source
         if echo_code:
             print("### Mojo code from string\n")
-    
+
     if echo_code:
         print(mojo_code)
         print("-" * 80)
-    
+
     # Generate cache key from source code hash
-    code_hash = hashlib.sha256(mojo_code.encode('utf-8')).hexdigest()[:16]
+    code_hash = hashlib.sha256(mojo_code.encode("utf-8")).hexdigest()[:16]
     cache_key = f"mojo_{code_hash}"
     cached_binary = CACHE_DIR / cache_key
-    
+
     # Compile if not cached
     if not use_cache or not cached_binary.exists():
         if use_cache and echo_output:
             print(f"[Compiling and caching as {cache_key}...]")
-        
+
         # Write source to temp file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.mojo', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".mojo", delete=False) as tmp:
             tmp.write(mojo_code)
             source_file = tmp.name
-        
+
         try:
             # Compile to binary
-            compile_cmd = ['mojo', 'build', source_file, '-o', str(cached_binary)]
+            compile_cmd = ["mojo", "build", source_file, "-o", str(cached_binary)]
             compile_result = subprocess.run(
                 compile_cmd,
                 capture_output=True,
                 text=True,
                 check=False,
             )
-            
+
             if compile_result.returncode != 0:
                 print(f"### Compilation failed:\n{compile_result.stderr}")
                 return None
-                
+
         finally:
             Path(source_file).unlink(missing_ok=True)
-    
+
     elif echo_output:
         print(f"[Using cached binary {cache_key}]")
-    
+
     # Run the cached binary
     run_cmd = [str(cached_binary)]
     if extra_args:
         run_cmd.extend(extra_args)
-    
+
     try:
         result = subprocess.run(
             run_cmd,
@@ -123,21 +121,21 @@ def run_mojo(
             text=True,
             check=False,
         )
-        
-        output: Optional[str] = None
+
+        output: str | None = None
         if result.stdout:
             output = result.stdout.strip()
             if echo_output:
                 print(f"\n### Output - {get_mojo_version()}:\n{output}")
-        
+
         if result.stderr:
             print(f"\n### Runtime errors:\n{result.stderr}")
-        
+
         if result.returncode != 0:
             return None
-            
+
         return output
-        
+
     except subprocess.SubprocessError as e:
         print(f"Subprocess error: {e}")
         return None
@@ -149,6 +147,7 @@ def run_mojo(
 def clear_cache():
     """Clear all cached Mojo binaries."""
     import shutil
+
     if CACHE_DIR.exists():
         shutil.rmtree(CACHE_DIR)
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -162,10 +161,10 @@ def cache_stats():
     if not CACHE_DIR.exists():
         print("Cache directory doesn't exist")
         return
-    
+
     binaries = list(CACHE_DIR.glob("mojo_*"))
     total_size = sum(b.stat().st_size for b in binaries)
-    
+
     print(f"Cache directory: {CACHE_DIR}")
     print(f"Cached binaries: {len(binaries)}")
     print(f"Total size: {total_size / 1024 / 1024:.2f} MB")
@@ -173,7 +172,7 @@ def cache_stats():
 
 if __name__ == "__main__":
     print(f"Mojo version: {get_mojo_version()}\n")
-    
+
     # Example: Direct code execution
     print("=== Example: Running Mojo code ===")
     code = """
@@ -181,11 +180,11 @@ fn main():
     print("Hello from Mojo!")
 """
     result = run_mojo(code, echo_output=True)
-    
+
     # Example: With caching disabled
     print("\n=== Example: Running without cache ===")
     result = run_mojo(code, echo_output=True, use_cache=False)
-    
+
     print("\nFor more examples, see examples.py")
     print()
     cache_stats()

@@ -23,7 +23,7 @@ Example:
                 prev = curr
                 curr = next_val
             return curr
-        
+
         fn main():
             print(fibonacci({{n}}))
         '''
@@ -37,8 +37,8 @@ __author__ = "Michael Booth"
 __email__ = "michael@databooth.com.au"
 
 # Core functionality
-from mojo_marimo.executor import run_mojo, clear_cache, cache_stats, get_mojo_version
 from mojo_marimo.decorator import mojo
+from mojo_marimo.executor import cache_stats, clear_cache, get_mojo_version, run_mojo
 
 __all__ = [
     "run_mojo",

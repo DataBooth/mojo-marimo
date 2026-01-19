@@ -1,14 +1,13 @@
 """Pytest configuration for mojo-marimo tests."""
 
-import pytest
 import subprocess
+
+import pytest
 
 
 def pytest_configure(config):
     """Register custom markers."""
-    config.addinivalue_line(
-        "markers", "requires_mojo: mark test as requiring mojo on PATH"
-    )
+    config.addinivalue_line("markers", "requires_mojo: mark test as requiring mojo on PATH")
 
 
 def check_mojo_available():
@@ -30,7 +29,7 @@ def check_mojo_env():
     if not check_mojo_available():
         pytest.skip(
             "Mojo not found on PATH. Install: curl https://get.modular.com | sh - && modular install mojo",
-            allow_module_level=True
+            allow_module_level=True,
         )
 
 

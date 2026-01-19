@@ -23,7 +23,7 @@ def check_mojo_available():
     print("=" * 60)
     print("Checking Mojo availability...")
     print("=" * 60)
-    
+
     try:
         result = subprocess.run(
             ["mojo", "--version"],
@@ -45,7 +45,7 @@ def check_mojo_available():
         print("   curl https://get.modular.com | sh -")
         print("   modular install mojo")
         print("\n2. Add to PATH (example for macOS/Linux):")
-        print("   export PATH=\"$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH\"")
+        print('   export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"')
         print("\n3. Verify:")
         print("   mojo --version")
         return False
@@ -70,61 +70,53 @@ def main():
     if not check_mojo_available():
         print("\n⚠️  Cannot proceed without mojo on PATH")
         sys.exit(1)
-    
+
     print("\n" + "=" * 60)
     print("Testing both approaches...")
     print("=" * 60)
-    
+
     # Import after checking mojo is available
     # Add examples to path
     examples_path = Path(__file__).parent.parent / "examples"
     sys.path.insert(0, str(examples_path))
-    
+
     from examples import fibonacci as fib_example
     from mojo_marimo.decorator import fibonacci as fib_decorator
     from mojo_marimo.executor import clear_cache
-    
+
     # Clear cache to ensure fair test
     clear_cache()
     print("\nCache cleared for testing")
-    
+
     # Test value
     n = 10
     expected = 55  # fibonacci(10) = 55
-    
+
     # Test each approach
     results = {}
-    
+
     results["cached_first"] = test_approach(
-        "1. Cached Binary (first call - will compile)",
-        fib_example,
-        n
+        "1. Cached Binary (first call - will compile)", fib_example, n
     )
-    
+
     results["decorator"] = test_approach(
-        "2. Decorator (first call - will compile)",
-        fib_decorator,
-        n
+        "2. Decorator (first call - will compile)", fib_decorator, n
     )
-    
+
     # Test warm cache performance
     results["cached_warm"] = test_approach(
-        "3. Cached Binary (second call - using cache)",
-        fib_example,
-        n
+        "3. Cached Binary (second call - using cache)", fib_example, n
     )
-    
+
     results["decorator_warm"] = test_approach(
-        "4. Decorator (second call - using cache)",
-        fib_decorator,
-        n
+        "4. Decorator (second call - using cache)", fib_decorator, n
     )
-    
+
     # Verify results
     print("\n" + "=" * 60)
     print("Results Summary")
     print("=" * 60)
-    
+
     all_correct = True
     for approach, result in results.items():
         if result is None:
@@ -135,7 +127,7 @@ def main():
         else:
             print(f"❌ {approach}: {result} (expected {expected})")
             all_correct = False
-    
+
     # Final verdict
     print("\n" + "=" * 60)
     if all_correct:
