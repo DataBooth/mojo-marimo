@@ -39,6 +39,7 @@ __email__ = "michael@databooth.com.au"
 # Core functionality
 from mojo_marimo.decorator import mojo
 from mojo_marimo.executor import cache_stats, clear_cache, get_mojo_version, run_mojo
+from mojo_marimo.validator import get_validation_hint, validate_mojo_code
 
 __all__ = [
     "run_mojo",
@@ -46,4 +47,6 @@ __all__ = [
     "cache_stats",
     "get_mojo_version",
     "mojo",
+    "validate_mojo_code",
+    "get_validation_hint",
 ]

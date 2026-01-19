@@ -54,6 +54,8 @@ def test_all_exports():
         "cache_stats",
         "get_mojo_version",
         "mojo",
+        "validate_mojo_code",
+        "get_validation_hint",
     ]
 
     assert set(mojo_marimo.__all__) == set(expected)

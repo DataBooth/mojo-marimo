@@ -11,6 +11,8 @@ from functools import cache
 from pathlib import Path
 from textwrap import dedent
 
+from mojo_marimo.validator import validate_mojo_code, get_validation_hint
+
 # Cache directory for compiled Mojo binaries
 CACHE_DIR = Path.home() / ".mojo_cache" / "binaries"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -75,6 +77,15 @@ def run_mojo(
     if echo_code:
         print(mojo_code)
         print("-" * 80)
+
+    # Validate Mojo code before compilation
+    is_valid, error_msg = validate_mojo_code(mojo_code)
+    if not is_valid:
+        print(f"### Validation Error: {error_msg}")
+        hint = get_validation_hint(error_msg)
+        if hint:
+            print(hint)
+        return None
 
     # Generate cache key from source code hash
     code_hash = hashlib.sha256(mojo_code.encode("utf-8")).hexdigest()[:16]
