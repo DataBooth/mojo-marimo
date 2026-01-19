@@ -112,32 +112,20 @@ clean-mojo-cache:
 cache-stats:
     uv run python -c "from mojo_marimo.executor import cache_stats; cache_stats()"
 
-# Git operations
-# --------------
-
-# Show git status
-status:
-    git status
-
-# Commit and push changes (requires message)
-commit MESSAGE:
-    git add -A
-    git commit -m "{{MESSAGE}}\n\nCo-Authored-By: Warp <agent@warp.dev>"
-    git push
-
 # Project info
 # ------------
 
 # Show project info
 info:
     @echo "Project: mojo-marimo"
-    @echo "Python: $(python --version)"
-    @echo "Mojo: $(mojo --version 2>/dev/null || echo 'not found')"
-    @echo "UV: $(uv --version)"
     @echo ""
     @echo "Environment:"
     @uv run python -c "import sys; print(f'  Python: {sys.version}')"
     @uv run python -c "import mojo_marimo; print(f'  Package: {mojo_marimo.__version__}')"
+    @echo ""
+    @echo "Tools:"
+    @echo "  UV: $(uv --version)"
+    @uv run mojo --version 2>/dev/null || echo "  Mojo: not found (install with: modular install mojo)"
 
 # Show installed packages
 list-packages:
