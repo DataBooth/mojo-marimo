@@ -186,15 +186,18 @@ This checks that `mojo` is available and tests both approaches.
 
 ```bash
 # Using just
-just notebook-example
-just notebook-benchmark
+just notebook-decorator  # @mojo decorator examples
+just notebook-executor   # run_mojo() examples
+just notebook-benchmark  # Performance comparison
 
 # Using uv
-uv run marimo edit notebooks/example_notebook.py
+uv run marimo edit notebooks/decorator_notebook.py
+uv run marimo edit notebooks/executor_notebook.py
 uv run marimo edit notebooks/benchmark_notebook.py
 
 # Using pixi
-pixi run notebook-example
+pixi run notebook-decorator
+pixi run notebook-executor
 pixi run notebook-benchmark
 ```
 
@@ -233,9 +236,16 @@ See the [benchmark notebook](notebooks/benchmark_notebook.py) for detailed compa
 
 ## Documentation
 
-- [**README.md**](docs/README.md) - Detailed usage guide
-- [**SUMMARY.md**](docs/SUMMARY.md) - Implementation overview and design decisions
-- [**blog_post_draft.md**](docs/blog_post_draft.md) - Long-form explanation and business context
+### Project Documentation
+- [**CONTRIBUTING.md**](docs/project/CONTRIBUTING.md) - Contribution guidelines
+- [**CHANGELOG.md**](docs/project/CHANGELOG.md) - Version history
+- [**Implementation Guide**](docs/project/README.md) - Detailed usage guide
+- [**Technical Summary**](docs/project/SUMMARY.md) - Implementation overview
+
+### Blog & Announcements
+- [**Blog Post Draft**](docs/blog_post_draft.md) - Long-form explanation
+- [**Modular Forum**](docs/MODULAR_FORUM_ANNOUNCEMENT.md) - Mojo community announcement
+- [**marimo Community**](docs/MARIMO_ANNOUNCEMENT.md) - marimo community announcement
 
 ## Project Structure
 
@@ -250,12 +260,18 @@ mojo-marimo/
 │   ├── examples.py          # Python wrappers (fibonacci, etc.)
 │   └── examples.mojo        # Standalone Mojo code
 ├── notebooks/               # Interactive marimo notebooks
-│   ├── example_notebook.py  # Interactive demo
-│   └── benchmark_notebook.py # Performance comparison
+│   ├── decorator_notebook.py # @mojo decorator examples
+│   ├── executor_notebook.py  # run_mojo() examples  
+│   ├── benchmark_notebook.py # Performance comparison
+│   └── example_notebook.py   # Original demo (legacy)
 ├── scripts/                 # Utility scripts
 │   └── verify_setup.py      # Setup verification
 ├── tests/                   # Test suite
 ├── docs/                    # Documentation
+│   ├── project/            # Project docs (contributing, changelog)
+│   ├── blog_post_draft.md  # Blog post
+│   ├── MODULAR_FORUM_ANNOUNCEMENT.md
+│   └── MARIMO_ANNOUNCEMENT.md
 └── README.md                # This file
 ```
 
@@ -283,7 +299,8 @@ just typecheck
 just check              # Run all quality checks
 
 # Notebooks
-just notebook-example
+just notebook-decorator
+just notebook-executor
 just notebook-benchmark
 
 # Development
