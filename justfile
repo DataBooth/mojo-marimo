@@ -27,6 +27,10 @@ test-setup:
 # Interactive notebooks
 # ---------------------
 
+# Interactive learning notebook (for newcomers)
+learn:
+    uv run marimo edit notebooks/interactive_learning.py
+
 # Open decorator pattern notebook
 notebook-decorator:
     uv run marimo edit notebooks/pattern_decorator.py

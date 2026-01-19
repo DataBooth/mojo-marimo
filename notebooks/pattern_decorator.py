@@ -19,26 +19,26 @@ def _():
 def _(mo):
     mo.md(r"""
     # @mojo Decorator Pattern 🔥
-    
+
     Write Mojo code in a function's docstring, call it like Python.
-    
+
     ## Key Concept
-    
+
     ```python
     @mojo
     def my_func(n: int) -> int:
         '''
         fn my_func(n: Int) -> Int:
             return n * n
-        
+
         fn main():
             print(my_func({{n}}))
         '''
         ...
-    
+
     result = my_func(10)  # Returns: 100
     ```
-    
+
     Use `{{parameter}}` for substitution.
     """)
     return
@@ -52,7 +52,9 @@ def _():
 
 @app.cell
 def _(get_mojo_version, mo):
-    mo.md(f"**Mojo:** `{get_mojo_version()}`")
+    mo.md(f"""
+    **Mojo:** `{get_mojo_version()}`
+    """)
     return
 
 
@@ -80,7 +82,7 @@ def _(mojo):
                 prev = curr
                 curr = next_val
             return curr
-        
+
         fn main():
             print(fibonacci({{n}}))
         """
@@ -93,14 +95,14 @@ def _(fibonacci, mo):
     # Simple function calls
     result_10 = fibonacci(10)
     result_20 = fibonacci(20)
-    
+
     mo.md(f"""
     ```python
     fibonacci(10) = {result_10}
     fibonacci(20) = {result_20:,}
     ```
     """)
-    return result_10, result_20
+    return
 
 
 @app.cell(hide_code=True)
@@ -122,7 +124,7 @@ def _(mojo):
             for i in range(1, n + 1):
                 total += i * i
             return total
-        
+
         fn main():
             print(sum_squares({{n}}))
         """
@@ -134,13 +136,13 @@ def _(mojo):
 def _(mo, sum_squares):
     # Calculate sum: 1² + 2² + ... + 10²
     result = sum_squares(10)
-    
+
     mo.md(f"""
     ```python
     sum_squares(10) = {result}  # 1² + 2² + ... + 10²
     ```
     """)
-    return (result,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -164,15 +166,15 @@ def _(mojo):
                 return True
             if n % 2 == 0:
                 return False
-            
+
             var i: Int = 3
             while i * i <= n:
                 if n % i == 0:
                     return False
                 i += 2
-            
+
             return True
-        
+
         fn main():
             print(is_prime({{n}}))
         """
@@ -189,16 +191,16 @@ def _(is_prime, mo):
         (97, is_prime(97)),
         (100, is_prime(100)),
     ]
-    
+
     results = "\n".join([f"{n}: {'✅ prime' if p else '❌ not prime'}" 
                          for n, p in primes_status])
-    
+
     mo.md(f"""
     ```python
     {results}
     ```
     """)
-    return primes_status, results
+    return
 
 
 @app.cell(hide_code=True)
@@ -223,7 +225,7 @@ def _(mojo):
                 y = x % y
                 x = temp
             return x
-        
+
         fn main():
             print(gcd({{a}}, {{b}}))
         """
@@ -236,14 +238,14 @@ def _(gcd, mo):
     # Test GCD with various inputs
     result_48_18 = gcd(48, 18)
     result_100_35 = gcd(100, 35)
-    
+
     mo.md(f"""
     ```python
     gcd(48, 18) = {result_48_18}
     gcd(100, 35) = {result_100_35}
     ```
     """)
-    return result_100_35, result_48_18
+    return
 
 
 @app.cell(hide_code=True)
@@ -251,18 +253,18 @@ def _(mo):
     mo.md(r"""
     ---
     ## Summary
-    
+
     **Benefits:**
     - ✅ Clean Python-like API
     - ✅ Mojo code visible in notebook
     - ✅ Automatic type conversion
     - ✅ Cached execution (~10-50ms after first compile)
-    
+
     **When to use:**
     - Self-contained Mojo functions
     - Interactive notebooks
     - Quick prototyping
-    
+
     **See also:** `pattern_executor.py` for dynamic code generation
     """)
     return

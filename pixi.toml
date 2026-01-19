@@ -22,6 +22,7 @@ ty = "*"
 test-setup = { cmd = "python verify_setup.py", cwd = "scripts" }
 
 # Interactive notebooks
+learn = { cmd = "marimo edit interactive_learning.py", cwd = "notebooks" }
 notebook-decorator = { cmd = "marimo edit pattern_decorator.py", cwd = "notebooks" }
 notebook-executor = { cmd = "marimo edit pattern_executor.py", cwd = "notebooks" }
 benchmark = { cmd = "marimo edit benchmark.py", cwd = "notebooks" }
