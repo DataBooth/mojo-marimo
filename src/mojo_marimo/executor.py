@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 from functools import cache
 from pathlib import Path
+from textwrap import dedent
 
 # Cache directory for compiled Mojo binaries
 CACHE_DIR = Path.home() / ".mojo_cache" / "binaries"
@@ -66,7 +67,8 @@ def run_mojo(
         if echo_code:
             print(f"### Mojo code from file: {path}\n")
     else:
-        mojo_code = source
+        # Auto-dedent inline Mojo code to handle indented triple-quoted strings
+        mojo_code = dedent(source)
         if echo_code:
             print("### Mojo code from string\n")
 

@@ -69,9 +69,9 @@ def _(mo):
 def _(mo, run_mojo):
     # Simple Mojo code as string
     simple_code = """
-fn main():
-    print("Hello from Mojo!")
-"""
+    fn main():
+        print("Hello from Mojo!")
+    """
 
     result1 = run_mojo(simple_code)
 
@@ -99,20 +99,20 @@ def _(mo):
 def _(mo, run_mojo):
     # Mojo code with hardcoded value
     fib_code_10 = """
-fn fibonacci(n: Int) -> Int:
-    if n <= 1:
-        return n
-    var prev: Int = 0
-    var curr: Int = 1
-    for _ in range(2, n + 1):
-        var next_val = prev + curr
-        prev = curr
-        curr = next_val
-    return curr
+    fn fibonacci(n: Int) -> Int:
+        if n <= 1:
+            return n
+        var prev: Int = 0
+        var curr: Int = 1
+        for _ in range(2, n + 1):
+            var next_val = prev + curr
+            prev = curr
+            curr = next_val
+        return curr
 
-fn main():
-    print(fibonacci(10))
-"""
+    fn main():
+        print(fibonacci(10))
+    """
 
     fib_result = run_mojo(fib_code_10)
 
@@ -148,12 +148,12 @@ def _(mo, run_mojo):
         }
 
         mojo_code = f"""
-fn compute(a: Int, b: Int) -> Int:
-    return {operations[operation]}
+        fn compute(a: Int, b: Int) -> Int:
+            return {operations[operation]}
 
-fn main():
-    print(compute({a}, {b}))
-"""
+        fn main():
+            print(compute({a}, {b}))
+        """
         return run_mojo(mojo_code), mojo_code
 
     # Try different operations
