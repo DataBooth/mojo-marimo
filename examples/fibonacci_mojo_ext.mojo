@@ -34,7 +34,8 @@ fn PyInit_fibonacci_mojo_ext() -> PythonObject:
         )
         return mb.finalize()
     except e:
-        abort(String("error creating Python Mojo module: ", e))
+        print("error creating Python Mojo module:", e)
+        return PythonObject()
 
 
 fn fibonacci(py_n: PythonObject) raises -> PythonObject:
@@ -43,7 +44,7 @@ fn fibonacci(py_n: PythonObject) raises -> PythonObject:
     Note: Takes PythonObject, not native Mojo Int.
     This is required for Python extension module functions.
     """
-    var n = Int(py=py_n)
+    var n = Int(py_n)
     
     if n <= 1:
         return PythonObject(n)
@@ -61,7 +62,7 @@ fn fibonacci(py_n: PythonObject) raises -> PythonObject:
 
 fn is_prime(py_n: PythonObject) raises -> PythonObject:
     """Check if number is prime using trial division."""
-    var n = Int(py=py_n)
+    var n = Int(py_n)
     
     if n < 2:
         return PythonObject(False)

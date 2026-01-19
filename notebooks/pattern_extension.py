@@ -85,13 +85,13 @@ def _():
     # Note: We don't return 'mojo' here to avoid namespace collision
     # with the @mojo decorator imported later from mojo_marimo
     import mojo.importer
-    
+
     # Import our Mojo extension module
     # BUILD HAPPENS HERE: First import compiles .mojo → .so (~1-2s)
     # Subsequent imports use cached .so from __mojocache__/ (~instant)
     # Recompiles only when .mojo file changes
     import fibonacci_mojo_ext
-    
+
     return (fibonacci_mojo_ext,)
 
 
@@ -205,76 +205,6 @@ def _(mo):
     mo.md("""
     Let's compare the extension module approach with the decorator pattern:
     """)
-    return
-
-
-@app.cell
-def _():
-    # Import decorator pattern for comparison
-    # This 'mojo' decorator doesn't conflict with 'mojo.importer' above
-    # because that cell doesn't return the 'mojo' module
-    from mojo_marimo import mojo
-
-    @mojo
-    def fibonacci_decorator(n: int) -> int:
-        """
-        fn fibonacci(n: Int) -> Int:
-            if n <= 1:
-                return n
-            var prev: Int = 0
-            var curr: Int = 1
-            for _ in range(2, n + 1):
-                var next_val = prev + curr
-                prev = curr
-                curr = next_val
-            return curr
-
-        fn main():
-            print(fibonacci({{n}}))
-        """
-        ...
-    return (fibonacci_decorator,)
-
-
-@app.cell
-def _(fibonacci_decorator, fibonacci_mojo_ext, mo, time):
-    test_n = 30
-    runs = 10
-
-    # Benchmark extension module
-    ext_times = []
-    for _ in range(runs):
-        start = time.perf_counter()
-        fibonacci_mojo_ext.fibonacci(test_n)
-        ext_times.append((time.perf_counter() - start) * 1000)
-
-    ext_mean = sum(ext_times) / len(ext_times)
-
-    # Benchmark decorator (with warmup)
-    fibonacci_decorator(test_n)  # Warmup
-    dec_times = []
-    for _ in range(runs):
-        start = time.perf_counter()
-        fibonacci_decorator(test_n)
-        dec_times.append((time.perf_counter() - start) * 1000)
-
-    dec_mean = sum(dec_times) / len(dec_times)
-
-    speedup = dec_mean / ext_mean
-
-    mo.md(
-        f"""
-        ### Benchmark Results: fibonacci({test_n})
-
-        Over {runs} runs:
-
-        - **Extension module**: {ext_mean:.3f}ms (direct call)
-        - **Decorator pattern**: {dec_mean:.3f}ms (subprocess + cache)
-        - **Speedup**: {speedup:.1f}x faster
-
-        The extension module eliminates the ~10-15ms subprocess overhead.
-        """
-    )
     return
 
 
