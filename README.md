@@ -1,14 +1,14 @@
-# mojo-marimo 🔥
+# py-run-mojo 🔥
 
 **Notebook-agnostic Mojo integration for Python** - three patterns for running high-performance Mojo code from any Python environment.
 
 > **Status:** ✅ **Beta** - Three working approaches, evolving based on real-world usage
 >
-> **Note:** Despite the name, this library works with **any Python notebook system** (Jupyter, marimo, VSCode, Google Colab) and even standalone Python scripts. The name reflects its origin, but a rename is under consideration—see [ROADMAP.md](docs/ROADMAP.md).
+> **Note:** This library works with **any Python notebook system** (Jupyter, marimo, VSCode, Google Colab) and even standalone Python scripts. It was previously called `mojo-marimo`; the new name reflects its notebook-agnostic scope—see [ROADMAP.md](docs/ROADMAP.md).
 
 ## Overview
 
-`mojo-marimo` provides three distinct patterns for executing Mojo code from Python, each with different trade-offs:
+`py-run-mojo` (formerly `mojo-marimo`) provides three distinct patterns for executing Mojo code from Python, each with different trade-offs:
 
 1. **Decorator** (`@mojo`) - Clean Pythonic syntax with template parameters and caching
 2. **Executor** (`run_mojo()`) - Dynamic execution from strings or files, great for code generation
@@ -17,7 +17,7 @@
 **Works everywhere:** Jupyter notebooks, marimo, VSCode notebooks, Google Colab, IPython REPL, or standalone Python scripts. The core library has no notebook-specific dependencies.
 
 ```python
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 @mojo
 def fibonacci(n: int) -> int:
@@ -81,7 +81,7 @@ See [ROADMAP.md](docs/ROADMAP.md) for full details:
 
 ## Installation
 
-`mojo-marimo` supports both `uv` (recommended) and `pixi` for environment management.
+`py-run-mojo` supports both `uv` (recommended) and `pixi` for environment management.
 
 ### Prerequisites
 
@@ -91,8 +91,8 @@ See [ROADMAP.md](docs/ROADMAP.md) for full details:
 
 ```bash
 # Clone the repository
-git clone https://github.com/databooth/mojo-marimo
-cd mojo-marimo
+git clone https://github.com/databooth/py-run-mojo
+cd py-run-mojo
 
 # Install dependencies (includes mojo)
 uv sync --extra dev
@@ -108,8 +108,8 @@ uv run marimo edit notebooks/example_notebook.py
 
 ```bash
 # Clone the repository
-git clone https://github.com/databooth/mojo-marimo
-cd mojo-marimo
+git clone https://github.com/databooth/py-run-mojo
+cd py-run-mojo
 
 # Install with pixi
 pixi install
@@ -126,7 +126,7 @@ pixi run notebook-example
 ### Pattern 1: Decorator (Recommended)
 
 ```python
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 @mojo
 def sum_squares(n: int) -> int:
@@ -150,7 +150,7 @@ print(result)  # 385
 ### Pattern 2: Executor
 
 ```python
-from mojo_marimo import run_mojo
+from py_run_mojo import run_mojo
 
 mojo_code = """
 fn compute(n: Int) -> Int:
@@ -222,7 +222,7 @@ just demo-decorator
 
 # Using uv
 uv run python examples/examples.py
-uv run python -m mojo_marimo.decorator
+uv run python -m py_run_mojo.decorator
 
 # Using pixi
 pixi run demo-examples
@@ -263,9 +263,9 @@ See the [benchmark notebook](notebooks/benchmark_notebook.py) for detailed compa
 ## Project Structure
 
 ```
-mojo-marimo/
+py-run-mojo/
 ├── src/
-│   └── mojo_marimo/          # Core library
+│   └── py_run_mojo/          # Core library
 │       ├── executor.py       # Cached Mojo execution
 │       ├── decorator.py      # @mojo decorator
 │       ├── validator.py      # Pre-compilation validation
@@ -282,7 +282,8 @@ mojo-marimo/
 ├── notebooks/               # Interactive marimo notebooks
 │   ├── pattern_decorator.py # @mojo decorator examples
 │   ├── pattern_executor.py  # run_mojo() examples
-│   └── interactive_learning.py  # Learning notebook
+│   ├── interactive_learning.py  # Learning notebook
+│   └── gpu_puzzles/         # marimo notebooks scaffolding Mojo GPU Puzzles
 ├── scripts/                 # Utility scripts
 │   └── verify_setup.py      # Setup verification
 ├── tests/                   # Test suite

@@ -25,7 +25,7 @@ def _(mo):
     ## Key Concept
 
     ```python
-    from mojo_marimo import run_mojo
+    from py_run_mojo import run_mojo
 
     # Pattern 1: Inline string
     mojo_code = '''
@@ -43,7 +43,7 @@ def _(mo):
 
 @app.cell
 def _():
-    from mojo_marimo import run_mojo, get_mojo_version
+    from py_run_mojo import run_mojo, get_mojo_version
     from pathlib import Path
     return Path, get_mojo_version, run_mojo
 

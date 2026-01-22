@@ -12,7 +12,7 @@ if __name__ == "__main__":
     src_path = Path(__file__).parent.parent / "src"
     sys.path.insert(0, str(src_path))
 
-from mojo_marimo.executor import run_mojo
+from py_run_mojo.executor import run_mojo
 
 
 def fibonacci(n: int) -> int:
@@ -99,7 +99,7 @@ fn main():
 
 if __name__ == "__main__":
     # Imports already available from above
-    from mojo_marimo.executor import cache_stats, get_mojo_version
+    from py_run_mojo.executor import cache_stats, get_mojo_version
 
     print(f"Mojo version: {get_mojo_version()}\n")
 

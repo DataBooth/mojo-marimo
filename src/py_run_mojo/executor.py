@@ -11,7 +11,7 @@ from functools import cache
 from pathlib import Path
 from textwrap import dedent
 
-from mojo_marimo.validator import validate_mojo_code, get_validation_hint
+from py_run_mojo.validator import validate_mojo_code, get_validation_hint
 
 # Cache directory for compiled Mojo binaries
 CACHE_DIR = Path.home() / ".mojo_cache" / "binaries"

@@ -3,22 +3,22 @@
 
 def test_package_imports():
     """Test that the package can be imported."""
-    import mojo_marimo
+    import py_run_mojo
 
-    assert mojo_marimo.__version__ == "0.1.0"
-    assert mojo_marimo.__author__ == "Michael Booth"
+    assert py_run_mojo.__version__ == "0.1.2"
+    assert py_run_mojo.__author__ == "Michael Booth"
 
 
 def test_decorator_import():
     """Test that the decorator can be imported."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     assert callable(mojo)
 
 
 def test_core_functions_import():
     """Test that core functions can be imported."""
-    from mojo_marimo import (
+    from py_run_mojo import (
         cache_stats,
         clear_cache,
         get_mojo_version,
@@ -33,7 +33,7 @@ def test_core_functions_import():
 
 def test_decorator_definition():
     """Test that decorator can define functions."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     # Can define a decorated function
     @mojo
@@ -46,7 +46,7 @@ def test_decorator_definition():
 
 def test_all_exports():
     """Test that __all__ is properly defined."""
-    import mojo_marimo
+    import py_run_mojo
 
     expected = [
         "run_mojo",
@@ -58,4 +58,4 @@ def test_all_exports():
         "get_validation_hint",
     ]
 
-    assert set(mojo_marimo.__all__) == set(expected)
+    assert set(py_run_mojo.__all__) == set(expected)

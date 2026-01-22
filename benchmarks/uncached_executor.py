@@ -3,7 +3,7 @@
 These use run_mojo directly without caching to show the compilation overhead.
 """
 
-from mojo_marimo import run_mojo
+from py_run_mojo import run_mojo
 
 
 def fibonacci(n: int) -> int:

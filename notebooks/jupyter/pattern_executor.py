@@ -6,7 +6,7 @@
 # ## Key Concept
 # 
 # ```python
-# from mojo_marimo import run_mojo
+# from py_run_mojo import run_mojo
 # 
 # # Option 1: Inline code
 # result = run_mojo("""
@@ -21,7 +21,7 @@
 # Perfect for dynamic code generation, testing, or quick experiments.
 
 # %%
-from mojo_marimo import run_mojo, get_mojo_version
+from py_run_mojo import run_mojo, get_mojo_version
 
 print(f"Mojo version: {get_mojo_version()}")
 

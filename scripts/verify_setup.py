@@ -81,8 +81,8 @@ def main():
     sys.path.insert(0, str(examples_path))
 
     from examples import fibonacci as fib_example
-    from mojo_marimo.decorator import fibonacci as fib_decorator
-    from mojo_marimo.executor import clear_cache
+    from py_run_mojo.decorator import fibonacci as fib_decorator
+    from py_run_mojo.executor import clear_cache
 
     # Clear cache to ensure fair test
     clear_cache()

@@ -5,7 +5,7 @@ import pytest
 
 def test_decorator_basic():
     """Test basic decorator functionality."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def simple_func(n: int) -> int:
@@ -21,7 +21,7 @@ def test_decorator_basic():
 
 def test_decorator_with_parameter_substitution():
     """Test that parameters are properly substituted."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def echo(n: int) -> int:
@@ -37,7 +37,7 @@ def test_decorator_with_parameter_substitution():
 
 def test_decorator_returns_int():
     """Test int return type conversion."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def double(n: int) -> int:
@@ -54,7 +54,7 @@ def test_decorator_returns_int():
 
 def test_decorator_returns_bool():
     """Test bool return type conversion."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def is_positive(n: int) -> bool:
@@ -72,7 +72,7 @@ def test_decorator_returns_bool():
 
 def test_decorator_with_multiple_params():
     """Test decorator with multiple parameters."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def add(a: int, b: int) -> int:
@@ -89,8 +89,8 @@ def test_decorator_with_multiple_params():
 
 def test_decorator_caching():
     """Test that decorator uses caching."""
-    from mojo_marimo import mojo
-    from mojo_marimo.executor import clear_cache
+    from py_run_mojo import mojo
+    from py_run_mojo.executor import clear_cache
 
     clear_cache()
 
@@ -112,7 +112,7 @@ def test_decorator_caching():
 
 def test_decorator_without_docstring():
     """Test that decorator raises error without docstring."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     with pytest.raises(ValueError, match="no docstring"):
 
@@ -122,7 +122,7 @@ def test_decorator_without_docstring():
 
 def test_decorator_preserves_function_name():
     """Test that decorator preserves function metadata."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def my_function(n: int) -> int:
@@ -137,7 +137,7 @@ def test_decorator_preserves_function_name():
 
 def test_decorator_with_complex_mojo_code():
     """Test decorator with more complex Mojo implementation."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def fibonacci(n: int) -> int:
@@ -175,7 +175,7 @@ def test_decorator_with_complex_mojo_code():
 )
 def test_decorator_prime_check(n, expected):
     """Test decorator with prime checking logic."""
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def is_prime(n: int) -> bool:

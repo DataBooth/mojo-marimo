@@ -1,7 +1,7 @@
 """Test validator catches common Mojo errors."""
 
 import pytest
-from mojo_marimo.validator import validate_mojo_code, get_validation_hint
+from py_run_mojo.validator import validate_mojo_code, get_validation_hint
 
 
 def test_empty_code():

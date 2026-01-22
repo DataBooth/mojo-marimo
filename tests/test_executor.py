@@ -8,7 +8,7 @@ import pytest
 
 def test_run_mojo_with_simple_code():
     """Test basic code execution."""
-    from mojo_marimo.executor import run_mojo
+    from py_run_mojo.executor import run_mojo
 
     code = """
 fn main():
@@ -20,7 +20,7 @@ fn main():
 
 def test_run_mojo_with_arithmetic():
     """Test code that performs computation."""
-    from mojo_marimo.executor import run_mojo
+    from py_run_mojo.executor import run_mojo
 
     code = """
 fn main():
@@ -33,7 +33,7 @@ fn main():
 
 def test_cache_enabled_by_default():
     """Test that caching is enabled by default."""
-    from mojo_marimo.executor import clear_cache, run_mojo
+    from py_run_mojo.executor import clear_cache, run_mojo
 
     # Clear cache first
     clear_cache()
@@ -53,7 +53,7 @@ fn main():
 
 def test_cache_disabled():
     """Test that caching can be disabled."""
-    from mojo_marimo.executor import run_mojo
+    from py_run_mojo.executor import run_mojo
 
     code = """
 fn main():
@@ -69,7 +69,7 @@ fn main():
 
 def test_clear_cache():
     """Test cache clearing functionality."""
-    from mojo_marimo.executor import clear_cache, run_mojo
+    from py_run_mojo.executor import clear_cache, run_mojo
 
     code = """
 fn main():
@@ -85,7 +85,7 @@ fn main():
 
 def test_cache_stats():
     """Test cache statistics functionality."""
-    from mojo_marimo.executor import cache_stats, clear_cache
+    from py_run_mojo.executor import cache_stats, clear_cache
 
     clear_cache()
 
@@ -95,7 +95,7 @@ def test_cache_stats():
 
 def test_get_mojo_version():
     """Test Mojo version retrieval."""
-    from mojo_marimo.executor import get_mojo_version
+    from py_run_mojo.executor import get_mojo_version
 
     version = get_mojo_version()
     # Should return something (or "Unknown" if mojo not found)
@@ -105,7 +105,7 @@ def test_get_mojo_version():
 
 def test_run_mojo_with_file():
     """Test execution from a .mojo file."""
-    from mojo_marimo.executor import run_mojo
+    from py_run_mojo.executor import run_mojo
 
     # Create temporary .mojo file
     with tempfile.NamedTemporaryFile(mode="w", suffix=".mojo", delete=False) as f:
@@ -121,7 +121,7 @@ def test_run_mojo_with_file():
 
 def test_empty_source():
     """Test handling of empty source."""
-    from mojo_marimo.executor import run_mojo
+    from py_run_mojo.executor import run_mojo
 
     result = run_mojo("")
     assert result is None
@@ -129,7 +129,7 @@ def test_empty_source():
 
 def test_invalid_mojo_code():
     """Test handling of invalid Mojo code."""
-    from mojo_marimo.executor import run_mojo
+    from py_run_mojo.executor import run_mojo
 
     code = """
 fn main(:
@@ -151,7 +151,7 @@ fn main(:
 )
 def test_factorial_computation(n, expected):
     """Test parameterized factorial computation."""
-    from mojo_marimo.executor import run_mojo
+    from py_run_mojo.executor import run_mojo
 
     code = f"""
 fn factorial(n: Int) -> Int:

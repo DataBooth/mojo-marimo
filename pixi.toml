@@ -1,10 +1,10 @@
 [workspace]
-name = "mojo-marimo"
-version = "0.1.0"
+name = "py-run-mojo"
+version = "0.1.2"
 authors = ["Michael Booth <michael@databooth.com.au>"]
 channels = ["conda-forge"]
 platforms = ["osx-arm64", "linux-64", "win-64"]
-description = "Interactive Mojo integration for Python notebooks"
+description = "Run high-performance Mojo code from Python - three execution patterns"
 
 [dependencies]
 python = ">=3.12,<3.15"
@@ -45,12 +45,12 @@ benchmark-exec = { cmd = "marimo edit execution_approaches.py", cwd = "benchmark
 
 # Command-line demos
 demo-examples = { cmd = "python examples.py", cwd = "examples" }
-demo-decorator = { cmd = "python -m mojo_marimo.decorator" }
+demo-decorator = { cmd = "python -m py_run_mojo.decorator" }
 
 # Testing
 test = "pytest tests/"
 test-verbose = "pytest tests/ -v"
-test-coverage = "pytest tests/ --cov=src/mojo_marimo --cov-report=term-missing"
+test-coverage = "pytest tests/ --cov=src/py_run_mojo --cov-report=term-missing"
 
 # Code quality
 format = "ruff format ."
@@ -63,7 +63,7 @@ check = { depends-on = ["format", "lint", "typecheck"] }
 
 # Development
 clean-mojo-cache = "rm -rf ~/.mojo_cache/binaries/*"
-cache-stats = "python -c 'from mojo_marimo.executor import cache_stats; cache_stats()'"
+cache-stats = "python -c 'from py_run_mojo.executor import cache_stats; cache_stats()'"
 
 # CI/CD
 ci = { depends-on = ["check", "test"] }

@@ -1,6 +1,6 @@
-# Contributing to mojo-marimo
+# Contributing to py-run-mojo
 
-Thank you for your interest in contributing to mojo-marimo! This is a living experiment, evolving based on real-world usage.
+Thank you for your interest in contributing to py-run-mojo! This is a living experiment, evolving based on real-world usage.
 
 ## Areas for Contribution
 
@@ -27,7 +27,7 @@ source .venv/bin/activate
 uv pip install -e ".[dev]"
 
 # Verify setup
-python src/mojo_marimo/test_all_approaches.py
+python -m pytest tests/
 ```
 
 ### Using pixi
@@ -51,7 +51,7 @@ pixi run test-setup
 pytest tests/
 
 # Run with coverage
-pytest tests/ --cov=src/mojo_marimo --cov-report=html
+pytest tests/ --cov=src/py_run_mojo --cov-report=html
 
 # Format code
 ruff format .
@@ -104,7 +104,7 @@ Note that integration tests require `mojo` on your PATH:
 mojo --version
 
 # Run integration test
-python src/mojo_marimo/test_all_approaches.py
+pytest tests/
 ```
 
 ## Pull Request Process

@@ -2,7 +2,7 @@
 
 import pytest
 from pathlib import Path
-from mojo_marimo import run_mojo
+from py_run_mojo import run_mojo
 
 
 # Find all reference .mojo files

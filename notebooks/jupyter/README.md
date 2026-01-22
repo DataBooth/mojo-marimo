@@ -1,6 +1,6 @@
 # Jupyter Notebooks
 
-Jupyter-native versions of `mojo-marimo` examples. These are standard Python files with `# %%` cell markers that work in:
+Jupyter-native versions of `py-run-mojo` examples. These are standard Python files with `# %%` cell markers that work in:
 
 - **Jupyter Notebook** / JupyterLab
 - **VSCode** (Python Interactive Window)

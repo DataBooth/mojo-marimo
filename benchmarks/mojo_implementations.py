@@ -3,7 +3,7 @@
 These implementations use the @mojo decorator for clean integration.
 """
 
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 
 @mojo

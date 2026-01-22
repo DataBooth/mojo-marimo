@@ -1,4 +1,4 @@
-# mojo-marimo justfile
+# py-run-mojo justfile
 # Cross-platform task runner synced with pixi.toml tasks
 # Run `just --list` to see all available commands
 
@@ -130,7 +130,7 @@ demo-examples:
 
 # Run decorator demo
 demo-decorator:
-    uv run python -m mojo_marimo.decorator
+    uv run python -m py_run_mojo.decorator
 
 # Testing
 # -------
@@ -145,7 +145,7 @@ test-verbose:
 
 # Run tests with coverage report
 test-coverage:
-    uv run pytest tests/ --cov=src/mojo_marimo --cov-report=term-missing
+    uv run pytest tests/ --cov=src/py_run_mojo --cov-report=term-missing
 
 # Run quick tests (skip slow ones)
 test-quick:
@@ -177,6 +177,16 @@ check: format lint typecheck
 # Development
 # -----------
 
+# Build and packaging
+build:
+    uv run hatch build
+
+publish-test:
+    uv run hatch publish -r test
+
+publish:
+    uv run hatch publish
+
 # Clean up cache and build artifacts
 clean:
     rm -rf .pytest_cache
@@ -203,11 +213,11 @@ cache-stats:
 
 # Show project info
 info:
-    @echo "Project: mojo-marimo"
+    @echo "Project: py-run-mojo"
     @echo ""
     @echo "Environment:"
     @uv run python -c "import sys; print(f'  Python: {sys.version}')"
-    @uv run python -c "import mojo_marimo; print(f'  Package: {mojo_marimo.__version__}')"
+    @uv run python -c "import py_run_mojo; print(f'  Package: {py_run_mojo.__version__}')"
     @echo ""
     @echo "Tools:"
     @echo "  UV: $(uv --version)"
@@ -216,6 +226,32 @@ info:
 # Show installed packages
 list-packages:
     uv pip list
+
+# Verify published package from PyPI using uv
+verify-pypi:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    ENV_DIR="/tmp/py-run-mojo-prod"
+    echo "▶ Creating fresh uv virtualenv at $ENV_DIR"
+    uv venv "$ENV_DIR"
+    echo "▶ Activating virtualenv"
+    # shellcheck disable=SC1090
+    source "$ENV_DIR/bin/activate"
+    echo "▶ Installing py-run-mojo from PyPI via uv"
+    uv pip install --index-url https://pypi.org/simple py-run-mojo
+    echo "▶ Verifying installed package"
+    python - <<'EOF'
+    import py_run_mojo
+
+    print("installed_version =", py_run_mojo.__version__)
+
+    try:
+        from py_run_mojo import get_mojo_version
+        print("mojo_version    =", get_mojo_version())
+    except Exception as e:
+        print("get_mojo_version failed (this is OK if mojo isn't installed):", e)
+    EOF
+    echo "✅ PyPI package verification finished"
 
 # CI/CD simulation
 # ----------------

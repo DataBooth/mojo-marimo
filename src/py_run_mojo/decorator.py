@@ -12,7 +12,7 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Any
 
-from mojo_marimo.executor import get_mojo_version, run_mojo
+from py_run_mojo.executor import get_mojo_version, run_mojo
 
 
 def mojo(func: Callable[..., Any]) -> Callable[..., Any]:
