@@ -107,6 +107,8 @@ def __():
     examples_path = Path(__file__).parent.parent / "examples"
     sys.path.insert(0, str(examples_path))
 
+    from mojo_marimo.executor import clear_cache
+
     from examples import (
         fibonacci as fib_cached,
     )
@@ -116,7 +118,6 @@ def __():
     from examples import (
         sum_squares as sum_sq_cached,
     )
-    from mojo_marimo.executor import clear_cache
 
     return clear_cache, fib_cached, prime_cached, sum_sq_cached
 

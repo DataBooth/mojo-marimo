@@ -11,7 +11,7 @@ from functools import cache
 from pathlib import Path
 from textwrap import dedent
 
-from py_run_mojo.validator import validate_mojo_code, get_validation_hint
+from py_run_mojo.validator import get_validation_hint, validate_mojo_code
 
 # Cache directory for compiled Mojo binaries
 CACHE_DIR = Path.home() / ".mojo_cache" / "binaries"
@@ -20,11 +20,52 @@ CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 @cache
 def get_mojo_version() -> str:
-    """Get the installed Mojo version."""
+    """Get the installed Mojo version.
+
+    Preference order:
+    1. The Python ``mojo`` package's version (if importable).
+    2. The ``mojo --version`` CLI output (if it looks like a Modular CLI).
+
+    Both paths are defensive: if anything looks wrong we return ``"Unknown"``
+    rather than surfacing raw shell errors in user-facing UIs.
+    """
+
+    # 1. Try the Python package first; this avoids PATH/shim issues and is
+    # usually present whenever Mojo is installed via Modular's tooling.
+    try:  # pragma: no cover - import shape may vary across versions
+        import mojo  # type: ignore[import]
+
+        pkg_version = getattr(mojo, "__version__", None) or getattr(mojo, "version", None)
+        if isinstance(pkg_version, str) and pkg_version.strip():
+            # Normalise to the same shape the CLI uses for easier display.
+            if pkg_version.startswith("Mojo "):
+                return pkg_version.strip()
+            return f"Mojo {pkg_version.strip()}"
+    except Exception:
+        # Fall back to CLI discovery below.
+        pass
+
+    # 2. Fallback: shell out to the CLI, but only trust sane output.
     try:
-        return subprocess.getoutput("mojo --version").strip()
+        result = subprocess.run(
+            ["mojo", "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
     except Exception:
         return "Unknown"
+
+    stdout = (result.stdout or "").strip()
+
+    # Non-zero exit or obviously wrong output – treat as unavailable.
+    if result.returncode != 0:
+        return "Unknown"
+
+    if not stdout or not stdout.startswith("Mojo "):
+        return "Unknown"
+
+    return stdout
 
 
 def run_mojo(

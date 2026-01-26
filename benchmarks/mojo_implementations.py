@@ -51,7 +51,7 @@ def is_prime(n: int) -> bool:
             return True
         if n % 2 == 0:
             return False
-        
+
         var i: Int = 3
         while i * i <= n:
             if n % i == 0:
@@ -110,7 +110,7 @@ def count_primes(n: int) -> int:
             return True
         if num % 2 == 0:
             return False
-        
+
         var i: Int = 3
         while i * i <= num:
             if num % i == 0:

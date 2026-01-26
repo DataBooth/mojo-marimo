@@ -96,19 +96,19 @@ benchmark-exec:
 
 # Launch Jupyter notebook browser in jupyter/ directory
 jupyter:
-    uv run jupyter notebook notebooks/jupyter/
+    VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/
 
 # Open decorator pattern notebook (Jupyter)
 jupyter-decorator:
-    uv run jupyter notebook notebooks/jupyter/pattern_decorator.py
+    VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/pattern_decorator.py
 
 # Open executor pattern notebook (Jupyter)
 jupyter-executor:
-    uv run jupyter notebook notebooks/jupyter/pattern_executor.py
+    VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/pattern_executor.py
 
 # Monte Carlo notebook (Jupyter)
 jupyter-mc:
-    uv run jupyter notebook notebooks/jupyter/monte_carlo_extension.py
+    VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/monte_carlo_extension.py
 
 # Convert Jupyter .py files to .ipynb format
 jupyter-convert:
@@ -116,7 +116,7 @@ jupyter-convert:
     cd notebooks/jupyter
     for file in *.py; do
         [ -f "$file" ] || continue
-        uv run jupytext --to notebook "$file"
+        VIRTUAL_ENV= uv run jupytext --to notebook "$file"
         echo "✓ Converted $file → ${file%.py}.ipynb"
     done
     echo "✅ All notebooks converted!"
@@ -126,49 +126,49 @@ jupyter-convert:
 
 # Run examples module demo
 demo-examples:
-    uv run python examples/examples.py
+    VIRTUAL_ENV= uv run python examples/examples.py
 
 # Run decorator demo
 demo-decorator:
-    uv run python -m py_run_mojo.decorator
+    VIRTUAL_ENV= uv run python -m py_run_mojo.decorator
 
 # Testing
 # -------
 
 # Run all tests
 test:
-    uv run pytest tests/
+    VIRTUAL_ENV= uv run python -m pytest tests/
 
 # Run all tests with verbose output
 test-verbose:
-    uv run pytest tests/ -v
+    VIRTUAL_ENV= uv run python -m pytest tests/ -v
 
 # Run tests with coverage report
 test-coverage:
-    uv run pytest tests/ --cov=src/py_run_mojo --cov-report=term-missing
+    VIRTUAL_ENV= uv run python -m pytest tests/ --cov=src/py_run_mojo --cov-report=term-missing
 
 # Run quick tests (skip slow ones)
 test-quick:
-    uv run pytest tests/ -m "not slow"
+    VIRTUAL_ENV= uv run python -m pytest tests/ -m "not slow"
 
 # Code quality
 # ------------
 
 # Format code with ruff
 format:
-    uv run ruff format .
+    VIRTUAL_ENV= uv run ruff format .
 
 # Lint code with ruff
 lint:
-    uv run ruff check .
+    VIRTUAL_ENV= uv run ruff check .
 
 # Fix linting issues automatically
 lint-fix:
-    uv run ruff check --fix .
+    VIRTUAL_ENV= uv run ruff check --fix .
 
 # Run type checker
 typecheck:
-    uv run ty check
+    VIRTUAL_ENV= uv run ty check
 
 # Run all quality checks (format, lint, typecheck)
 check: format lint typecheck
@@ -179,13 +179,13 @@ check: format lint typecheck
 
 # Build and packaging
 build:
-    uv run hatch build
+    VIRTUAL_ENV= uv run hatch build
 
 publish-test:
-    uv run hatch publish -r test
+    VIRTUAL_ENV= uv run hatch publish -r test
 
 publish:
-    uv run hatch publish
+    VIRTUAL_ENV= uv run hatch publish
 
 # Clean up cache and build artifacts
 clean:
@@ -206,7 +206,7 @@ clean-mojo-cache:
 
 # Show Mojo cache stats
 cache-stats:
-    uv run python -c "from mojo_marimo.executor import cache_stats; cache_stats()"
+    VIRTUAL_ENV= uv run python -c "from py_run_mojo.executor import cache_stats; cache_stats()"
 
 # Project info
 # ------------
@@ -216,22 +216,22 @@ info:
     @echo "Project: py-run-mojo"
     @echo ""
     @echo "Environment:"
-    @uv run python -c "import sys; print(f'  Python: {sys.version}')"
-    @uv run python -c "import py_run_mojo; print(f'  Package: {py_run_mojo.__version__}')"
+    @VIRTUAL_ENV= uv run python -c "import sys; print(f'  Python: {sys.version}')"
+    @VIRTUAL_ENV= uv run python -c "import py_run_mojo; print(f'  Package: {py_run_mojo.__version__}')"
     @echo ""
     @echo "Tools:"
     @echo "  UV: $(uv --version)"
-    @uv run mojo --version 2>/dev/null || echo "  Mojo: not found (install with: modular install mojo)"
+    @VIRTUAL_ENV= uv run mojo --version 2>/dev/null || echo "  Mojo: not found (install with: modular install mojo)"
 
 # Show installed packages
 list-packages:
-    uv pip list
+    VIRTUAL_ENV= uv pip list
 
-# Verify published package from PyPI using uv
+# Verify published package from PyPI using uv in a fresh temporary environment
 verify-pypi:
     #!/usr/bin/env bash
     set -euo pipefail
-    ENV_DIR="/tmp/py-run-mojo-prod"
+    ENV_DIR="$(mktemp -d /tmp/py-run-mojo-prod-XXXXXX)"
     echo "▶ Creating fresh uv virtualenv at $ENV_DIR"
     uv venv "$ENV_DIR"
     echo "▶ Activating virtualenv"

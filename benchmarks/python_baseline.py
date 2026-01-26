@@ -31,7 +31,7 @@ def is_prime(n: int) -> bool:
         return True
     if n % 2 == 0:
         return False
-    
+
     # Check odd divisors up to sqrt(n)
     i = 3
     while i * i <= n:

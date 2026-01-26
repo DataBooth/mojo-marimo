@@ -1,27 +1,27 @@
 # %% [markdown]
 # # run_mojo() Executor Pattern 🔥
-# 
+#
 # Execute Mojo code dynamically from strings or files.
-# 
+#
 # ## Key Concept
-# 
+#
 # ```python
 # from py_run_mojo import run_mojo
-# 
+#
 # # Option 1: Inline code
 # result = run_mojo("""
 #     fn main():
 #         print(42 * 42)
 # """)
-# 
+#
 # # Option 2: Execute file
 # result = run_mojo("path/to/file.mojo")
 # ```
-# 
+#
 # Perfect for dynamic code generation, testing, or quick experiments.
 
 # %%
-from py_run_mojo import run_mojo, get_mojo_version
+from py_run_mojo import get_mojo_version, run_mojo
 
 print(f"Mojo version: {get_mojo_version()}")
 
@@ -77,7 +77,7 @@ else:
 
 # %% [markdown]
 # ## Mojo Syntax Error Handling
-# 
+#
 # The executor validates common Mojo syntax errors before compilation:
 
 # %% [markdown]
@@ -149,9 +149,9 @@ print(result)
 
 # %% [markdown]
 # ## All Validation Checks
-# 
+#
 # The executor catches these common errors before compilation:
-# 
+#
 # 1. **Missing `fn main()`** - Every Mojo program needs an entry point
 # 2. **File-scope statements** - Code must be inside functions
 # 3. **Missing colons** - Function definitions must end with `:`
@@ -161,14 +161,14 @@ print(result)
 # 7. **Python-style print** - Use `print()` not `print "text"`
 # 8. **Lowercase types** - Use `Int` not `int`, `String` not `str`, `Bool` not `bool`
 # 9. **Missing parentheses** - Functions and range() need `()`
-# 
+#
 # These validations provide quick feedback without waiting for compilation.
 
 # %% [markdown]
 # ## Performance Characteristics
-# 
+#
 # - **First call**: ~1-2 seconds (compiles Mojo code)
 # - **Subsequent calls with same code**: ~10-50ms (uses cached binary)
 # - **Cache location**: `~/.mojo_cache/binaries/`
-# 
+#
 # The executor pattern is perfect for dynamic code generation and testing.

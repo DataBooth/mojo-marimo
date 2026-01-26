@@ -49,9 +49,7 @@ def _(mo):
     import pathlib
 
     base = pathlib.Path(__file__).parent
-    puzzle_files = sorted(
-        p for p in base.glob("[0-9][0-9]_*.py") if p.name != "index.py"
-    )
+    puzzle_files = sorted(p for p in base.glob("[0-9][0-9]_*.py") if p.name != "index.py")
 
     rows = []
     for p in puzzle_files:

@@ -12,6 +12,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -43,8 +44,10 @@ def _(mo):
 
 @app.cell
 def _():
-    from py_run_mojo import run_mojo, get_mojo_version
     from pathlib import Path
+
+    from py_run_mojo import get_mojo_version, run_mojo
+
     return Path, get_mojo_version, run_mojo
 
 
@@ -338,11 +341,7 @@ def _(mo, run_mojo):
     # Generate Mojo code dynamically
     def compute_with_mojo(a, b, operation):
         """Generate and execute Mojo code for different operations."""
-        operations = {
-            "add": "a + b",
-            "multiply": "a * b",
-            "power": "a ** b"
-        }
+        operations = {"add": "a + b", "multiply": "a * b", "power": "a ** b"}
 
         mojo_code = f"""
         fn compute(a: Int, b: Int) -> Int:

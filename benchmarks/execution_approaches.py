@@ -56,22 +56,35 @@ def __(mo):
 @app.cell
 def __():
     # Import all three approaches
-    from uncached_executor import (
-        fibonacci as fib_uncached,
-        sum_squares as sum_sq_uncached,
-        is_prime as prime_uncached,
-    )
-    from examples import (
-        fibonacci as fib_cached,
-        sum_squares as sum_sq_cached,
-        is_prime as prime_cached,
-    )
     from mojo_implementations import (
         fibonacci as fib_decorator,
-        sum_squares as sum_sq_decorator,
+    )
+    from mojo_implementations import (
         is_prime as prime_decorator,
     )
+    from mojo_implementations import (
+        sum_squares as sum_sq_decorator,
+    )
     from mojo_marimo import clear_cache
+    from uncached_executor import (
+        fibonacci as fib_uncached,
+    )
+    from uncached_executor import (
+        is_prime as prime_uncached,
+    )
+    from uncached_executor import (
+        sum_squares as sum_sq_uncached,
+    )
+
+    from examples import (
+        fibonacci as fib_cached,
+    )
+    from examples import (
+        is_prime as prime_cached,
+    )
+    from examples import (
+        sum_squares as sum_sq_cached,
+    )
 
     return (
         fib_uncached,
@@ -157,8 +170,8 @@ def __(
     mo.md(
         f"""
         **1. Uncached executor** (recompiles every time)
-        - Mean: {bench_uncached['mean_ms']:.1f}ms ± {bench_uncached['stdev_ms']:.1f}ms
-        - Result: {bench_uncached['result']}
+        - Mean: {bench_uncached["mean_ms"]:.1f}ms ± {bench_uncached["stdev_ms"]:.1f}ms
+        - Result: {bench_uncached["result"]}
         """
     )
 
@@ -167,20 +180,18 @@ def __(
     mo.md(
         f"""
         **2. Cached executor** (first call - compiles)
-        - Time: {bench_cached_cold['mean_ms']:.1f}ms
-        - Result: {bench_cached_cold['result']}
+        - Time: {bench_cached_cold["mean_ms"]:.1f}ms
+        - Result: {bench_cached_cold["result"]}
         """
     )
 
     # Decorator (first call is slow)
-    bench_decorator_cold = benchmark_function(
-        fib_decorator, n, warmup_runs=0, timed_runs=1
-    )
+    bench_decorator_cold = benchmark_function(fib_decorator, n, warmup_runs=0, timed_runs=1)
     mo.md(
         f"""
         **3. Decorator** (first call - compiles)
-        - Time: {bench_decorator_cold['mean_ms']:.1f}ms
-        - Result: {bench_decorator_cold['result']}
+        - Time: {bench_decorator_cold["mean_ms"]:.1f}ms
+        - Result: {bench_decorator_cold["result"]}
         """
     )
 
@@ -205,13 +216,11 @@ def __(
     mo.md(f"### Testing fibonacci({n}) with warm cache...")
 
     # Uncached (still slow)
-    bench_uncached_warm = benchmark_function(
-        fib_uncached, n, warmup_runs=1, timed_runs=5
-    )
+    bench_uncached_warm = benchmark_function(fib_uncached, n, warmup_runs=1, timed_runs=5)
     mo.md(
         f"""
         **1. Uncached executor** (still recompiles)
-        - Mean: {bench_uncached_warm['mean_ms']:.1f}ms ± {bench_uncached_warm['stdev_ms']:.1f}ms
+        - Mean: {bench_uncached_warm["mean_ms"]:.1f}ms ± {bench_uncached_warm["stdev_ms"]:.1f}ms
         """
     )
 
@@ -220,20 +229,18 @@ def __(
     mo.md(
         f"""
         **2. Cached executor** (using cached binary)
-        - Mean: {bench_cached_warm['mean_ms']:.1f}ms ± {bench_cached_warm['stdev_ms']:.1f}ms
-        - **Speedup vs uncached: {bench_uncached_warm['mean_ms'] / bench_cached_warm['mean_ms']:.1f}x**
+        - Mean: {bench_cached_warm["mean_ms"]:.1f}ms ± {bench_cached_warm["stdev_ms"]:.1f}ms
+        - **Speedup vs uncached: {bench_uncached_warm["mean_ms"] / bench_cached_warm["mean_ms"]:.1f}x**
         """
     )
 
     # Decorator (now fast!)
-    bench_decorator_warm = benchmark_function(
-        fib_decorator, n, warmup_runs=1, timed_runs=5
-    )
+    bench_decorator_warm = benchmark_function(fib_decorator, n, warmup_runs=1, timed_runs=5)
     mo.md(
         f"""
         **3. Decorator** (using cached binary)
-        - Mean: {bench_decorator_warm['mean_ms']:.1f}ms ± {bench_decorator_warm['stdev_ms']:.1f}ms
-        - **Speedup vs uncached: {bench_uncached_warm['mean_ms'] / bench_decorator_warm['mean_ms']:.1f}x**
+        - Mean: {bench_decorator_warm["mean_ms"]:.1f}ms ± {bench_decorator_warm["stdev_ms"]:.1f}ms
+        - **Speedup vs uncached: {bench_uncached_warm["mean_ms"] / bench_decorator_warm["mean_ms"]:.1f}x**
         """
     )
 
@@ -254,8 +261,8 @@ def __(mo, bench_cached_warm, bench_decorator_warm):
         
         **Cached executor** and **Decorator** have identical performance 
         (both use the same caching mechanism):
-        - Cached: {bench_cached_warm['mean_ms']:.1f}ms
-        - Decorator: {bench_decorator_warm['mean_ms']:.1f}ms
+        - Cached: {bench_cached_warm["mean_ms"]:.1f}ms
+        - Decorator: {bench_decorator_warm["mean_ms"]:.1f}ms
         
         ### Recommendations
         

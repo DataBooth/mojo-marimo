@@ -7,6 +7,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -28,8 +29,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    from mojo_marimo import run_mojo
     import numpy as np
+    from mojo_marimo import run_mojo
 
     mo.md("✅ **Executor imported**")
     return np, run_mojo
@@ -40,7 +41,9 @@ def _(mo):
     # UI controls
     width_slider = mo.ui.slider(50, 800, value=400, step=50, label="Width", show_value=True)
     height_slider = mo.ui.slider(50, 600, value=300, step=50, label="Height", show_value=True)
-    max_iter_slider = mo.ui.slider(50, 500, value=256, step=50, label="Max Iterations", show_value=True)
+    max_iter_slider = mo.ui.slider(
+        50, 500, value=256, step=50, label="Max Iterations", show_value=True
+    )
 
     mo.hstack([width_slider, height_slider, max_iter_slider])
     return height_slider, max_iter_slider, width_slider
@@ -108,16 +111,18 @@ def _(height_slider, mo, np, result, width_slider):
     if result is None:
         mo.md("❌ **Compilation or execution failed**")
 
-    lines = result.split('\n')
+    lines = result.split("\n")
     data = []
     for line in lines:
-        if line.strip() and ',' in line:
-            row = [int(x) for x in line.split(',')]
+        if line.strip() and "," in line:
+            row = [int(x) for x in line.split(",")]
             data.append(row)
 
     mandelbrot_array = np.array(data)
 
-    mo.md(f"✅ **Computed {width_slider.value}×{height_slider.value} grid** ({mandelbrot_array.size:,} points)")
+    mo.md(
+        f"✅ **Computed {width_slider.value}×{height_slider.value} grid** ({mandelbrot_array.size:,} points)"
+    )
     return (mandelbrot_array,)
 
 
@@ -125,12 +130,14 @@ def _(height_slider, mo, np, result, width_slider):
 def _(height_slider, mandelbrot_array, max_iter_slider, mo, width_slider):
     import plotly.graph_objects as go
 
-    fig = go.Figure(data=go.Heatmap(
-        z=mandelbrot_array,
-        colorscale='Hot',
-        colorbar=dict(title="Iterations"),
-        hovertemplate='x: %{x}<br>y: %{y}<br>iterations: %{z}<extra></extra>'
-    ))
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=mandelbrot_array,
+            colorscale="Hot",
+            colorbar=dict(title="Iterations"),
+            hovertemplate="x: %{x}<br>y: %{y}<br>iterations: %{z}<extra></extra>",
+        )
+    )
 
     fig.update_layout(
         title=f"Mandelbrot Set ({width_slider.value}×{height_slider.value}, max_iter={max_iter_slider.value})",
@@ -138,7 +145,7 @@ def _(height_slider, mandelbrot_array, max_iter_slider, mo, width_slider):
         yaxis_title="Imaginary axis",
         width=800,
         height=600,
-        yaxis=dict(scaleanchor="x")
+        yaxis=dict(scaleanchor="x"),
     )
 
     mo.ui.plotly(fig)

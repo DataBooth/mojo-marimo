@@ -12,6 +12,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -46,7 +47,8 @@ def _(mo):
 
 @app.cell
 def _():
-    from mojo_marimo import mojo, get_mojo_version
+    from mojo_marimo import get_mojo_version, mojo
+
     return get_mojo_version, mojo
 
 
@@ -87,6 +89,7 @@ def _(mojo):
             print(fibonacci({{n}}))
         """
         ...
+
     return (fibonacci,)
 
 
@@ -129,6 +132,7 @@ def _(mojo):
             print(sum_squares({{n}}))
         """
         ...
+
     return (sum_squares,)
 
 
@@ -179,6 +183,7 @@ def _(mojo):
             print(is_prime({{n}}))
         """
         ...
+
     return (is_prime,)
 
 
@@ -192,8 +197,7 @@ def _(is_prime, mo):
         (100, is_prime(100)),
     ]
 
-    results = "\n".join([f"{n}: {'✅ prime' if p else '❌ not prime'}" 
-                         for n, p in primes_status])
+    results = "\n".join([f"{n}: {'✅ prime' if p else '❌ not prime'}" for n, p in primes_status])
 
     mo.md(f"""
     ```python
@@ -230,6 +234,7 @@ def _(mojo):
             print(gcd({{a}}, {{b}}))
         """
         ...
+
     return (gcd,)
 
 

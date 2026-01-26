@@ -5,85 +5,94 @@ import re
 
 def validate_mojo_code(code: str) -> tuple[bool, str | None]:
     """Perform basic validation on Mojo code.
-    
+
     Args:
         code: Mojo source code to validate
-        
+
     Returns:
         (is_valid, error_message) tuple
     """
-    lines = code.strip().split('\n')
-    
+    lines = code.split("\n")
+
     # Check 1: Code is not empty
     if not code.strip():
         return False, "Empty code provided"
-    
-    # Check 2: Has a main function (required for executable)
-    has_main = re.search(r'^fn main\(\)', code, re.MULTILINE)
-    has_def_main = re.search(r'^def main\(\)', code, re.MULTILINE)
-    
+
+    # Heuristic: is this a *full* program (with a main) or a fragment?
+    # Many callers (especially puzzles/notebooks) will validate kernels or
+    # small snippets that deliberately omit main(). We only enforce a main
+    # function when the code clearly looks like a standalone program.
+    has_main = re.search(r"^fn\s+main\(\)", code, re.MULTILINE)
+    has_def_main = re.search(r"^def\s+main\(\)", code, re.MULTILINE)
+
     if not (has_main or has_def_main):
-        return False, "Missing 'fn main()' or 'def main()' - Mojo executables require a main function"
-    
+        # Treat pure kernel/fragments as valid; downstream Mojo compiler will
+        # still provide real diagnostics if they are wrong.
+        return True, None
+
     # Check 3: Detect common indentation errors
-    has_tabs = any('\t' in line for line in lines if line.strip())
-    has_spaces = any(line.startswith(' ') and not line.startswith('\t') for line in lines)
-    
+    has_tabs = any("\t" in line for line in lines if line.strip())
+    has_spaces = any(line.startswith(" ") and not line.startswith("\t") for line in lines)
+
     if has_tabs and has_spaces:
         return False, "Mixed tabs and spaces in indentation"
-    
+
     for i, line in enumerate(lines, 1):
         if not line.strip():
             continue
-        
+
         # Check for obvious indentation errors (statements at wrong level)
         stripped = line.lstrip()
-        
+
         # Skip imports, function/struct definitions, and comments
-        if stripped.startswith(('from ', 'import ', 'fn ', 'def ', 'struct ', '#')):
+        if stripped.startswith(("from ", "import ", "fn ", "def ", "struct ", "#")):
             continue
-            
+
         # Check for statements/expressions that should be inside functions
-        if stripped.startswith(('return ', 'var ', 'if ', 'for ', 'while ', 'print(')):
+        if stripped.startswith(("return ", "var ", "if ", "for ", "while ", "print(")):
             # These should be indented (inside a function/block)
             indent = len(line) - len(stripped)
             if indent == 0:
-                keyword = stripped.split('(')[0] if '(' in stripped else stripped.split()[0]
+                keyword = stripped.split("(")[0] if "(" in stripped else stripped.split()[0]
                 return False, f"Line {i}: '{keyword}' at file scope (must be inside a function)"
-    
+
     # Check 4: Validate function/def syntax - missing colon
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
-        if stripped.startswith(('fn ', 'def ')):
+        if stripped.startswith(("fn ", "def ")):
+            # Skip lines that clearly look like the *start* of a multi-line
+            # function header (no closing parenthesis yet). We only want to
+            # flag obviously malformed one-line headers.
+            if "(" in stripped and ")" not in stripped:
+                continue
+
             # Function declaration should end with :
             # Examples: fn foo():  or  fn bar(x: Int) -> Int:
-            if not stripped.endswith(':'):
-                # Make sure it's not a multi-line function (has opening brace on next line)
-                # In Mojo, function declarations should have : on same line
+            if not stripped.endswith(":"):
                 return False, f"Line {i}: Function declaration missing colon (':') at end"
-    
+
     # Check 5: Common Python patterns that don't work in Mojo
-    if re.search(r'\blet\s+\w+', code):
+    if re.search(r"\blet\s+\w+", code):
         return False, "'let' keyword is deprecated in Mojo - use 'var' instead"
-    
+
     # Check 6: print statement without parentheses (Python 2 style)
-    if re.search(r'^\s+print\s+(?!\()', code, re.MULTILINE):
+    if re.search(r"^\s+print\s+(?!\()", code, re.MULTILINE):
         return False, "print requires parentheses: print(...) not print ..."
-    
+
     # Check 7: Common typos in type annotations (case-sensitive)
-    if re.search(r':\s*int\b', code):  # lowercase 'int' instead of 'Int'
+    if re.search(r":\s*int\b", code):  # lowercase 'int' instead of 'Int'
         return False, "Use 'Int' (capitalized) for integer types in Mojo, not 'int'"
-    
-    if re.search(r':\s*str\b', code):  # lowercase 'str' instead of 'String'
+
+    if re.search(r":\s*str\b", code):  # lowercase 'str' instead of 'String'
         return False, "Use 'String' for string types in Mojo, not 'str'"
-    
-    if re.search(r':\s*bool\b', code):  # lowercase 'bool' instead of 'Bool'
+
+    if re.search(r":\s*bool\b", code):  # lowercase 'bool' instead of 'Bool'
         return False, "Use 'Bool' (capitalized) for boolean types in Mojo, not 'bool'"
-    
+
     # Check 8: Missing parentheses in range/len
-    if re.search(r'\brange\s+\d', code):  # range 10 instead of range(10)
+    if re.search(r"\brange\s+\d", code):  # range 10 instead of range(10)
         return False, "'range' requires parentheses: range(n) not range n"
-    
+
     return True, None
 
 
@@ -169,9 +178,9 @@ fn main():
     # for i in range 10   # ✗ Missing parentheses
 """,
     }
-    
+
     for key, hint in hints.items():
         if key.lower() in error_msg.lower():
             return hint
-    
+
     return ""

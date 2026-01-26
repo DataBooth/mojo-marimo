@@ -1,7 +1,6 @@
 """Test validator catches common Mojo errors."""
 
-import pytest
-from py_run_mojo.validator import validate_mojo_code, get_validation_hint
+from py_run_mojo.validator import get_validation_hint, validate_mojo_code
 
 
 def test_empty_code():
@@ -9,7 +8,7 @@ def test_empty_code():
     is_valid, error = validate_mojo_code("")
     assert not is_valid
     assert error and "empty" in error.lower()
-    
+
     is_valid, error = validate_mojo_code("   \n  \n  ")
     assert not is_valid
     assert error and "empty" in error.lower()
@@ -86,21 +85,23 @@ fn main():
 def test_validation_hints():
     """Test that hints are provided for errors."""
     # Missing main hint - use actual error message from validator
-    hint = get_validation_hint("Missing 'fn main()' or 'def main()' - Mojo executables require a main function")
+    hint = get_validation_hint(
+        "Missing 'fn main()' or 'def main()' - Mojo executables require a main function"
+    )
     assert "fn main()" in hint or "def main()" in hint
-    
+
     # Mixed indentation hint
     hint = get_validation_hint("Mixed tabs and spaces in indentation")
     assert "consistent" in hint.lower()
-    
+
     # File scope hint
     hint = get_validation_hint("Line 5: 'var' at file scope (should be indented inside a function)")
     assert "file scope" in hint.lower() or "inside a function" in hint.lower()
-    
+
     # Missing colon hint
     hint = get_validation_hint("Function declaration missing colon (':') after parameters")
     assert "colon" in hint.lower() or ":" in hint
-    
+
     # Unknown error returns empty string
     hint = get_validation_hint("some weird error")
     assert hint == ""

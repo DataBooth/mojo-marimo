@@ -13,6 +13,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -30,7 +31,8 @@ def _(mo):
 
 @app.cell
 def _():
-    from mojo_marimo import mojo, run_mojo, get_mojo_version
+    from mojo_marimo import get_mojo_version, mojo, run_mojo
+
     return get_mojo_version, mojo, run_mojo
 
 
@@ -73,6 +75,7 @@ def _(mojo):
             print(fibonacci({{n}}))
         """
         ...
+
     return (fibonacci,)
 
 
@@ -140,6 +143,7 @@ def _(mojo):
             print(sum_squares_formula({{n}}))
         """
         ...
+
     return sum_squares_formula, sum_squares_loop
 
 
@@ -215,6 +219,7 @@ def _(mojo):
             print(is_prime({{n}}))
         """
         ...
+
     return (is_prime,)
 
 
@@ -237,7 +242,7 @@ def _(is_prime, mo, prime_range):
 
     **Primes found:** {prime_count} out of {end_val - start_val + 1} numbers ({density:.1f}%)
 
-    **Prime list:** {', '.join(map(str, primes[:20]))}{'...' if len(primes) > 20 else ''}
+    **Prime list:** {", ".join(map(str, primes[:20]))}{"..." if len(primes) > 20 else ""}
 
     💡 *Prime density decreases as numbers get larger (Prime Number Theorem)*
     """)
@@ -258,9 +263,7 @@ def _(mo):
 @app.cell
 def _(mo):
     operation_choice = mo.ui.dropdown(
-        ["add", "multiply", "power", "modulo"],
-        value="add",
-        label="Operation:"
+        ["add", "multiply", "power", "modulo"], value="add", label="Operation:"
     )
 
     val_a = mo.ui.number(1, 100, value=12, label="a:")
@@ -277,7 +280,7 @@ def _(mo, operation_choice, run_mojo, time, val_a, val_b):
         "add": ("a + b", "+"),
         "multiply": ("a * b", "×"),
         "power": ("a ** b", "^"),
-        "modulo": ("a % b", "%")
+        "modulo": ("a % b", "%"),
     }
 
     mojo_expr, symbol = operations_map[operation_choice.value]

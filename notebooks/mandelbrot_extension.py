@@ -7,6 +7,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -30,10 +31,10 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    import mojo.importer  # Register import hook
     import mandelbrot_ext  # Auto-compiles examples/mandelbrot_ext.mojo
+    import mojo.importer  # Register import hook
     import numpy as np
-    
+
     mo.md("✅ **Extension module imported** - First import compiles `.mojo` → `.so` (~1-2s)")
     return mandelbrot_ext, mojo, np
 
@@ -43,8 +44,10 @@ def _(mo):
     # UI controls
     width_slider = mo.ui.slider(50, 800, value=400, step=50, label="Width", show_value=True)
     height_slider = mo.ui.slider(50, 600, value=300, step=50, label="Height", show_value=True)
-    max_iter_slider = mo.ui.slider(50, 500, value=256, step=50, label="Max Iterations", show_value=True)
-    
+    max_iter_slider = mo.ui.slider(
+        50, 500, value=256, step=50, label="Max Iterations", show_value=True
+    )
+
     mo.hstack([width_slider, height_slider, max_iter_slider])
     return height_slider, max_iter_slider, width_slider
 
@@ -53,40 +56,46 @@ def _(mo):
 def _(height_slider, mandelbrot_ext, max_iter_slider, mo, np, width_slider):
     # Direct function call - zero subprocess overhead!
     result_list = mandelbrot_ext.compute_mandelbrot(
-        width_slider.value, 
-        height_slider.value, 
+        width_slider.value,
+        height_slider.value,
         max_iter_slider.value,
-        -2.5, 1.0,  # x_min, x_max
-        -1.25, 1.25  # y_min, y_max
+        -2.5,
+        1.0,  # x_min, x_max
+        -1.25,
+        1.25,  # y_min, y_max
     )
-    
+
     # Convert to numpy array
     mandelbrot_array = np.array(result_list)
-    
-    mo.md(f"✅ **Computed {width_slider.value}×{height_slider.value} grid** ({mandelbrot_array.size:,} points)")
+
+    mo.md(
+        f"✅ **Computed {width_slider.value}×{height_slider.value} grid** ({mandelbrot_array.size:,} points)"
+    )
     return mandelbrot_array, result_list
 
 
 @app.cell
 def _(height_slider, mandelbrot_array, max_iter_slider, mo, width_slider):
     import plotly.graph_objects as go
-    
-    fig = go.Figure(data=go.Heatmap(
-        z=mandelbrot_array,
-        colorscale='Hot',
-        colorbar=dict(title="Iterations"),
-        hovertemplate='x: %{x}<br>y: %{y}<br>iterations: %{z}<extra></extra>'
-    ))
-    
+
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=mandelbrot_array,
+            colorscale="Hot",
+            colorbar=dict(title="Iterations"),
+            hovertemplate="x: %{x}<br>y: %{y}<br>iterations: %{z}<extra></extra>",
+        )
+    )
+
     fig.update_layout(
         title=f"Mandelbrot Set ({width_slider.value}×{height_slider.value}, max_iter={max_iter_slider.value})",
         xaxis_title="Real axis",
         yaxis_title="Imaginary axis",
         width=800,
         height=600,
-        yaxis=dict(scaleanchor="x")
+        yaxis=dict(scaleanchor="x"),
     )
-    
+
     mandelbrot_plot = mo.ui.plotly(fig)
     mandelbrot_plot
     return fig, go, mandelbrot_plot
@@ -115,7 +124,7 @@ def _(mo):
             "Seahorse valley": (-0.75, -0.735, 0.095, 0.11),
         },
         value="Full view",
-        label="Region"
+        label="Region",
     )
     region
     return (region,)
@@ -124,32 +133,27 @@ def _(mo):
 @app.cell
 def _(mandelbrot_ext, mo, np, region):
     import plotly.graph_objects as go
-    
+
     # Get region bounds
     x_min, x_max, y_min, y_max = region.value
-    
+
     # Compute zoomed region
-    zoom_data = mandelbrot_ext.compute_mandelbrot(
-        500, 400, 512,
-        x_min, x_max, y_min, y_max
-    )
+    zoom_data = mandelbrot_ext.compute_mandelbrot(500, 400, 512, x_min, x_max, y_min, y_max)
     zoom_array = np.array(zoom_data)
-    
-    fig_zoom = go.Figure(data=go.Heatmap(
-        z=zoom_array,
-        colorscale='Hot',
-        colorbar=dict(title="Iterations")
-    ))
-    
+
+    fig_zoom = go.Figure(
+        data=go.Heatmap(z=zoom_array, colorscale="Hot", colorbar=dict(title="Iterations"))
+    )
+
     fig_zoom.update_layout(
         title=f"Mandelbrot Set - {region.value}",
         xaxis_title="Real axis",
         yaxis_title="Imaginary axis",
         width=800,
         height=640,
-        yaxis=dict(scaleanchor="x")
+        yaxis=dict(scaleanchor="x"),
     )
-    
+
     mo.ui.plotly(fig_zoom)
     return fig_zoom, go, x_max, x_min, y_max, y_min, zoom_array, zoom_data
 

@@ -7,6 +7,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -31,12 +32,13 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    from mojo_marimo import run_mojo
     from pathlib import Path
-    
+
+    from mojo_marimo import run_mojo
+
     # Path to standalone Mojo file
     mojo_file = Path("examples/monte_carlo.mojo")
-    
+
     mo.md(f"✅ **Using Mojo file**: `{mojo_file}`")
     return Path, mojo_file, run_mojo
 
@@ -49,7 +51,7 @@ def _(mo):
         step=10000,
         value=100_000,
         label="Number of samples",
-        show_value=True
+        show_value=True,
     )
     samples_slider
     return (samples_slider,)
@@ -79,7 +81,7 @@ fn main():
     var pi_estimate = estimate_pi({samples_slider.value})
     print(pi_estimate)
 """
-    
+
     mo.md("✅ **Dynamic Mojo code generated**")
     return (mojo_code,)
 
@@ -87,10 +89,10 @@ fn main():
 @app.cell
 def _(mojo_code, mo, run_mojo, samples_slider):
     import math
-    
+
     # Execute Mojo code
     result = run_mojo(mojo_code)
-    
+
     if result is None:
         mo.md("❌ **Compilation or execution failed**")
     else:
@@ -98,7 +100,7 @@ def _(mojo_code, mo, run_mojo, samples_slider):
         pi_actual = math.pi
         error = abs(pi_estimate - pi_actual)
         error_percent = (error / pi_actual) * 100
-        
+
         mo.md(
             f"""
             ## Results
@@ -126,14 +128,15 @@ def _(mo):
 
 @app.cell
 def _(mo, run_mojo):
-    import plotly.graph_objects as go
     import math
-    
+
+    import plotly.graph_objects as go
+
     # Generate estimates for different sample sizes
     sample_sizes = [10**i for i in range(2, 7)]
     estimates = []
     errors = []
-    
+
     for n in sample_sizes:
         code = f"""
 from random import random_float64
@@ -156,21 +159,28 @@ fn main():
             est = float(result.strip())
             estimates.append(est)
             errors.append(abs(est - math.pi))
-    
+
     # Convergence plot
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=sample_sizes, y=estimates,
-        mode='lines+markers', name='Mojo Estimate',
-        line=dict(color='#ff6b35', width=3), marker=dict(size=10)
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=sample_sizes,
+            y=estimates,
+            mode="lines+markers",
+            name="Mojo Estimate",
+            line=dict(color="#ff6b35", width=3),
+            marker=dict(size=10),
+        )
+    )
     fig.add_hline(y=math.pi, line_dash="dash", line_color="green", annotation_text="Actual π")
     fig.update_layout(
         title="Monte Carlo Convergence to π",
-        xaxis_title="Number of Samples", yaxis_title="Estimated π",
-        xaxis_type="log", height=400
+        xaxis_title="Number of Samples",
+        yaxis_title="Estimated π",
+        xaxis_type="log",
+        height=400,
     )
-    
+
     mo.ui.plotly(fig)
     return code, errors, est, estimates, fig, go, n, sample_sizes
 
@@ -179,15 +189,23 @@ fn main():
 def _(errors, go, mo, sample_sizes):
     # Error plot
     fig_error = go.Figure()
-    fig_error.add_trace(go.Scatter(
-        x=sample_sizes, y=errors,
-        mode='lines+markers', name='Absolute Error',
-        line=dict(color='#d62828', width=3), marker=dict(size=10)
-    ))
+    fig_error.add_trace(
+        go.Scatter(
+            x=sample_sizes,
+            y=errors,
+            mode="lines+markers",
+            name="Absolute Error",
+            line=dict(color="#d62828", width=3),
+            marker=dict(size=10),
+        )
+    )
     fig_error.update_layout(
         title="Estimation Error vs Sample Size",
-        xaxis_title="Number of Samples", yaxis_title="Absolute Error",
-        xaxis_type="log", yaxis_type="log", height=400
+        xaxis_title="Number of Samples",
+        yaxis_title="Absolute Error",
+        xaxis_type="log",
+        yaxis_type="log",
+        height=400,
     )
     mo.ui.plotly(fig_error)
     return (fig_error,)

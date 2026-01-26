@@ -84,19 +84,18 @@ def _():
     # Enable Mojo import hook for auto-compilation
     # Note: We don't return 'mojo' here to avoid namespace collision
     # with the @mojo decorator imported later from mojo_marimo
-    import mojo.importer
 
     # Import our Mojo extension module
     # BUILD HAPPENS HERE: First import compiles .mojo → .so (~1-2s)
     # Subsequent imports use cached .so from __mojocache__/ (~instant)
     # Recompiles only when .mojo file changes
     import fibonacci_mojo_ext
+
     return (fibonacci_mojo_ext,)
 
 
 @app.cell
 def _(examples_dir, fibonacci_mojo_ext, mo):
-    import os
 
     # Check if __mojocache__ exists to show build status
     cache_dir = examples_dir / "__mojocache__"
