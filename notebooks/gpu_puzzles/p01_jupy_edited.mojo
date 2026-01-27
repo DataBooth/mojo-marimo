@@ -10,16 +10,16 @@ comptime dtype = DType.float32
 
 
 
+
 fn add_10(
     output: UnsafePointer[Scalar[dtype], MutAnyOrigin],
     a: UnsafePointer[Scalar[dtype], MutAnyOrigin],
 ):
     i = thread_idx.x
     # FILL ME IN (roughly 1 line)
-
+    output[i] = a[i] + 10.0
 
 # ANCHOR_END: add_10
-
 
 
 def main():

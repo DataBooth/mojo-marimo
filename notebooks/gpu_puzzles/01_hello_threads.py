@@ -7,7 +7,7 @@ solution code. Use it alongside https://puzzles.modular.com.
 
 import marimo
 
-__generated_with = "0.19.5"
+__generated_with = "0.19.6"
 app = marimo.App(width="medium")
 
 
@@ -55,6 +55,7 @@ def _():
         mo,
         problem_id,
         run_mojo,
+        run_mojo_code,
         save_problem_code,
     )
 
