@@ -1,6 +1,6 @@
 [project]
 name = "py-run-mojo"
-version = "0.1.2"
+version = "0.1.3"
 description = "Run high-performance Mojo code from Python - three patterns for any environment"
 authors = [
     {name = "Michael Booth", email = "michael@databooth.com.au"}
