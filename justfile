@@ -83,6 +83,13 @@ notebook-mandelbrot-executor:
 notebook-mandelbrot-extension:
     uv run marimo edit notebooks/mandelbrot_extension.py
 
+# GPU puzzle notebooks (marimo)
+notebook-gpu-p01-hello-threads:
+    uv run marimo edit notebooks/gpu_puzzles/p01/p01_hello_threads.py
+
+notebook-gpu-p02-zip:
+    uv run marimo edit notebooks/gpu_puzzles/p02/p02_zip.py
+
 # Open Python vs Mojo benchmark notebook
 benchmark:
     uv run marimo edit benchmarks/python_vs_mojo.py
