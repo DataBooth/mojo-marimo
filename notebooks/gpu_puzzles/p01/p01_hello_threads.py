@@ -14,20 +14,17 @@ app = marimo.App(width="medium")
 @app.cell
 def _(mo):
     mo.md(r"""
-    # GPU Puzzles 01–02: Hello Threads
+    # Mojo 🔥 GPU Puzzles: 01 - Hello Threads
 
     This notebook is designed to be used **with** the official Mojo GPU
-    Puzzles at https://puzzles.modular.com.
+    Puzzles by Modular at https://puzzles.modular.com.
 
     - Read the puzzle description on the official site.
-    - Paste or re-type the relevant Mojo kernel and driver code into the
-      code cells below.
-    - Use the controls here to experiment with different grid/block
-      configurations and inputs.
+    - The relevant Mojo setup (read only), kernel and driver (read only) code are provided in the code cells below.
+    - **Edit the kernel code to complete the GPU puzzle.**
 
     > **Note:** This repository and notebook are not affiliated with
-    > Modular. They are just an educational wrapper around the public
-    > puzzles.
+    > Modular. They are just an educational wrapper around the public puzzles.
     """)
     return
 
@@ -46,19 +43,24 @@ def _(mo):
 @app.cell
 def _():
     import marimo as mo
+    import sys
+    from pathlib import Path
+
+    # Ensure the gpu_puzzles utils module is importable when running this notebook.
+    ROOT = Path(__file__).resolve().parent.parent  # .../notebooks/gpu_puzzles
+    if str(ROOT) not in sys.path:
+        sys.path.append(str(ROOT))
+
     from gpu_puzzles_utils_marimo import (
         load_puzzle_fragments,
         run_puzzle_with_marimo,
         save_puzzle_program,
     )
     from py_run_mojo import run_mojo, get_mojo_version
-
-    problem_id = "p01"
     return (
         get_mojo_version,
         load_puzzle_fragments,
         mo,
-        problem_id,
         run_mojo,
         run_puzzle_with_marimo,
         save_puzzle_program,
@@ -66,11 +68,17 @@ def _():
 
 
 @app.cell
+def _():
+    problem_id = "p01"
+    return (problem_id,)
+
+
+@app.cell
 def _(load_puzzle_fragments, problem_id):
     # Load the three code segments (setup, kernel, main) for this puzzle from .mojo files
 
-    mojo_setup_code, mojo_kernel_code, mojo_main_code = load_puzzle_fragments(problem_id)
-    return mojo_kernel_code, mojo_main_code, mojo_setup_code
+    setup_code, kernel_code, main_code = load_puzzle_fragments(problem_id)
+    return kernel_code, main_code, setup_code
 
 
 @app.cell
@@ -101,9 +109,9 @@ def _(mo):
 
 
 @app.cell
-def _(mo, mojo_setup_code):
+def _(mo, setup_code):
     mo.ui.code_editor(
-                value=mojo_setup_code,
+                value=setup_code,
                 label="### i. Setup and definitions",
                 theme="dark",
                 language="python",
@@ -114,10 +122,10 @@ def _(mo, mojo_setup_code):
 
 
 @app.cell
-def _(mo, mojo_main_code):
+def _(main_code, mo):
     mo.ui.code_editor(
                 label = "### iii. Host driver: `main`",
-                value=mojo_main_code,
+                value=main_code,
                 theme="dark",
                 language="python",
                 disabled=True,
@@ -130,35 +138,8 @@ def _(mo, mojo_main_code):
 def _(mo):
     mo.md(r"""
     ## 4. Edit the kernel to solve the puzzle
-    """)
-    return
 
-
-@app.cell
-def _(mo, mojo_kernel_code):
-    # Interactive editor for the kernel
-
-    kernel_editor = mo.ui.code_editor(
-        value=mojo_kernel_code,
-        theme="dark",
-        language="python",
-        label="### Kernel: (**FILL ME IN**)",
-        min_height=220,
-    )
-    return (kernel_editor,)
-
-
-@app.cell
-def _(kernel_editor):
-    kernel_editor
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md("""
     Tips:
-
     - Use `i = thread_idx.x` to pick the current element.
     - Read from `a` and write to `output`.
     - Make sure you don't go out of bounds when you experiment.
@@ -167,79 +148,98 @@ def _(mo):
 
 
 @app.cell
-def _(kernel_editor, mo, mojo_main_code, mojo_setup_code):
+def _(kernel_code, mo):
+    # Interactive editor for the kernel
 
-    mojo_code = "\n\n".join(
+    kernel_code_editor = mo.ui.code_editor(
+        value=kernel_code,
+        theme="dark",
+        language="python",
+        label="### Kernel: (Make your edits here to **FILL ME IN**)",
+        min_height=220,
+    )
+    return (kernel_code_editor,)
+
+
+@app.cell
+def _(kernel_code_editor):
+    kernel_code_editor
+    return
+
+
+@app.cell
+def _(kernel_code_editor, main_code, setup_code):
+    all_code = "\n\n".join(
         [
-            mojo_setup_code,
-            kernel_editor.value,
-            mojo_main_code,
+            setup_code,
+            kernel_code_editor.value,
+            main_code,
         ]
     )
+    return (all_code,)
 
-    # Optional: inspect the full Mojo program that will be sent to `run_mojo`.
-    # You can copy-paste this into a standalone `.mojo` file if you want to
-    # run it from the command line.
-    try:
-        expander = mo.expander("Show entire Mojo program")
-        with expander:
-            mo.ui.code_editor(
-                value=mojo_code,
-                theme="dark",
-                language="python",
-                disabled=True,
-                min_height=260,
-            )
-    except Exception:
-        # Fallback if this marimo version does not have `expander`.
-        mo.ui.code_editor(
-            value=mojo_code,
+
+@app.cell
+def _(all_code, mo):
+    mo.accordion({"**Show/hide entire program**": mo.ui.code_editor(
+            value=all_code,
             theme="dark",
             language="python",
             disabled=True,
             min_height=260,
-        )
-    return (mojo_code,)
+    )})
+    return
 
 
 @app.cell
 def _(mo):
     mo.md(r"""
-    ## 4. Run and inspect output
+    ## 4. Save, Run and inspect output
 
-    Click **Run kernel** to compile and execute the Mojo program. Any `print`
-    output from `main()` (including the puzzle's own assertions) will appear
-    below.
+    Optionally click Save and then **Run kernel** to compile and execute the Mojo program. Any `print`
+    output from `main()` (including the puzzle's own assertions) will appear below.
     """)
     return
 
 
 @app.cell
-def _(mo, mojo_code, problem_id, save_puzzle_program):
-    """Save the current Mojo program to a `.mojo` file for use on the CLI."""
+def _(all_code, mo, problem_id, save_puzzle_program):
+    """Save the current Mojo program to a `.mojo` file for use on the CLI.
 
-    def save_code() -> None:
-        path = save_puzzle_program(problem_id, mojo_code)
-        mo.callout(
-            f"Saved current kernel to `{path}`. You can run it with `mojo {path}`.",
-            kind="info",
-        )
+    Run this cell after editing the kernel to write out a self-contained
+    `.mojo` file for the puzzle.
+    """
 
-    save_button = mo.ui.button(
-        label="Save Mojo file for this puzzle",
-        on_click=lambda _: save_code(),
+    path = save_puzzle_program(problem_id, all_code)
+    info = mo.callout(
+        f"Saved current kernel to `{path}`. You can run it in the repo with `mojo {path}`.",
+        kind="info",
     )
-    mo.hstack([save_button], justify="center")
+    name_line = mo.md(f"**Saved file:** `{path.name}`")
+    return (name_line,)
+
+
+@app.cell
+def _(name_line):
+    name_line
     return
 
 
 @app.cell
-def _(mo, mojo_code, run_mojo, run_puzzle_with_marimo):
-    run_kernel_button = mo.ui.button(
-        label="Run kernel...",
-        on_click=lambda _: run_puzzle_with_marimo(mo, run_mojo, mojo_code, label="Kernel run"),
-    )
-    mo.hstack([run_kernel_button], justify="center")
+def _(all_code, mo, run_mojo, run_puzzle_with_marimo):
+    """Run the current Mojo program and display the result.
+
+    This cell uses `run_puzzle_with_marimo`, which will compile/execute the
+    program and show a callout indicating success or failure.
+    """
+
+    components = run_puzzle_with_marimo(mo, run_mojo, all_code, label="Kernel run")
+    return (components,)
+
+
+@app.cell
+def _(components):
+    components
     return
 
 

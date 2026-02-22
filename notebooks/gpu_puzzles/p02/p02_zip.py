@@ -49,6 +49,13 @@ def _(mo):
 @app.cell
 def _():
     import marimo as mo
+    import sys
+    from pathlib import Path
+
+    # Ensure the gpu_puzzles utils module is importable when running this notebook.
+    ROOT = Path(__file__).resolve().parent.parent  # .../notebooks/gpu_puzzles
+    if str(ROOT) not in sys.path:
+        sys.path.append(str(ROOT))
 
     problem_id = "p02"
     return (

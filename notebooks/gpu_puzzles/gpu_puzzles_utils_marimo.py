@@ -41,22 +41,25 @@ def run_puzzle_with_marimo(
     run_mojo: Callable[[str], Optional[str]],
     code: str,
     label: str = "Execution result",
-) -> None:
-    """Run Mojo code from a marimo notebook and show a callout.
+):
+    """Run Mojo code from a marimo notebook and return UI components.
 
-    This mirrors the behaviour used in the original ``helpers.run_mojo_code``.
+    Returns a tuple of marimo components (callouts/markdown) so that the
+    calling cell can render them reliably.
     """
 
     result = run_mojo(code, echo_output=True)
 
     if result is None:
-        mo.callout(
+        callout = mo.callout(
             "Execution failed – see compilation/runtime errors above.",
             kind="danger",
         )
-    else:
-        mo.callout(f"{label} (see printed output above).", kind="success")
-        mo.md(f"Execution result (stdout): `{result}`")
+        return (callout,)
+
+    success = mo.callout(f"{label} (see printed output above).", kind="success")
+    details = mo.md(f"Execution result (stdout): `{result}`")
+    return success, details
 
 
 def suggest_puzzle_cli_filename(problem: str) -> str:

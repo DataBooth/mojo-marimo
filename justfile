@@ -113,9 +113,15 @@ jupyter-decorator:
 jupyter-executor:
     VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/pattern_executor.py
 
-# Monte Carlo notebook (Jupyter)
+# Monte Carlo notebooks (Jupyter)
 jupyter-mc:
     VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/monte_carlo_extension.py
+
+jupyter-mc-decorator:             # Monte Carlo decorator notebook (Jupyter)
+    VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/monte_carlo_decorator.py
+
+jupyter-mc-executor:               # Monte Carlo executor notebook (Jupyter)
+    VIRTUAL_ENV= uv run jupyter notebook notebooks/jupyter/monte_carlo_executor.py
 
 # Convert Jupyter .py files to .ipynb format
 jupyter-convert:
