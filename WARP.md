@@ -97,7 +97,7 @@ This project ships both marimo and Jupyter variants of the examples.
 
 ```bash
 # marimo notebooks (preferred entry points)
-just learn                    # interactive_learning.py
+just learn                    # notebooks/interactive_learning.py
 just notebook-decorator       # notebooks/pattern_decorator.py
 just notebook-executor        # notebooks/pattern_executor.py
 just notebook-extension       # notebooks/pattern_extension.py
@@ -109,6 +109,10 @@ just notebook-mc-extension
 just notebook-mandelbrot-decorator
 just notebook-mandelbrot-executor
 just notebook-mandelbrot-extension
+
+# GPU puzzle notebooks (marimo)
+just notebook-gpu-p01-hello-threads
+just notebook-gpu-p02-zip
 
 # Benchmarks (marimo)
 just benchmark                # benchmarks/python_vs_mojo.py
@@ -133,9 +137,18 @@ All of the above are implemented in terms of `uv run ...` commands; if needed, i
 just demo-examples            # uv run python examples/examples.py
 just demo-decorator           # uv run python -m py_run_mojo.decorator
 
+# Verify that example .mojo files compile
+just check-mojo-build
+
 # Mojo cache utilities
 just clean-mojo-cache         # rm -rf ~/.mojo_cache/binaries/*
 just cache-stats              # uv run python -c "from py_run_mojo.executor import cache_stats; cache_stats()"
+
+# Build and publish
+just build                    # uv run hatch build
+just publish-test             # uv run hatch publish -r test
+just publish                  # uv run hatch publish
+just verify-pypi              # installs from PyPI into a temp env and prints versions
 
 # Project / environment info
 just info                     # prints Python, package version, Mojo version, etc.
@@ -166,17 +179,18 @@ Future agents should import from the top-level `py_run_mojo` package unless they
 
 `executor.py` is the core execution engine:
 
-- Accepts either a **Mojo source string** or a **path to a `.mojo` file`** via `run_mojo(source, ...)`.
+- Accepts either a **Mojo source string** or a **path to a `.mojo` file** via `run_mojo(source, ...)`.
 - Normalises inline code with `textwrap.dedent` so triple-quoted, indented strings work reliably in Python.
 - Validates source using `validator.validate_mojo_code` before compilation; on failure it prints an error and an optional hint from `get_validation_hint` and returns `None`.
 - Computes a cache key as a SHA256 hash of the final Mojo source and stores compiled binaries under `~/.mojo_cache/binaries/`.
 - Uses `mojo build <tempfile.mojo> -o <cached_binary>` via `subprocess.run` to compile, then executes the resulting binary directly.
 - Provides `clear_cache()` and `cache_stats()` helpers which operate purely on the cache directory and print human-friendly summaries.
-- `get_mojo_version()` shells out to `mojo --version` once (memoised with `functools.cache`).
+- `get_mojo_version()` prefers the importable Python `mojo` package version and falls back to `mojo --version`; memoised with `functools.cache` and returns `"Unknown"` if unavailable.
 
 Key behavioural points for new code:
 
-- `run_mojo` returns the **stdout text** (stripped) or `None` on error; it never raises for normal compile/runtime failures but logs them to stdout/stderr.
+- `run_mojo` returns the **stdout text** (stripped) or `None` on failure. Note: if the Mojo program produces no stdout, `run_mojo` currently returns `None` even when the binary exits successfully.
+- `run_mojo` never raises for normal compile/runtime failures; it logs diagnostics to stdout/stderr and returns `None`.
 - `echo_code` and `echo_output` flags are useful for debugging but should generally be left `False` in library code and tests unless diagnosing an issue.
 - `use_cache=False` forces recompilation and bypasses the binary cache; tests rely on `clear_cache()` plus repeated `run_mojo` calls to exercise both cold and warm paths.
 
@@ -188,7 +202,7 @@ Key behavioural points for new code:
   - Captures the wrapped function's **docstring** as a Mojo code template.
   - Uses `inspect.signature` to bind call arguments and performs **string substitution** on `{{param_name}}` placeholders in the Mojo template.
   - Calls `run_mojo(..., use_cache=True)` so that the underlying Mojo binary is cached by source hash.
-  - Converts the string result from `run_mojo` into `int`, `bool`, or `float` based on the function's **return annotation**; otherwise returns the raw string (or `None`).
+  - Converts the string result from `run_mojo` into `int`, `bool`, or `float` based on the function's **return annotation**. If `run_mojo` returns `None` / empty output, the decorator currently returns `0` / `False` / `0.0` for those types. Otherwise it returns the raw string (or `None`).
 - The module defines sample decorated functions (`fibonacci`, `sum_squares`, `is_prime`) and a `__main__` block that prints basic results and cache warm-ups; this is what `just demo-decorator` exercises.
 
 When adding new decorated functions, follow the existing pattern:
@@ -201,9 +215,9 @@ When adding new decorated functions, follow the existing pattern:
 
 `validator.py` provides best-effort static checks on Mojo source before invoking the compiler:
 
-- Ensures code is non-empty and that there is either `fn main()` or `def main()` (required for executables).
-- Detects mixed tabs/spaces and obvious file-scope statements that should be inside a function (e.g. `var`, `return`, `if` at top level).
-- Enforces that `fn`/`def` declarations end with a colon.
+- Ensures code is non-empty.
+- If the source contains a `main()` entry point (`fn main()` or `def main()`), it runs additional lightweight checks (indentation consistency, obvious file-scope statements that should be inside a function, and missing colons on one-line `fn`/`def` headers).
+- For code fragments without `main()`, it deliberately returns valid and lets the Mojo compiler provide full diagnostics (useful for kernels/snippets).
 - Flags common Python-ism mistakes in Mojo (e.g. `int`/`str`/`bool` instead of `Int`/`String`/`Bool`, `print` without parentheses, `range 10` without parentheses).
 - `get_validation_hint(error_msg)` maps known error substrings to short, human-readable remediation snippets used by `executor.run_mojo`.
 
