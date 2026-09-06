@@ -22,7 +22,7 @@ from py_run_mojo import mojo
 @mojo
 def fibonacci(n: int) -> int:
     """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         if n <= 1:
             return n
         var prev: Int = 0
@@ -33,7 +33,7 @@ def fibonacci(n: int) -> int:
             curr = next_val
         return curr
     
-    fn main():
+    def main():
         print(fibonacci({{n}}))
     """
     pass
@@ -131,13 +131,13 @@ from py_run_mojo import mojo
 @mojo
 def sum_squares(n: int) -> int:
     """
-    fn sum_squares(n: Int) -> Int:
+    def sum_squares(n: Int) -> Int:
         var total: Int = 0
         for i in range(1, n + 1):
             total += i * i
         return total
     
-    fn main():
+    def main():
         print(sum_squares({{n}}))
     """
     pass
@@ -153,10 +153,10 @@ print(result)  # 385
 from py_run_mojo import run_mojo
 
 mojo_code = """
-fn compute(n: Int) -> Int:
+def compute(n: Int) -> Int:
     return n * n
 
-fn main():
+def main():
     print(compute(42))
 """
 

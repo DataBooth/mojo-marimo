@@ -46,7 +46,7 @@ def _(mo, mojo):
     @mojo
     def compute_mandelbrot(width: int, height: int, max_iter: int) -> str:
         """
-        fn mandelbrot_point(cx: Float64, cy: Float64, max_iter: Int) -> Int:
+        def mandelbrot_point(cx: Float64, cy: Float64, max_iter: Int) -> Int:
             var x: Float64 = 0.0
             var y: Float64 = 0.0
             var iteration: Int = 0
@@ -59,7 +59,7 @@ def _(mo, mojo):
                 iteration += 1
             return iteration
 
-        fn main():
+        def main():
             var width = {{width}}
             var height = {{height}}
             var max_iter = {{max_iter}}

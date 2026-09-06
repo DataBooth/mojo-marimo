@@ -10,7 +10,7 @@ def test_decorator_basic():
     @mojo
     def simple_func(n: int) -> int:
         """
-        fn main():
+        def main():
             print(42)
         """
         ...
@@ -26,7 +26,7 @@ def test_decorator_with_parameter_substitution():
     @mojo
     def echo(n: int) -> int:
         """
-        fn main():
+        def main():
             print({{n}})
         """
         ...
@@ -42,7 +42,7 @@ def test_decorator_returns_int():
     @mojo
     def double(n: int) -> int:
         """
-        fn main():
+        def main():
             var result = {{n}} * 2
             print(result)
         """
@@ -59,7 +59,7 @@ def test_decorator_returns_bool():
     @mojo
     def is_positive(n: int) -> bool:
         """
-        fn main():
+        def main():
             var result = {{n}} > 0
             print(result)
         """
@@ -77,7 +77,7 @@ def test_decorator_with_multiple_params():
     @mojo
     def add(a: int, b: int) -> int:
         """
-        fn main():
+        def main():
             var result = {{a}} + {{b}}
             print(result)
         """
@@ -97,7 +97,7 @@ def test_decorator_caching():
     @mojo
     def cached_func(n: int) -> int:
         """
-        fn main():
+        def main():
             print({{n}})
         """
         ...
@@ -127,7 +127,7 @@ def test_decorator_preserves_function_name():
     @mojo
     def my_function(n: int) -> int:
         """
-        fn main():
+        def main():
             print(42)
         """
         ...
@@ -142,7 +142,7 @@ def test_decorator_with_complex_mojo_code():
     @mojo
     def fibonacci(n: int) -> int:
         """
-        fn fibonacci(n: Int) -> Int:
+        def fibonacci(n: Int) -> Int:
             if n <= 1:
                 return n
             var prev: Int = 0
@@ -153,7 +153,7 @@ def test_decorator_with_complex_mojo_code():
                 curr = next_val
             return curr
 
-        fn main():
+        def main():
             print(fibonacci({{n}}))
         """
         ...
@@ -180,7 +180,7 @@ def test_decorator_prime_check(n, expected):
     @mojo
     def is_prime(n: int) -> bool:
         """
-        fn is_prime(n: Int) -> Bool:
+        def is_prime(n: Int) -> Bool:
             if n < 2:
                 return False
             if n == 2:
@@ -194,7 +194,7 @@ def test_decorator_prime_check(n, expected):
                 i += 2
             return True
 
-        fn main():
+        def main():
             print(is_prime({{n}}))
         """
         ...

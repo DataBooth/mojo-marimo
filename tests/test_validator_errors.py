@@ -17,7 +17,7 @@ def test_empty_code():
 def test_missing_main():
     """Validator catches missing main function."""
     code = """
-    fn helper():
+    def helper():
         print("I'm not main!")
     """
     is_valid, error = validate_mojo_code(code)
@@ -27,7 +27,7 @@ def test_missing_main():
 
 def test_mixed_indentation():
     """Validator catches mixed tabs and spaces."""
-    code = "fn main():\n\tprint('tab')\n    print('spaces')"
+    code = "def main():\n\tprint('tab')\n    print('spaces')"
     is_valid, error = validate_mojo_code(code)
     assert not is_valid
     assert error and ("indentation" in error.lower() or "mixed" in error.lower())
@@ -36,7 +36,7 @@ def test_mixed_indentation():
 def test_file_scope_statement():
     """Validator catches statements at file scope."""
     code = """
-fn main():
+def main():
     print("ok")
 
 var x = 10
@@ -49,7 +49,7 @@ var x = 10
 def test_missing_colon():
     """Validator catches missing colon in function definition."""
     code = """
-fn main()
+def main()
     print("oops")
 """
     is_valid, error = validate_mojo_code(code)
@@ -60,10 +60,10 @@ fn main()
 def test_missing_colon_with_return_type():
     """Validator catches missing colon with return type annotation."""
     code = """
-fn compute(n: Int) -> Int
+def compute(n: Int) -> Int
     return n * 2
 
-fn main():
+def main():
     print(compute(5))
 """
     is_valid, error = validate_mojo_code(code)
@@ -74,7 +74,7 @@ fn main():
 def test_valid_code():
     """Validator passes valid code."""
     code = """
-fn main():
+def main():
     print("Hello, Mojo!")
 """
     is_valid, error = validate_mojo_code(code)
@@ -86,9 +86,9 @@ def test_validation_hints():
     """Test that hints are provided for errors."""
     # Missing main hint - use actual error message from validator
     hint = get_validation_hint(
-        "Missing 'fn main()' or 'def main()' - Mojo executables require a main function"
+        "Missing 'def main()' - Mojo executables require a main function"
     )
-    assert "fn main()" in hint or "def main()" in hint
+    assert "def main()" in hint
 
     # Mixed indentation hint
     hint = get_validation_hint("Mixed tabs and spaces in indentation")
@@ -112,9 +112,16 @@ def test_multiple_errors():
     code = """
 var x = 10
 
-fn helper()
+def helper()
     print("no colon and no main")
 """
     is_valid, error = validate_mojo_code(code)
     assert not is_valid
     assert error is not None  # Should catch at least one issue
+
+
+def test_single_line_function_body_is_valid():
+    """Validator accepts single-line function bodies (valid Mojo)."""
+    is_valid, error = validate_mojo_code('def main(): print("hi")')
+    assert is_valid
+    assert error is None

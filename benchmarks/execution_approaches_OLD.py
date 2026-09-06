@@ -107,7 +107,7 @@ def __():
     examples_path = Path(__file__).parent.parent / "examples"
     sys.path.insert(0, str(examples_path))
 
-    from mojo_marimo.executor import clear_cache
+    from py_run_mojo.executor import clear_cache
 
     from examples import (
         fibonacci as fib_cached,
@@ -150,13 +150,13 @@ def __(mo):
 
 @app.cell
 def __():
-    from mojo_marimo.decorator import (
+    from py_run_mojo.decorator import (
         fibonacci as fib_decorator,
     )
-    from mojo_marimo.decorator import (
+    from py_run_mojo.decorator import (
         is_prime as prime_decorator,
     )
-    from mojo_marimo.decorator import (
+    from py_run_mojo.decorator import (
         sum_squares as sum_sq_decorator,
     )
 
@@ -473,9 +473,9 @@ def __(mo):
         # compute_wrapper.py
         def fibonacci(n: int) -> int:
             mojo_code = f"""
-            fn fibonacci(n: Int) -> Int:
+            def fibonacci(n: Int) -> Int:
                 # ... mojo implementation ...
-            fn main():
+            def main():
                 print(fibonacci({n}))
             """
             return int(mo_run_mojo(mojo_code))
@@ -489,9 +489,9 @@ def __(mo):
         # mo_run_cached.py
         def fibonacci_cached(n: int) -> int:
             mojo_code = f"""
-            fn fibonacci(n: Int) -> Int:
+            def fibonacci(n: Int) -> Int:
                 # ... mojo implementation ...
-            fn main():
+            def main():
                 print(fibonacci({n}))
             """
             return int(mo_run_mojo_cached(mojo_code))
@@ -506,9 +506,9 @@ def __(mo):
         @mojo
         def fibonacci(n: int) -> int:
             """
-            fn fibonacci(n: Int) -> Int:
+            def fibonacci(n: Int) -> Int:
                 # ... mojo implementation ...
-            fn main():
+            def main():
                 print(fibonacci({{n}}))
             """
             pass

@@ -35,9 +35,9 @@ Implemented three distinct approaches for executing Mojo code from Python/marimo
      @mojo
      def fibonacci(n: int) -> int:
          """
-         fn fibonacci(n: Int) -> Int:
+         def fibonacci(n: Int) -> Int:
              # ... mojo implementation ...
-         fn main():
+         def main():
              print(fibonacci({{n}}))
          """
          pass

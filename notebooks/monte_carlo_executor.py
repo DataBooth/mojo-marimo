@@ -34,7 +34,7 @@ def _(mo):
 def _(mo):
     from pathlib import Path
 
-    from mojo_marimo import run_mojo
+    from py_run_mojo import run_mojo
 
     # Path to standalone Mojo file
     mojo_file = Path("examples/monte_carlo.mojo")
@@ -64,7 +64,7 @@ def _(mo, samples_slider):
 from random import random_float64
 from math import sqrt
 
-fn estimate_pi(samples: Int) -> Float64:
+def estimate_pi(samples: Int) -> Float64:
     var inside_circle: Int = 0
     
     for _ in range(samples):
@@ -77,7 +77,7 @@ fn estimate_pi(samples: Int) -> Float64:
     
     return 4.0 * Float64(inside_circle) / Float64(samples)
 
-fn main():
+def main():
     var pi_estimate = estimate_pi({samples_slider.value})
     print(pi_estimate)
 """
@@ -142,7 +142,7 @@ def _(mo, run_mojo):
 from random import random_float64
 from math import sqrt
 
-fn estimate_pi(samples: Int) -> Float64:
+def estimate_pi(samples: Int) -> Float64:
     var inside_circle: Int = 0
     for _ in range(samples):
         var x = random_float64()
@@ -151,7 +151,7 @@ fn estimate_pi(samples: Int) -> Float64:
             inside_circle += 1
     return 4.0 * Float64(inside_circle) / Float64(samples)
 
-fn main():
+def main():
     print(estimate_pi({n}))
 """
         result = run_mojo(code)

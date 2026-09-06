@@ -38,7 +38,7 @@ def test_decorator_definition():
     # Can define a decorated function
     @mojo
     def test_func(n: int) -> int:
-        """fn main(): print(42)"""
+        """def main(): print(42)"""
         ...
 
     assert callable(test_func)

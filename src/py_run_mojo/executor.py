@@ -5,7 +5,9 @@ executions much faster (~10-50ms vs ~1-2s).
 """
 
 import hashlib
+import shutil
 import subprocess
+import sys
 import tempfile
 from functools import cache
 from pathlib import Path
@@ -16,6 +18,28 @@ from py_run_mojo.validator import get_validation_hint, validate_mojo_code
 # Cache directory for compiled Mojo binaries
 CACHE_DIR = Path.home() / ".mojo_cache" / "binaries"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _find_mojo_binary() -> str:
+    """Locate the ``mojo`` executable.
+
+    Preference order:
+    1. ``mojo`` on PATH.
+    2. Next to the current Python interpreter (covers the pip-installed
+       ``mojo`` package when the virtualenv's bin dir is not on PATH, e.g.
+       notebook kernels started without activating the environment).
+    3. Bare ``"mojo"`` — preserves the standard FileNotFoundError from
+       subprocess if Mojo is genuinely not installed.
+    """
+    on_path = shutil.which("mojo")
+    if on_path:
+        return on_path
+    bin_dir = Path(sys.executable).parent
+    for name in ("mojo", "mojo.exe"):
+        candidate = bin_dir / name
+        if candidate.is_file():
+            return str(candidate)
+    return "mojo"
 
 
 @cache
@@ -48,7 +72,7 @@ def get_mojo_version() -> str:
     # 2. Fallback: shell out to the CLI, but only trust sane output.
     try:
         result = subprocess.run(
-            ["mojo", "--version"],
+            [_find_mojo_binary(), "--version"],
             capture_output=True,
             text=True,
             check=False,
@@ -89,7 +113,7 @@ def run_mojo(
         The stdout output if successful, else None.
 
     Example:
-        >>> code = '''\n        ... fn main():\n        ...     print("Hello from Mojo!")\n        ... '''\n        >>> output = run_mojo(code)
+        >>> code = '''\n        ... def main():\n        ...     print("Hello from Mojo!")\n        ... '''\n        >>> output = run_mojo(code)
         >>> print(output)
         Hello from Mojo!
     """
@@ -100,8 +124,17 @@ def run_mojo(
     path = Path(source)
     mojo_code: str
 
-    # Read or use source code
-    if path.is_file():
+    # Read or use source code.
+    # Only strings without newlines can plausibly be file paths, so skip the
+    # filesystem check for multi-line inline code. Also guard against
+    # ENAMETOOLONG, which Python 3.13+ pathlib re-raises from is_file()
+    # instead of returning False for over-long inline source strings.
+    try:
+        is_file = "\n" not in source and path.is_file()
+    except OSError:
+        is_file = False
+
+    if is_file:
         try:
             mojo_code = path.read_text()
         except OSError as e:
@@ -145,7 +178,7 @@ def run_mojo(
 
         try:
             # Compile to binary
-            compile_cmd = ["mojo", "build", source_file, "-o", str(cached_binary)]
+            compile_cmd = [_find_mojo_binary(), "build", source_file, "-o", str(cached_binary)]
             compile_result = subprocess.run(
                 compile_cmd,
                 capture_output=True,
@@ -230,7 +263,7 @@ if __name__ == "__main__":
     # Example: Direct code execution
     print("=== Example: Running Mojo code ===")
     code = """
-fn main():
+def main():
     print("Hello from Mojo!")
 """
     result = run_mojo(code, echo_output=True)

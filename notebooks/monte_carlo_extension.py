@@ -32,6 +32,14 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import sys
+    from pathlib import Path
+
+    # The .mojo source lives in ../examples, so it must be on sys.path
+    # before the mojo.importer hook can find it.
+    examples_dir = Path(__file__).parent.parent / "examples"
+    sys.path.insert(0, str(examples_dir))
+
     import mojo.importer  # Register import hook for auto-compilation
     import monte_carlo_ext  # Auto-compiles examples/monte_carlo_ext.mojo
 
@@ -192,9 +200,7 @@ def _(mo):
 
 
 @app.cell
-def _(go, mo, monte_carlo_ext):
-    import math
-
+def _(go, math, mo, monte_carlo_ext):
     # Test different sample sizes
     sample_sizes = [10**i for i in range(2, 7)]
     estimates = []

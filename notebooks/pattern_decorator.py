@@ -29,10 +29,10 @@ def _(mo):
     @mojo
     def my_func(n: int) -> int:
         '''
-        fn my_func(n: Int) -> Int:
+        def my_func(n: Int) -> Int:
             return n * n
 
-        fn main():
+        def main():
             print(my_func({{n}}))
         '''
         ...
@@ -47,7 +47,7 @@ def _(mo):
 
 @app.cell
 def _():
-    from mojo_marimo import get_mojo_version, mojo
+    from py_run_mojo import get_mojo_version, mojo
 
     return get_mojo_version, mojo
 
@@ -74,7 +74,7 @@ def _(mojo):
     @mojo
     def fibonacci(n: int) -> int:
         """
-        fn fibonacci(n: Int) -> Int:
+        def fibonacci(n: Int) -> Int:
             if n <= 1:
                 return n
             var prev: Int = 0
@@ -85,7 +85,7 @@ def _(mojo):
                 curr = next_val
             return curr
 
-        fn main():
+        def main():
             print(fibonacci({{n}}))
         """
         ...
@@ -122,13 +122,13 @@ def _(mojo):
     @mojo
     def sum_squares(n: int) -> int:
         """
-        fn sum_squares(n: Int) -> Int:
+        def sum_squares(n: Int) -> Int:
             var total: Int = 0
             for i in range(1, n + 1):
                 total += i * i
             return total
 
-        fn main():
+        def main():
             print(sum_squares({{n}}))
         """
         ...
@@ -163,7 +163,7 @@ def _(mojo):
     @mojo
     def is_prime(n: int) -> bool:
         """
-        fn is_prime(n: Int) -> Bool:
+        def is_prime(n: Int) -> Bool:
             if n < 2:
                 return False
             if n == 2:
@@ -179,7 +179,7 @@ def _(mojo):
 
             return True
 
-        fn main():
+        def main():
             print(is_prime({{n}}))
         """
         ...
@@ -221,7 +221,7 @@ def _(mojo):
     @mojo
     def gcd(a: int, b: int) -> int:
         """
-        fn gcd(a: Int, b: Int) -> Int:
+        def gcd(a: Int, b: Int) -> Int:
             var x = a
             var y = b
             while y != 0:
@@ -230,7 +230,7 @@ def _(mojo):
                 x = temp
             return x
 
-        fn main():
+        def main():
             print(gcd({{a}}, {{b}}))
         """
         ...
@@ -262,7 +262,7 @@ def _(mo):
     The decorator validates Mojo code **before** compilation to catch common errors early.
     
     **Validation checks:**
-    - Missing `fn main()` function
+    - Missing `def main()` function
     - Statements at file scope (e.g., `var x = 10` outside functions)
     - Missing colons after function declarations
     - Mixed tabs and spaces in indentation

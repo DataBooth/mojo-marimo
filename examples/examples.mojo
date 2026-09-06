@@ -3,7 +3,7 @@
 This module provides fast computation functions that can be called from Python/marimo.
 """
 
-fn fibonacci(n: Int) -> Int:
+def fibonacci(n: Int) -> Int:
     """Calculate the nth Fibonacci number iteratively."""
     if n <= 1:
         return n
@@ -19,7 +19,7 @@ fn fibonacci(n: Int) -> Int:
     return curr
 
 
-fn sum_squares(n: Int) -> Int:
+def sum_squares(n: Int) -> Int:
     """Calculate the sum of squares from 1 to n."""
     var total: Int = 0
     for i in range(1, n + 1):
@@ -27,7 +27,7 @@ fn sum_squares(n: Int) -> Int:
     return total
 
 
-fn is_prime(n: Int) -> Bool:
+def is_prime(n: Int) -> Bool:
     """Check if a number is prime."""
     if n < 2:
         return False
@@ -45,7 +45,7 @@ fn is_prime(n: Int) -> Bool:
     return True
 
 
-fn main():
+def main():
     """Test the functions."""
     print("Fibonacci(10):", fibonacci(10))
     print("Sum of squares 1-10:", sum_squares(10))

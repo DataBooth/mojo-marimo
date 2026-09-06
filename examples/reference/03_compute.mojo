@@ -1,7 +1,7 @@
 """Dynamic computation - add two numbers."""
 
-fn compute(a: Int, b: Int) -> Int:
+def compute(a: Int, b: Int) -> Int:
     return a + b
 
-fn main():
+def main():
     print(compute(5, 3))

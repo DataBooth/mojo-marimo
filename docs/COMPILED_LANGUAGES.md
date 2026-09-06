@@ -72,7 +72,7 @@ This is the approach used by `mojo-marimo`:
 ```python
 # Write code
 mojo_code = """
-fn fibonacci(n: Int) -> Int:
+def fibonacci(n: Int) -> Int:
     # Mojo implementation
 """
 

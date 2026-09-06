@@ -11,7 +11,7 @@ def test_run_mojo_with_simple_code():
     from py_run_mojo.executor import run_mojo
 
     code = """
-fn main():
+def main():
     print("test output")
 """
     result = run_mojo(code)
@@ -23,7 +23,7 @@ def test_run_mojo_with_arithmetic():
     from py_run_mojo.executor import run_mojo
 
     code = """
-fn main():
+def main():
     var result = 42 + 8
     print(result)
 """
@@ -39,7 +39,7 @@ def test_cache_enabled_by_default():
     clear_cache()
 
     code = """
-fn main():
+def main():
     print("cached test")
 """
 
@@ -56,7 +56,7 @@ def test_cache_disabled():
     from py_run_mojo.executor import run_mojo
 
     code = """
-fn main():
+def main():
     print("no cache")
 """
 
@@ -72,7 +72,7 @@ def test_clear_cache():
     from py_run_mojo.executor import clear_cache, run_mojo
 
     code = """
-fn main():
+def main():
     print("test")
 """
 
@@ -109,7 +109,7 @@ def test_run_mojo_with_file():
 
     # Create temporary .mojo file
     with tempfile.NamedTemporaryFile(mode="w", suffix=".mojo", delete=False) as f:
-        f.write('fn main():\n    print("from file")')
+        f.write('def main():\n    print("from file")')
         temp_path = f.name
 
     try:
@@ -132,7 +132,7 @@ def test_invalid_mojo_code():
     from py_run_mojo.executor import run_mojo
 
     code = """
-fn main(:
+def main(:
     invalid syntax here
 """
 
@@ -154,7 +154,7 @@ def test_factorial_computation(n, expected):
     from py_run_mojo.executor import run_mojo
 
     code = f"""
-fn factorial(n: Int) -> Int:
+def factorial(n: Int) -> Int:
     if n <= 1:
         return 1
     var result = 1
@@ -162,9 +162,74 @@ fn factorial(n: Int) -> Int:
         result *= i
     return result
 
-fn main():
+def main():
     print(factorial({n}))
 """
 
     result = run_mojo(code)
     assert result == expected
+
+
+def test_run_mojo_with_long_source_string():
+    """Long multi-line source must be treated as code, not a file path.
+
+    Regression test: on Python 3.13+, pathlib.is_file() re-raises
+    ENAMETOOLONG instead of returning False for over-long "paths".
+    """
+    from py_run_mojo.executor import run_mojo
+
+    code = """
+def main():
+    var total = 0
+    for i in range(10):
+        total += i
+    # This comment exists only to push the source past 255 bytes so that
+    # treating it as a file path would raise ENAMETOOLONG on Python 3.13+.
+    # Regression test for pathlib.is_file() re-raising instead of returning
+    # False when handed inline source code instead of a real path.
+    print(total)
+"""
+    assert len(code.encode()) > 255  # exceed filesystem NAME_MAX
+    assert run_mojo(code) == "45"
+
+
+def test_run_mojo_with_long_single_line_source():
+    """Long single-line source (no newlines) must not raise from the path check."""
+    from py_run_mojo.executor import run_mojo
+
+    payload = "x" * 300
+    code = f'def main(): print("{payload}")'
+    assert "\n" not in code and len(code.encode()) > 255
+    assert run_mojo(code) == payload
+
+
+def test_find_mojo_binary_prefers_path(monkeypatch):
+    """mojo found on PATH is used when available."""
+    from py_run_mojo import executor
+
+    monkeypatch.setattr(executor.shutil, "which", lambda name: "/usr/bin/mojo")
+    assert executor._find_mojo_binary() == "/usr/bin/mojo"
+
+
+def test_find_mojo_binary_falls_back_to_interpreter_dir(monkeypatch):
+    """Without mojo on PATH, use the binary next to the running interpreter
+    (pip-installed mojo package in the same virtualenv)."""
+    import sys
+    from pathlib import Path
+
+    from py_run_mojo import executor
+
+    monkeypatch.setattr(executor.shutil, "which", lambda name: None)
+    expected = Path(sys.executable).parent / "mojo"
+    assert expected.is_file()  # sanity: venv must have mojo beside python
+    assert executor._find_mojo_binary() == str(expected)
+
+
+def test_find_mojo_binary_defaults_to_literal(monkeypatch, tmp_path):
+    """With no mojo anywhere, fall back to bare 'mojo' so the subprocess
+    raises the standard FileNotFoundError."""
+    from py_run_mojo import executor
+
+    monkeypatch.setattr(executor.shutil, "which", lambda name: None)
+    monkeypatch.setattr(executor.sys, "executable", str(tmp_path / "python"))
+    assert executor._find_mojo_binary() == "mojo"

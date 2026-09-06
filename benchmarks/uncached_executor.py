@@ -9,7 +9,7 @@ from py_run_mojo import run_mojo
 def fibonacci(n: int) -> int:
     """Fibonacci using uncached executor."""
     mojo_code = f"""
-fn fibonacci(n: Int) -> Int:
+def fibonacci(n: Int) -> Int:
     if n <= 1:
         return n
     var prev: Int = 0
@@ -20,7 +20,7 @@ fn fibonacci(n: Int) -> Int:
         curr = next_val
     return curr
 
-fn main():
+def main():
     print(fibonacci({n}))
 """
     result = run_mojo(mojo_code)
@@ -30,13 +30,13 @@ fn main():
 def sum_squares(n: int) -> int:
     """Sum of squares using uncached executor."""
     mojo_code = f"""
-fn sum_squares(n: Int) -> Int:
+def sum_squares(n: Int) -> Int:
     var total: Int = 0
     for i in range(1, n + 1):
         total += i * i
     return total
 
-fn main():
+def main():
     print(sum_squares({n}))
 """
     result = run_mojo(mojo_code)
@@ -46,7 +46,7 @@ fn main():
 def is_prime(n: int) -> bool:
     """Prime check using uncached executor."""
     mojo_code = f"""
-fn is_prime(n: Int) -> Bool:
+def is_prime(n: Int) -> Bool:
     if n < 2:
         return False
     if n == 2:
@@ -61,7 +61,7 @@ fn is_prime(n: Int) -> Bool:
         i += 2
     return True
 
-fn main():
+def main():
     print(is_prime({n}))
 """
     result = run_mojo(mojo_code)

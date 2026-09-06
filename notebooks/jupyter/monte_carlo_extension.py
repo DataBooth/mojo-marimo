@@ -7,11 +7,17 @@
 
 # %%
 import sys
+from pathlib import Path
 
-sys.path.insert(0, "../../examples")
+# The .mojo source lives in examples/ (two levels up from this notebook)
+examples_dir = Path(__file__).parent.parent.parent / "examples"
+sys.path.insert(0, str(examples_dir))
+
+# Register the Mojo import hook (compiles .mojo → .so on demand)
+import mojo.importer
 
 # Import the Mojo extension module
-import monte_carlo_mojo_ext
+import monte_carlo_ext
 
 # %%
 import numpy as np
@@ -31,10 +37,13 @@ from plotly.subplots import make_subplots
 # ## Small Sample (10,000 points)
 
 # %%
-# Generate samples - returns (x, y, inside, pi_estimate, error)
-x_small, y_small, inside_small, pi_small, error_small = monte_carlo_mojo_ext.generate_samples(
-    10_000
-)
+# Generate samples - returns a dict with 'x', 'y', 'inside', 'pi_estimate', 'error'
+res_small = monte_carlo_ext.generate_samples(10_000)
+x_small = np.array(res_small["x"])
+y_small = np.array(res_small["y"])
+inside_small = np.array(res_small["inside"], dtype=int)
+pi_small = res_small["pi_estimate"]
+error_small = res_small["error"]
 
 print("Samples: 10,000")
 print(f"π estimate: {pi_small:.6f}")
@@ -91,9 +100,12 @@ fig.show()
 
 # %%
 # Generate large sample
-x_large, y_large, inside_large, pi_large, error_large = monte_carlo_mojo_ext.generate_samples(
-    1_000_000
-)
+res_large = monte_carlo_ext.generate_samples(1_000_000)
+x_large = np.array(res_large["x"])
+y_large = np.array(res_large["y"])
+inside_large = np.array(res_large["inside"], dtype=int)
+pi_large = res_large["pi_estimate"]
+error_large = res_large["error"]
 
 print("Samples: 1,000,000")
 print(f"π estimate: {pi_large:.6f}")
@@ -110,7 +122,7 @@ estimates = []
 errors = []
 
 for n in sample_sizes:
-    _, _, _, pi_est, _ = monte_carlo_mojo_ext.generate_samples(n)
+    pi_est = monte_carlo_ext.generate_samples(n)["pi_estimate"]
     estimates.append(pi_est)
     errors.append(abs(pi_est - np.pi))
 

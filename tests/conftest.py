@@ -37,7 +37,7 @@ def check_mojo_env():
 def mojo_code_simple():
     """Fixture providing simple Mojo code for testing."""
     return """
-fn main():
+def main():
     print("test")
 """
 
@@ -46,7 +46,7 @@ fn main():
 def mojo_code_arithmetic():
     """Fixture providing Mojo code with arithmetic."""
     return """
-fn main():
+def main():
     var result = 10 + 5
     print(result)
 """

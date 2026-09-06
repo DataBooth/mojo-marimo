@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.4"
+__generated_with = "0.24.0"
 app = marimo.App(width="medium")
 
 
@@ -30,7 +30,7 @@ def _(mo):
 @app.cell
 def _(mo):
     import numpy as np
-    from mojo_marimo import run_mojo
+    from py_run_mojo import run_mojo
 
     mo.md("✅ **Executor imported**")
     return np, run_mojo
@@ -53,7 +53,7 @@ def _(mo):
 def _(height_slider, max_iter_slider, width_slider):
     # Build dynamic Mojo code
     mojo_code = f"""
-    fn mandelbrot_point(cx: Float64, cy: Float64, max_iter: Int) -> Int:
+    def mandelbrot_point(cx: Float64, cy: Float64, max_iter: Int) -> Int:
         var x: Float64 = 0.0
         var y: Float64 = 0.0
         var iteration: Int = 0
@@ -66,7 +66,7 @@ def _(height_slider, max_iter_slider, width_slider):
             iteration += 1
         return iteration
 
-    fn main():
+    def main():
         var width = {width_slider.value}
         var height = {height_slider.value}
         var max_iter = {max_iter_slider.value}
