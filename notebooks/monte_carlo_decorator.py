@@ -32,7 +32,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    from mojo_marimo import mojo
+    from py_run_mojo import mojo
 
     @mojo
     def estimate_pi_mojo(samples: int) -> float:
@@ -40,7 +40,7 @@ def _(mo):
         from random import random_float64
         from math import sqrt
 
-        fn estimate_pi(samples: Int) -> Float64:
+        def estimate_pi(samples: Int) -> Float64:
             var inside_circle: Int = 0
 
             for _ in range(samples):
@@ -53,7 +53,7 @@ def _(mo):
 
             return 4.0 * Float64(inside_circle) / Float64(samples)
 
-        fn main():
+        def main():
             print(estimate_pi({{samples}}))
         """
         ...

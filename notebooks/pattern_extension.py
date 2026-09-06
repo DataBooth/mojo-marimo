@@ -81,9 +81,11 @@ def _(mo):
 
 @app.cell
 def _():
-    # Enable Mojo import hook for auto-compilation
+    # Enable Mojo import hook for auto-compilation (must precede the
+    # extension-module import so the hook can compile .mojo → .so).
     # Note: We don't return 'mojo' here to avoid namespace collision
-    # with the @mojo decorator imported later from mojo_marimo
+    # with the @mojo decorator imported later from py_run_mojo
+    import mojo.importer
 
     # Import our Mojo extension module
     # BUILD HAPPENS HERE: First import compiles .mojo → .so (~1-2s)
@@ -266,16 +268,20 @@ def _(mo):
     Extension modules require specific structure:
 
     ```mojo
-    from python import PythonObject
-    from python.bindings import PythonModuleBuilder
+    from std.os import abort
+    from std.python import PythonObject
+    from std.python.bindings import PythonModuleBuilder
 
     @export
-    fn PyInit_mymodule() -> PythonObject:
-        var mb = PythonModuleBuilder("mymodule")
-        mb.def_function[my_func]("my_func")
-        return mb.finalize()
+    def PyInit_mymodule() abi("C") -> PythonObject:
+        try:
+            var mb = PythonModuleBuilder("mymodule")
+            mb.def_function[my_func]("my_func")
+            return mb.finalize()
+        except e:
+            abort(String("error creating Python Mojo module:", e))
 
-    fn my_func(py_arg: PythonObject) raises -> PythonObject:
+    def my_func(py_arg: PythonObject) raises -> PythonObject:
         var arg = Int(py=py_arg)  # Convert from Python
         var result = arg * 2
         return PythonObject(result)  # Convert to Python

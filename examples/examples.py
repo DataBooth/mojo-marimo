@@ -25,7 +25,7 @@ def fibonacci(n: int) -> int:
         The nth Fibonacci number
     """
     code = f"""
-fn fibonacci(n: Int) -> Int:
+def fibonacci(n: Int) -> Int:
     if n <= 1:
         return n
     var prev: Int = 0
@@ -36,7 +36,7 @@ fn fibonacci(n: Int) -> Int:
         curr = next_val
     return curr
 
-fn main():
+def main():
     print(fibonacci({n}))
 """
     result = run_mojo(code)
@@ -53,13 +53,13 @@ def sum_squares(n: int) -> int:
         The sum of squares from 1 to n
     """
     code = f"""
-fn sum_squares(n: Int) -> Int:
+def sum_squares(n: Int) -> Int:
     var total: Int = 0
     for i in range(1, n + 1):
         total += i * i
     return total
 
-fn main():
+def main():
     print(sum_squares({n}))
 """
     result = run_mojo(code)
@@ -76,7 +76,7 @@ def is_prime(n: int) -> bool:
         True if n is prime, False otherwise
     """
     code = f"""
-fn is_prime(n: Int) -> Bool:
+def is_prime(n: Int) -> Bool:
     if n < 2:
         return False
     if n == 2:
@@ -90,7 +90,7 @@ fn is_prime(n: Int) -> Bool:
         i += 2
     return True
 
-fn main():
+def main():
     print(is_prime({n}))
 """
     result = run_mojo(code)

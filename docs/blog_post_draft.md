@@ -43,14 +43,14 @@ All solve the same problem—executing Mojo from Python—but optimise for diffe
 **Pattern**: Pass Mojo code as string → Compile to binary → Cache by SHA256 hash → Execute
 
 ```python
-from mojo_marimo import run_mojo
+from py_run_mojo import run_mojo
 
 # Inline Mojo code
 mojo_code = """
-fn compute(n: Int) -> Int:
+def compute(n: Int) -> Int:
     return n * n
 
-fn main():
+def main():
     print(compute(42))
 """
 
@@ -78,12 +78,12 @@ result = run_mojo("path/to/module.mojo")
 **Pattern**: Extract Mojo from docstring → Use cached binary execution → Clean Python interface
 
 ```python
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 @mojo
 def fibonacci(n: int) -> int:
     """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         if n <= 1:
             return n
         var prev: Int = 0
@@ -94,7 +94,7 @@ def fibonacci(n: int) -> int:
             curr = next_val
         return curr
     
-    fn main():
+    def main():
         print(fibonacci({{n}}))
     """
     ...
@@ -127,17 +127,25 @@ result = fibonacci_mojo_ext.is_prime(17)
 
 **Mojo code** (requires `PythonModuleBuilder`):
 ```mojo
-from python.python import PythonModuleBuilder
+from std.os import abort
+from std.python import PythonObject
+from std.python.bindings import PythonModuleBuilder
 
-fn fibonacci(py_n: PythonObject) raises -> PythonObject:
-    let n = Int(py_n)
+@export
+def PyInit_fibonacci_mojo_ext() abi("C") -> PythonObject:
+    try:
+        var mb = PythonModuleBuilder("fibonacci_mojo_ext")
+        mb.def_function[fibonacci]("fibonacci")
+        return mb.finalize()
+    except e:
+        abort(String("error creating Python Mojo module:", e))
+
+def fibonacci(py_n: PythonObject) raises -> PythonObject:
+    var n = Int(py=py_n)
     if n <= 1:
-        return n
+        return PythonObject(n)
     # ... implementation
-    return result
-
-fn initialize(module: PythonModuleBuilder) -> None:
-    module.add_function("fibonacci", fibonacci)
+    return PythonObject(result)
 ```
 
 **When to use**:

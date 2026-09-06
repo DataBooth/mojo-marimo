@@ -31,9 +31,18 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    import mandelbrot_ext  # Auto-compiles examples/mandelbrot_ext.mojo
-    import mojo.importer  # Register import hook
+    import sys
+    from pathlib import Path
+
+    # The .mojo source lives in ../examples, so it must be on sys.path
+    # before the mojo.importer hook can find it.
+    examples_dir = Path(__file__).parent.parent / "examples"
+    sys.path.insert(0, str(examples_dir))
+
     import numpy as np
+
+    import mojo.importer  # Register import hook first (compiles .mojo → .so on demand)
+    import mandelbrot_ext  # Auto-compiles examples/mandelbrot_ext.mojo
 
     mo.md("✅ **Extension module imported** - First import compiles `.mojo` → `.so` (~1-2s)")
     return mandelbrot_ext, mojo, np
@@ -76,10 +85,10 @@ def _(height_slider, mandelbrot_ext, max_iter_slider, mo, np, width_slider):
 
 @app.cell
 def _(height_slider, mandelbrot_array, max_iter_slider, mo, width_slider):
-    import plotly.graph_objects as go
+    import plotly.graph_objects as _go
 
-    fig = go.Figure(
-        data=go.Heatmap(
+    fig = _go.Figure(
+        data=_go.Heatmap(
             z=mandelbrot_array,
             colorscale="Hot",
             colorbar=dict(title="Iterations"),
@@ -98,7 +107,7 @@ def _(height_slider, mandelbrot_array, max_iter_slider, mo, width_slider):
 
     mandelbrot_plot = mo.ui.plotly(fig)
     mandelbrot_plot
-    return fig, go, mandelbrot_plot
+    return fig, mandelbrot_plot
 
 
 @app.cell
@@ -132,7 +141,7 @@ def _(mo):
 
 @app.cell
 def _(mandelbrot_ext, mo, np, region):
-    import plotly.graph_objects as go
+    import plotly.graph_objects as _go
 
     # Get region bounds
     x_min, x_max, y_min, y_max = region.value
@@ -141,8 +150,8 @@ def _(mandelbrot_ext, mo, np, region):
     zoom_data = mandelbrot_ext.compute_mandelbrot(500, 400, 512, x_min, x_max, y_min, y_max)
     zoom_array = np.array(zoom_data)
 
-    fig_zoom = go.Figure(
-        data=go.Heatmap(z=zoom_array, colorscale="Hot", colorbar=dict(title="Iterations"))
+    fig_zoom = _go.Figure(
+        data=_go.Heatmap(z=zoom_array, colorscale="Hot", colorbar=dict(title="Iterations"))
     )
 
     fig_zoom.update_layout(
@@ -155,7 +164,7 @@ def _(mandelbrot_ext, mo, np, region):
     )
 
     mo.ui.plotly(fig_zoom)
-    return fig_zoom, go, x_max, x_min, y_max, y_min, zoom_array, zoom_data
+    return fig_zoom, x_max, x_min, y_max, y_min, zoom_array, zoom_data
 
 
 @app.cell

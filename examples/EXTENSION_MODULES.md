@@ -8,12 +8,12 @@ This directory contains an example of the **alternative approach** to integratin
 
 **How it works:**
 ```python
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 @mojo
 def fibonacci(n: int) -> int:
     """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         # Mojo implementation
     """
     ...
@@ -147,7 +147,7 @@ See [`notebooks/pattern_extension.py`](../notebooks/pattern_extension.py) for a 
 The `mojo-marimo` library could potentially support both modes:
 
 ```python
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 # Subprocess mode (current, simple)
 @mojo(mode="subprocess")
@@ -174,27 +174,40 @@ The decorator could automatically:
 
 Extension modules need:
 
-1. **Export function** with specific name:
+1. **Export function** with specific name (the `abi("C")` effect is required):
 ```mojo
+from std.os import abort
+from std.python import PythonObject
+from std.python.bindings import PythonModuleBuilder
+
 @export
-fn PyInit_<module_name>() -> PythonObject:
+def PyInit_<module_name>() abi("C") -> PythonObject:
     ...
 ```
 
 2. **PythonModuleBuilder** to register functions:
 ```mojo
-var mb = PythonModuleBuilder("module_name")
-mb.def_function[my_function]("my_function")
-return mb.finalize()
+try:
+    var mb = PythonModuleBuilder("module_name")
+    mb.def_function[my_function]("my_function")
+    return mb.finalize()
+except e:
+    abort(String("error creating Python Mojo module:", e))
 ```
 
 3. **Functions accepting PythonObject**:
 ```mojo
-fn my_function(py_arg: PythonObject) raises -> PythonObject:
+def my_function(py_arg: PythonObject) raises -> PythonObject:
     var arg = Int(py=py_arg)  # Convert from Python
     var result = arg * 2
     return PythonObject(result)  # Convert to Python
 ```
+
+> **Note:** `def_function` supports at most 6 `PythonObject` arguments. For
+> functions needing more, use the lower-level
+> `mb.def_py_function[fn]("name")` with the signature
+> `def fn(py_self: PythonObject, py_args: PythonObject) raises -> PythonObject`
+> and index into `py_args` (see `mandelbrot_ext.mojo`, which takes 7 args).
 
 ### Cache Management
 

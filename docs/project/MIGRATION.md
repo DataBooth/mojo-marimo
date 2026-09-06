@@ -34,7 +34,7 @@ mojo-marimo/
 │   ├── example_notebook.py     # Interactive demo
 │   └── benchmark_notebook.py   # Performance comparison
 ├── src/
-│   └── mojo_marimo/
+│   └── py_run_mojo/
 │       ├── __init__.py         # Package initialization
 │       ├── compute.mojo        # Standalone Mojo implementations
 │       ├── compute_wrapper.py  # Approach 1: Uncached subprocess
@@ -50,7 +50,7 @@ mojo-marimo/
 
 ### Directory Structure
 
-- **src/marimo_mojo/** → **src/mojo_marimo/**
+- **src/marimo_mojo/** → **src/py_run_mojo/**
   - Changed to match package naming convention (underscores instead of hyphens)
   - Now a proper Python package with `__init__.py`
 
@@ -73,7 +73,7 @@ mojo-marimo/
 6. **.gitignore** - Comprehensive ignore rules
 7. **.github/workflows/ci.yml.OFF** - Placeholder CI workflow
 8. **tests/test_imports.py** - Basic package tests
-9. **src/mojo_marimo/__init__.py** - Package initialization and exports
+9. **src/py_run_mojo/__init__.py** - Package initialization and exports
 
 ### Environment Management
 
@@ -98,9 +98,9 @@ This dual approach accommodates different user preferences and workflows.
 The code is now a proper Python package:
 
 ```python
-from mojo_marimo import mojo  # Decorator
-from mojo_marimo import fibonacci, sum_squares, is_prime  # Uncached
-from mojo_marimo import fibonacci_cached, clear_cache  # Cached
+from py_run_mojo import mojo  # Decorator
+from py_run_mojo import fibonacci, sum_squares, is_prime  # Uncached
+from py_run_mojo import fibonacci_cached, clear_cache  # Cached
 ```
 
 ### Version
@@ -145,7 +145,7 @@ source .venv/bin/activate
 uv pip install -e ".[dev]"
 
 # Verify
-python src/mojo_marimo/test_all_approaches.py
+python src/py_run_mojo/test_all_approaches.py
 
 # Run notebook
 marimo edit notebooks/example_notebook.py

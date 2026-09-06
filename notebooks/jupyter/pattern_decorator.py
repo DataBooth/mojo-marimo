@@ -9,10 +9,10 @@
 # @mojo
 # def my_func(n: int) -> int:
 #     '''
-#     fn my_func(n: Int) -> Int:
+#     def my_func(n: Int) -> Int:
 #         return n * n
 #
-#     fn main():
+#     def main():
 #         print(my_func({{n}}))
 #     '''
 #     ...
@@ -23,7 +23,7 @@
 # Use `{{parameter}}` for substitution.
 
 # %%
-from mojo_marimo import get_mojo_version, mojo
+from py_run_mojo import get_mojo_version, mojo
 
 print(f"Mojo version: {get_mojo_version()}")
 
@@ -35,7 +35,7 @@ print(f"Mojo version: {get_mojo_version()}")
 @mojo
 def fibonacci(n: int) -> int:
     """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         if n <= 1:
             return n
         var prev: Int = 0
@@ -46,7 +46,7 @@ def fibonacci(n: int) -> int:
             curr = next_val
         return curr
 
-    fn main():
+    def main():
         print(fibonacci({{n}}))
     """
     ...
@@ -64,13 +64,13 @@ print(f"fibonacci(20) = {fibonacci(20):,}")
 @mojo
 def sum_squares(n: int) -> int:
     """
-    fn sum_squares(n: Int) -> Int:
+    def sum_squares(n: Int) -> Int:
         var total: Int = 0
         for i in range(1, n + 1):
             total += i * i
         return total
 
-    fn main():
+    def main():
         print(sum_squares({{n}}))
     """
     ...
@@ -88,7 +88,7 @@ print(f"sum_squares(10) = {result}  # 1² + 2² + ... + 10²")
 @mojo
 def is_prime(n: int) -> bool:
     """
-    fn is_prime(n: Int) -> Bool:
+    def is_prime(n: Int) -> Bool:
         if n < 2:
             return False
         if n == 2:
@@ -104,7 +104,7 @@ def is_prime(n: int) -> bool:
 
         return True
 
-    fn main():
+    def main():
         print(is_prime({{n}}))
     """
     ...

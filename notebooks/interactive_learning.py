@@ -31,7 +31,7 @@ def _(mo):
 
 @app.cell
 def _():
-    from mojo_marimo import get_mojo_version, mojo, run_mojo
+    from py_run_mojo import get_mojo_version, mojo, run_mojo
 
     return get_mojo_version, mojo, run_mojo
 
@@ -60,7 +60,7 @@ def _(mojo):
     @mojo
     def fibonacci(n: int) -> int:
         """
-        fn fibonacci(n: Int) -> Int:
+        def fibonacci(n: Int) -> Int:
             if n <= 1:
                 return n
             var prev: Int = 0
@@ -71,7 +71,7 @@ def _(mojo):
                 curr = next_val
             return curr
 
-        fn main():
+        def main():
             print(fibonacci({{n}}))
         """
         ...
@@ -121,13 +121,13 @@ def _(mojo):
     @mojo
     def sum_squares_loop(n: int) -> int:
         """
-        fn sum_squares(n: Int) -> Int:
+        def sum_squares(n: Int) -> Int:
             var total: Int = 0
             for i in range(1, n + 1):
                 total += i * i
             return total
 
-        fn main():
+        def main():
             print(sum_squares({{n}}))
         """
         ...
@@ -135,11 +135,11 @@ def _(mojo):
     @mojo
     def sum_squares_formula(n: int) -> int:
         """
-        fn sum_squares_formula(n: Int) -> Int:
+        def sum_squares_formula(n: Int) -> Int:
             # Formula: n(n+1)(2n+1)/6
             return (n * (n + 1) * (2 * n + 1)) // 6
 
-        fn main():
+        def main():
             print(sum_squares_formula({{n}}))
         """
         ...
@@ -199,7 +199,7 @@ def _(mojo):
     @mojo
     def is_prime(n: int) -> bool:
         """
-        fn is_prime(n: Int) -> Bool:
+        def is_prime(n: Int) -> Bool:
             if n < 2:
                 return False
             if n == 2:
@@ -215,7 +215,7 @@ def _(mojo):
 
             return True
 
-        fn main():
+        def main():
             print(is_prime({{n}}))
         """
         ...
@@ -287,10 +287,10 @@ def _(mo, operation_choice, run_mojo, time, val_a, val_b):
 
     # Generate Mojo code dynamically
     dynamic_code = f"""
-    fn compute(a: Int, b: Int) -> Int:
+    def compute(a: Int, b: Int) -> Int:
         return {mojo_expr}
 
-    fn main():
+    def main():
         print(compute({val_a.value}, {val_b.value}))
     """
 

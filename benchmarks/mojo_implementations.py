@@ -9,7 +9,7 @@ from py_run_mojo import mojo
 @mojo
 def fibonacci(n: int) -> int:
     """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         if n <= 1:
             return n
         var prev: Int = 0
@@ -20,7 +20,7 @@ def fibonacci(n: int) -> int:
             curr = next_val
         return curr
 
-    fn main():
+    def main():
         print(fibonacci({{n}}))
     """
     ...
@@ -29,13 +29,13 @@ def fibonacci(n: int) -> int:
 @mojo
 def sum_squares(n: int) -> int:
     """
-    fn sum_squares(n: Int) -> Int:
+    def sum_squares(n: Int) -> Int:
         var total: Int = 0
         for i in range(1, n + 1):
             total += i * i
         return total
 
-    fn main():
+    def main():
         print(sum_squares({{n}}))
     """
     ...
@@ -44,7 +44,7 @@ def sum_squares(n: int) -> int:
 @mojo
 def is_prime(n: int) -> bool:
     """
-    fn is_prime(n: Int) -> Bool:
+    def is_prime(n: Int) -> Bool:
         if n < 2:
             return False
         if n == 2:
@@ -59,7 +59,7 @@ def is_prime(n: int) -> bool:
             i += 2
         return True
 
-    fn main():
+    def main():
         print(is_prime({{n}}))
     """
     ...
@@ -68,7 +68,7 @@ def is_prime(n: int) -> bool:
 @mojo
 def factorial(n: int) -> int:
     """
-    fn factorial(n: Int) -> Int:
+    def factorial(n: Int) -> Int:
         if n <= 1:
             return 1
         var result: Int = 1
@@ -76,7 +76,7 @@ def factorial(n: int) -> int:
             result *= i
         return result
 
-    fn main():
+    def main():
         print(factorial({{n}}))
     """
     ...
@@ -85,7 +85,7 @@ def factorial(n: int) -> int:
 @mojo
 def gcd(a: int, b: int) -> int:
     """
-    fn gcd(a: Int, b: Int) -> Int:
+    def gcd(a: Int, b: Int) -> Int:
         var x = a
         var y = b
         while y != 0:
@@ -94,7 +94,7 @@ def gcd(a: int, b: int) -> int:
             x = temp
         return x
 
-    fn main():
+    def main():
         print(gcd({{a}}, {{b}}))
     """
     ...
@@ -103,7 +103,7 @@ def gcd(a: int, b: int) -> int:
 @mojo
 def count_primes(n: int) -> int:
     """
-    fn is_prime(num: Int) -> Bool:
+    def is_prime(num: Int) -> Bool:
         if num < 2:
             return False
         if num == 2:
@@ -118,14 +118,14 @@ def count_primes(n: int) -> int:
             i += 2
         return True
 
-    fn count_primes(n: Int) -> Int:
+    def count_primes(n: Int) -> Int:
         var count: Int = 0
         for i in range(2, n + 1):
             if is_prime(i):
                 count += 1
         return count
 
-    fn main():
+    def main():
         print(count_primes({{n}}))
     """
     ...

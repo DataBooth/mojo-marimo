@@ -11,15 +11,15 @@ Or use auto-compilation:
     result = fibonacci_mojo_ext.fibonacci(10)
 """
 
-from python import PythonObject
-from python.bindings import PythonModuleBuilder
-from os import abort
+from std.os import abort
+from std.python import PythonObject
+from std.python.bindings import PythonModuleBuilder
 
 
 @export
-fn PyInit_fibonacci_mojo_ext() -> PythonObject:
+def PyInit_fibonacci_mojo_ext() abi("C") -> PythonObject:
     """Initialize the Python extension module.
-    
+
     Python looks for PyInit_<module_name>() when importing.
     """
     try:
@@ -29,23 +29,22 @@ fn PyInit_fibonacci_mojo_ext() -> PythonObject:
             docstring="Calculate nth Fibonacci number (iterative)"
         )
         mb.def_function[is_prime](
-            "is_prime", 
+            "is_prime",
             docstring="Check if number is prime"
         )
         return mb.finalize()
     except e:
-        print("error creating Python Mojo module:", e)
-        return PythonObject()
+        abort(String("error creating Python Mojo module:", e))
 
 
-fn fibonacci(py_n: PythonObject) raises -> PythonObject:
+def fibonacci(py_n: PythonObject) raises -> PythonObject:
     """Calculate nth Fibonacci number.
     
     Note: Takes PythonObject, not native Mojo Int.
     This is required for Python extension module functions.
     """
-    var n = Int(py_n)
-    
+    var n = Int(py=py_n)
+
     if n <= 1:
         return PythonObject(n)
     
@@ -60,10 +59,10 @@ fn fibonacci(py_n: PythonObject) raises -> PythonObject:
     return PythonObject(curr)
 
 
-fn is_prime(py_n: PythonObject) raises -> PythonObject:
+def is_prime(py_n: PythonObject) raises -> PythonObject:
     """Check if number is prime using trial division."""
-    var n = Int(py_n)
-    
+    var n = Int(py=py_n)
+
     if n < 2:
         return PythonObject(False)
     if n == 2:

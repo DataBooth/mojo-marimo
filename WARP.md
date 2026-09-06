@@ -193,7 +193,7 @@ Key behavioural points for new code:
 
 When adding new decorated functions, follow the existing pattern:
 
-- Ensure docstrings contain valid Mojo with a `fn main()` entry point.
+- Ensure docstrings contain valid Mojo with a `def main()` entry point.
 - Use `{{param}}` placeholders for argument substitution.
 - Provide an explicit return type annotation to get proper conversion.
 

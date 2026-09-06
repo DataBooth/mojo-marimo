@@ -10,7 +10,7 @@
 #
 # # Option 1: Inline code
 # result = run_mojo("""
-#     fn main():
+#     def main():
 #         print(42 * 42)
 # """)
 #
@@ -30,10 +30,10 @@ print(f"Mojo version: {get_mojo_version()}")
 
 # %%
 mojo_code = """
-fn compute(n: Int) -> Int:
+def compute(n: Int) -> Int:
     return n * n
 
-fn main():
+def main():
     print(compute(42))
 """
 
@@ -45,7 +45,7 @@ print(f"Result: {result}")
 
 # %%
 fib_code = """
-fn fibonacci(n: Int) -> Int:
+def fibonacci(n: Int) -> Int:
     if n <= 1:
         return n
     var prev: Int = 0
@@ -56,7 +56,7 @@ fn fibonacci(n: Int) -> Int:
         curr = next_val
     return curr
 
-fn main():
+def main():
     print(fibonacci(20))
 """
 
@@ -81,11 +81,11 @@ else:
 # The executor validates common Mojo syntax errors before compilation:
 
 # %% [markdown]
-# ### Error 1: Missing fn main()
+# ### Error 1: Missing def main()
 
 # %%
 bad_code_1 = """
-fn compute(n: Int) -> Int:
+def compute(n: Int) -> Int:
     return n * n
 """
 
@@ -99,7 +99,7 @@ print(result)  # Will show validation error
 bad_code_2 = """
 print("Hello")  # Invalid - must be inside a function
 
-fn main():
+def main():
     print("World")
 """
 
@@ -111,10 +111,10 @@ print(result)
 
 # %%
 bad_code_3 = """
-fn compute(n: Int) -> Int  # Missing colon!
+def compute(n: Int) -> Int  # Missing colon!
     return n * n
 
-fn main():
+def main():
     print(compute(5))
 """
 
@@ -126,7 +126,7 @@ print(result)
 
 # %%
 bad_code_4 = """
-fn main():
+def main():
 \tprint("tab")
     print("spaces")
 """
@@ -139,7 +139,7 @@ print(result)
 
 # %%
 bad_code_5 = """
-fn main():
+def main():
     let x: Int = 42  # Deprecated! Use 'var' instead
     print(x)
 """
@@ -152,7 +152,7 @@ print(result)
 #
 # The executor catches these common errors before compilation:
 #
-# 1. **Missing `fn main()`** - Every Mojo program needs an entry point
+# 1. **Missing `def main()`** - Every Mojo program needs an entry point
 # 2. **File-scope statements** - Code must be inside functions
 # 3. **Missing colons** - Function definitions must end with `:`
 # 4. **Mixed indentation** - Don't mix tabs and spaces

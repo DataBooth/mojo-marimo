@@ -18,7 +18,7 @@ It lets you write and execute Mojo code directly in marimo notebooks with **thre
 ### 1. Decorator Pattern - Clean & Pythonic
 Mojo code lives in docstrings with `{{param}}` template syntax:
 ```python
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 @mojo
 def fibonacci(n: int) -> int:
@@ -31,7 +31,7 @@ result = fibonacci(10)  # Called like normal Python
 ### 2. Executor Pattern - Dynamic Code Generation  
 Pass Mojo code as strings for runtime flexibility:
 ```python
-from mojo_marimo import run_mojo
+from py_run_mojo import run_mojo
 
 mojo_code = f"""[Generated Mojo code]"""
 result = run_mojo(mojo_code)

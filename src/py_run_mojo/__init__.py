@@ -13,7 +13,7 @@ Example:
     @mojo
     def fibonacci(n: int) -> int:
         '''
-        fn fibonacci(n: Int) -> Int:
+        def fibonacci(n: Int) -> Int:
             if n <= 1:
                 return n
             var prev: Int = 0
@@ -24,7 +24,7 @@ Example:
                 curr = next_val
             return curr
 
-        fn main():
+        def main():
             print(fibonacci({n}))
         '''
         pass

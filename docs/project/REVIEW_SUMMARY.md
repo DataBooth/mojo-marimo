@@ -37,7 +37,7 @@ All functions tested and working correctly:
 
 ```
 mojo-marimo/
-├── src/mojo_marimo/           # Core library (validator, decorator, executor)
+├── src/py_run_mojo/           # Core library (validator, decorator, executor)
 ├── examples/                   # Example implementations + reference .mojo files
 │   ├── fibonacci_mojo_ext.mojo  # Extension module example
 │   └── reference/               # Reference .mojo files for learning
@@ -95,12 +95,12 @@ mojo-marimo/
 **Use case**: Interactive development, notebooks, prototyping
 
 ```python
-from mojo_marimo import mojo
+from py_run_mojo import mojo
 
 @mojo
 def fibonacci(n: int) -> int:
     """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         # Mojo implementation
     """
     ...
@@ -112,10 +112,10 @@ def fibonacci(n: int) -> int:
 **Use case**: Dynamic code generation, flexible execution
 
 ```python
-from mojo_marimo import run_mojo
+from py_run_mojo import run_mojo
 
 code = """
-fn main():
+def main():
     print(42)
 """
 result = run_mojo(code)

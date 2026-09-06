@@ -65,7 +65,7 @@ def __():
     from mojo_implementations import (
         sum_squares as sum_sq_decorator,
     )
-    from mojo_marimo import clear_cache
+    from py_run_mojo import clear_cache
     from uncached_executor import (
         fibonacci as fib_uncached,
     )

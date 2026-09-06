@@ -30,7 +30,7 @@ def _(mo):
 
     # Pattern 1: Inline string
     mojo_code = '''
-    fn main():
+    def main():
         print(42)
     '''
     result = run_mojo(mojo_code)
@@ -72,7 +72,7 @@ def _(mo):
 def _(mo, run_mojo):
     # Simple Mojo code as string
     simple_code = """
-    fn main():
+    def main():
         print("Hello from Mojo!")
     """
 
@@ -103,7 +103,7 @@ def _(mo):
 def _(mo, run_mojo):
     # Mojo code with hardcoded value
     fib_code_10 = """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         if n <= 1:
             return n
         var prev: Int = 0
@@ -114,7 +114,7 @@ def _(mo, run_mojo):
             curr = next_val
         return curr
 
-    fn main():
+    def main():
         print(fibonacci(10))
     """
 
@@ -146,7 +146,7 @@ def _(mo):
 @app.cell
 def _(mo):
     mo.md(r"""
-    ### Example 1: Missing `fn main()`
+    ### Example 1: Missing `def main()`
     """)
     return
 
@@ -154,7 +154,7 @@ def _(mo):
 @app.cell
 def _(mo, run_mojo):
     no_main_code = """
-    fn fibonacci(n: Int) -> Int:
+    def fibonacci(n: Int) -> Int:
         if n <= 1:
             return n
         var prev: Int = 0
@@ -176,7 +176,7 @@ def _(mo, run_mojo):
 
     **Result:** `{result_no_main}` ❌
 
-    → Validation catches that executables need a `fn main()` function.
+    → Validation catches that executables need a `def main()` function.
     """)
     return
 
@@ -194,7 +194,7 @@ def _(mo, run_mojo):
     file_scope_code = """
     var x = 42  # Error: can't declare variables at file scope
 
-    fn main():
+    def main():
         print(x)
     """
 
@@ -224,10 +224,10 @@ def _(mo):
 @app.cell
 def _(mo, run_mojo):
     no_colon_code = """
-    fn compute(n: Int) -> Int
+    def compute(n: Int) -> Int
         return n * 2
 
-    fn main():
+    def main():
         print(compute(5))
     """
 
@@ -257,7 +257,7 @@ def _(mo):
 @app.cell
 def _(mo, run_mojo):
     # Note: using explicit \t in string to demonstrate
-    mixed_indent_code = """fn main():
+    mixed_indent_code = """def main():
     \tvar x = 1  # Tab here
     print(x)   # Spaces here
     """
@@ -344,10 +344,10 @@ def _(mo, run_mojo):
         operations = {"add": "a + b", "multiply": "a * b", "power": "a ** b"}
 
         mojo_code = f"""
-        fn compute(a: Int, b: Int) -> Int:
+        def compute(a: Int, b: Int) -> Int:
             return {operations[operation]}
 
-        fn main():
+        def main():
             print(compute({a}, {b}))
         """
         return run_mojo(mojo_code), mojo_code

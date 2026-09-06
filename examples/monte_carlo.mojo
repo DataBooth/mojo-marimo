@@ -6,7 +6,7 @@ Estimates π by randomly sampling points in a unit square and checking if they f
 from random import random_float64
 from math import sqrt
 
-fn estimate_pi(samples: Int) -> Float64:
+def estimate_pi(samples: Int) -> Float64:
     """Estimate π using Monte Carlo method."""
     var inside_circle: Int = 0
     
@@ -21,7 +21,7 @@ fn estimate_pi(samples: Int) -> Float64:
     # π ≈ 4 * (points inside circle / total points)
     return 4.0 * Float64(inside_circle) / Float64(samples)
 
-fn main():
+def main():
     var samples = 1_000_000
     var pi_estimate = estimate_pi(samples)
     var pi_actual = 3.14159265358979323846

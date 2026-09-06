@@ -1,6 +1,6 @@
 """Fibonacci calculator - iterative approach."""
 
-fn fibonacci(n: Int) -> Int:
+def fibonacci(n: Int) -> Int:
     if n <= 1:
         return n
     var prev: Int = 0
@@ -11,5 +11,5 @@ fn fibonacci(n: Int) -> Int:
         curr = next_val
     return curr
 
-fn main():
+def main():
     print(fibonacci(10))

@@ -3,7 +3,7 @@ Mandelbrot Set Calculation
 Computes iteration counts for points in the complex plane to visualize the Mandelbrot set.
 """
 
-fn mandelbrot_point(cx: Float64, cy: Float64, max_iter: Int) -> Int:
+def mandelbrot_point(cx: Float64, cy: Float64, max_iter: Int) -> Int:
     """Calculate iterations for a single point in the Mandelbrot set.
     
     Args:
@@ -27,7 +27,7 @@ fn mandelbrot_point(cx: Float64, cy: Float64, max_iter: Int) -> Int:
     
     return iteration
 
-fn compute_mandelbrot(width: Int, height: Int, max_iter: Int, 
+def compute_mandelbrot(width: Int, height: Int, max_iter: Int,
                        x_min: Float64, x_max: Float64,
                        y_min: Float64, y_max: Float64) -> None:
     """Compute the Mandelbrot set for a grid of points.
@@ -55,7 +55,7 @@ fn compute_mandelbrot(width: Int, height: Int, max_iter: Int,
                 print(",", end="")
         print()  # Newline after each row
 
-fn main():
+def main():
     # Standard Mandelbrot view
     var width = 400
     var height = 300

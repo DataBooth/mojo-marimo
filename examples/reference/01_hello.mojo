@@ -1,4 +1,4 @@
 """Simple hello world example."""
 
-fn main():
+def main():
     print("Hello from Mojo!")

@@ -24,8 +24,15 @@ def validate_mojo_code(code: str) -> tuple[bool, str | None]:
     # function when the code clearly looks like a standalone program.
     has_main = re.search(r"^fn\s+main\(\)", code, re.MULTILINE)
     has_def_main = re.search(r"^def\s+main\(\)", code, re.MULTILINE)
+    has_top_level_function = re.search(r"^\s*(?:fn|def)\s+\w+\s*\(", code, re.MULTILINE)
 
     if not (has_main or has_def_main):
+        # Standalone programs with function definitions still require a main
+        # entry point. Pure fragments (e.g. an expression or notebook cell) may
+        # legitimately omit main().
+        if has_top_level_function:
+            return False, "Missing 'def main()' - Mojo executables require a main function"
+
         # Treat pure kernel/fragments as valid; downstream Mojo compiler will
         # still provide real diagnostics if they are wrong.
         return True, None
@@ -66,9 +73,12 @@ def validate_mojo_code(code: str) -> tuple[bool, str | None]:
             if "(" in stripped and ")" not in stripped:
                 continue
 
-            # Function declaration should end with :
-            # Examples: fn foo():  or  fn bar(x: Int) -> Int:
-            if not stripped.endswith(":"):
+            # Function declaration should end with ':' — or, for single-line
+            # bodies like `def main(): print("hi")` (valid Mojo), have a ':'
+            # immediately after the signature.
+            if not stripped.endswith(":") and not re.search(
+                r"\)\s*(?:->\s*[^:]+)?\s*:\s*\S", stripped
+            ):
                 return False, f"Line {i}: Function declaration missing colon (':') at end"
 
     # Check 5: Common Python patterns that don't work in Mojo
@@ -99,17 +109,17 @@ def validate_mojo_code(code: str) -> tuple[bool, str | None]:
 def get_validation_hint(error_msg: str) -> str:
     """Provide helpful hints for common validation errors."""
     hints = {
-        "missing 'fn main()'": """
+        "missing 'def main()'": """
 💡 Mojo executables require a main function:
 
-fn main():
+def main():
     # Your code here
     print("Hello")
 """,
         "at file scope": """
 💡 Statements like 'var', 'return', 'if', etc. must be inside a function:
 
-fn main():
+def main():
     var x = 42  # ✓ Correct
     print(x)
 
@@ -118,22 +128,22 @@ fn main():
         "Mixed tabs and spaces": """
 💡 Use consistent indentation (spaces recommended):
 
-fn main():
+def main():
     var x = 1    # ✓ All spaces
     print(x)     # ✓ All spaces
 """,
         "missing colon": """
 💡 Mojo function declarations need a colon:
 
-fn compute(n: Int) -> Int:  # ✓ Colon at end
+def compute(n: Int) -> Int:  # ✓ Colon at end
     return n * 2
 
-fn compute(n: Int) -> Int   # ✗ Missing colon
+def compute(n: Int) -> Int   # ✗ Missing colon
 """,
         "'let' keyword is deprecated": """
 💡 Mojo deprecated 'let' in favor of 'var':
 
-fn main():
+def main():
     var x = 42   # ✓ Use 'var'
     var y = 10   # ✓ Use 'var'
     # let z = 5  # ✗ 'let' is deprecated
@@ -141,38 +151,38 @@ fn main():
         "print requires parentheses": """
 💡 Mojo requires parentheses for print (like Python 3):
 
-fn main():
+def main():
     print("Hello")      # ✓ Correct
     # print "Hello"    # ✗ Python 2 style doesn't work
 """,
         "Use 'Int'": """
 💡 Mojo type names are capitalized:
 
-fn compute(n: Int) -> Int:   # ✓ Capitalized 'Int'
+def compute(n: Int) -> Int:   # ✓ Capitalized 'Int'
     return n * 2
     
-# fn compute(n: int) -> int  # ✗ Python's 'int' doesn't work
+# def compute(n: int) -> int  # ✗ Python's 'int' doesn't work
 """,
         "Use 'String'": """
 💡 Mojo uses 'String' not 'str':
 
-fn greet(name: String):      # ✓ Use 'String'
+def greet(name: String):      # ✓ Use 'String'
     print(name)
     
-# fn greet(name: str)        # ✗ Python's 'str' doesn't work
+# def greet(name: str)        # ✗ Python's 'str' doesn't work
 """,
         "Use 'Bool'": """
 💡 Mojo uses 'Bool' not 'bool':
 
-fn is_valid(flag: Bool) -> Bool:  # ✓ Capitalized 'Bool'
+def is_valid(flag: Bool) -> Bool:  # ✓ Capitalized 'Bool'
     return flag
     
-# fn is_valid(flag: bool)          # ✗ Python's 'bool' doesn't work
+# def is_valid(flag: bool)          # ✗ Python's 'bool' doesn't work
 """,
         "'range' requires parentheses": """
 💡 Function calls need parentheses:
 
-fn main():
+def main():
     for i in range(10):   # ✓ Correct
         print(i)
     # for i in range 10   # ✗ Missing parentheses
