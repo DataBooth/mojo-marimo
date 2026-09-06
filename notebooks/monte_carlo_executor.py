@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.14"
+__generated_with = "0.24.0"
 app = marimo.App(width="medium")
 
 
@@ -13,20 +13,18 @@ def _():
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        # Monte Carlo Pi Estimation - Executor Pattern
+    mo.md("""
+    # Monte Carlo Pi Estimation - Executor Pattern
 
-        This notebook demonstrates using `run_mojo()` executor to estimate π using the Monte Carlo method.
+    This notebook demonstrates using `run_mojo()` executor to estimate π using the Monte Carlo method.
 
-        ## How it works
-        1. Generate random points (x, y) in a unit square [0,1] × [0,1]
-        2. Check if each point falls inside the unit circle (x² + y² ≤ 1)
-        3. π ≈ 4 × (points inside circle / total points)
+    ## How it works
+    1. Generate random points (x, y) in a unit square [0,1] × [0,1]
+    2. Check if each point falls inside the unit circle (x² + y² ≤ 1)
+    3. π ≈ 4 × (points inside circle / total points)
 
-        **Pattern**: Pass Mojo code as string or file path to `run_mojo()`
-        """
-    )
+    **Pattern**: Pass Mojo code as string or file path to `run_mojo()`
+    """)
     return
 
 
@@ -40,7 +38,7 @@ def _(mo):
     mojo_file = Path("examples/monte_carlo.mojo")
 
     mo.md(f"✅ **Using Mojo file**: `{mojo_file}`")
-    return Path, mojo_file, run_mojo
+    return (run_mojo,)
 
 
 @app.cell
@@ -61,34 +59,33 @@ def _(mo):
 def _(mo, samples_slider):
     # Build dynamic Mojo code
     mojo_code = f"""
-from random import random_float64
-from math import sqrt
+    from random import random_float64
+    from math import sqrt
 
-def estimate_pi(samples: Int) -> Float64:
-    var inside_circle: Int = 0
-    
-    for _ in range(samples):
-        var x = random_float64()
-        var y = random_float64()
-        var distance = sqrt(x * x + y * y)
-        
-        if distance <= 1.0:
-            inside_circle += 1
-    
-    return 4.0 * Float64(inside_circle) / Float64(samples)
+    def estimate_pi(samples: Int) -> Float64:
+        var inside_circle: Int = 0
 
-def main():
-    var pi_estimate = estimate_pi({samples_slider.value})
-    print(pi_estimate)
-"""
+        for _ in range(samples):
+            var x = random_float64()
+            var y = random_float64()
+            var distance = sqrt(x * x + y * y)
+    
+            if distance <= 1.0:
+                inside_circle += 1
+
+        return 4.0 * Float64(inside_circle) / Float64(samples)
+
+    def main():
+        var pi_estimate = estimate_pi({samples_slider.value})
+        print(pi_estimate)
+    """
 
     mo.md("✅ **Dynamic Mojo code generated**")
     return (mojo_code,)
 
 
 @app.cell
-def _(mojo_code, mo, run_mojo, samples_slider):
-    import math
+def _(math, mo, mojo_code, run_mojo, samples_slider):
 
     # Execute Mojo code
     result = run_mojo(mojo_code)
@@ -104,25 +101,23 @@ def _(mojo_code, mo, run_mojo, samples_slider):
         mo.md(
             f"""
             ## Results
-            
+    
             **Samples**: {samples_slider.value:,}  
             **Estimated π**: {pi_estimate:.10f}  
             **Actual π**: {pi_actual:.10f}  
             **Error**: {error:.10f} ({error_percent:.4f}%)
             """
         )
-    return error, error_percent, math, pi_actual, pi_estimate, result
+    return
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        ## Convergence Visualization
-        
-        Generate estimates for different sample sizes:
-        """
-    )
+    mo.md("""
+    ## Convergence Visualization
+
+    Generate estimates for different sample sizes:
+    """)
     return
 
 
@@ -139,24 +134,24 @@ def _(mo, run_mojo):
 
     for n in sample_sizes:
         code = f"""
-from random import random_float64
-from math import sqrt
+    from std.random import random_float64
+    from std.math import sqrt
 
-def estimate_pi(samples: Int) -> Float64:
-    var inside_circle: Int = 0
-    for _ in range(samples):
-        var x = random_float64()
-        var y = random_float64()
-        if sqrt(x * x + y * y) <= 1.0:
-            inside_circle += 1
-    return 4.0 * Float64(inside_circle) / Float64(samples)
+    def estimate_pi(samples: Int) -> Float64:
+        var inside_circle: Int = 0
+        for _ in range(samples):
+            var x = random_float64()
+            var y = random_float64()
+            if sqrt(x * x + y * y) <= 1.0:
+                inside_circle += 1
+        return 4.0 * Float64(inside_circle) / Float64(samples)
 
-def main():
-    print(estimate_pi({n}))
-"""
-        result = run_mojo(code)
-        if result:
-            est = float(result.strip())
+    def main():
+        print(estimate_pi({n}))
+    """
+        result2 = run_mojo(code)
+        if result2:
+            est = float(result2.strip())
             estimates.append(est)
             errors.append(abs(est - math.pi))
 
@@ -182,7 +177,7 @@ def main():
     )
 
     mo.ui.plotly(fig)
-    return code, errors, est, estimates, fig, go, n, sample_sizes
+    return errors, go, math, sample_sizes
 
 
 @app.cell
@@ -208,24 +203,22 @@ def _(errors, go, mo, sample_sizes):
         height=400,
     )
     mo.ui.plotly(fig_error)
-    return (fig_error,)
+    return
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        ## Pattern Summary
-        
-        **Executor Pattern (`run_mojo()`)**:
-        - ✅ Dynamic code generation (templates, algorithms)
-        - ✅ Can execute .mojo files or inline code
-        - ✅ Explicit control over execution
-        - ⚠️ Subprocess overhead (~10-50ms per call after caching)
-        
-        **Performance**: First call ~1-2s (compile), subsequent ~10-50ms (cached binary)
-        """
-    )
+    mo.md("""
+    ## Pattern Summary
+
+    **Executor Pattern (`run_mojo()`)**:
+    - ✅ Dynamic code generation (templates, algorithms)
+    - ✅ Can execute .mojo files or inline code
+    - ✅ Explicit control over execution
+    - ⚠️ Subprocess overhead (~10-50ms per call after caching)
+
+    **Performance**: First call ~1-2s (compile), subsequent ~10-50ms (cached binary)
+    """)
     return
 
 
